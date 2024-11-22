@@ -53,6 +53,7 @@ The downsides are
 
  It will not capture:
 - entities that begin with lowercase. To do that, take a look at other already mentioned packages, like spacyr and UDpipe.
+- it does not delves with ambiguity. For example, is "WHO" referring to question or World Health Organization?
 
 In my experience, this approach works better to certain types of text than others. Books, formal articles can be a good option that works well with this function. Text from social media, because it lacks formalities of the language and have a lot of types, it will not work so well.
 
@@ -93,6 +94,13 @@ Than, the entities are extracted using `extract_entity()`. Than a data frame wit
 ```{r vonNeumann graph}
 vonNeumann_txt |> extract_graph()
 ```
+
+One of the parameters is `sw` that means "stopwords". It is possible to add a vector stopwords.
+```{r vonNeumann graph stopwords}
+my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
+vonNeumann_txt |> extract_graph(sw = my_sw)
+```
+
 
 This process can take a while to run if the text/corpus is big. So, if you are interested only in some words, so first of all, filter the sentences/paragraphs with the desired words, and after that, extract the graph.
 Seeing another example, extracting from a wikipedia article:

@@ -20,19 +20,23 @@ rgx_word <- "(\\b[A-ZÀ-ß][A-ZÀ-ßa-zà-ÿ0-9\\.\\-]+\\b)"
 #' connectors("en")
 #' connectors("misc")
 connectors <- function(lang = "pt") {
-  if (lang %in% s2v("pt por port portugues português portuguese")) {
-    conn <- "da das de do dos"
-  } else if (lang %in% s2v("es spa spanish espanol español")) {
+  if (lang %in% c("pt", "por", "port", "portugues", "português", "portuguese")) {
+    conn <- c("da", "das", "de", "do", "dos")
+    # } else if (lang %in% s2v("es spa spanish espanol español")) {
+  } else if (lang %in% c("es", "spa", "spanish", "espanol", "español")) {
     conn <- "del"
-  } else if (lang %in% s2v("en eng english inglês")) {
-    conn <- "of of_the"
+    # } else if (lang %in% s2v("en eng english inglês")) {
+  } else if (lang %in% c("en", "eng", "english", "inglês")) {
+    conn <- c("of", "of the")
   } else if (lang == "misc") {
-    conn <- "of the of_the von van del"
+    # conn <- "of the of_the von van del"
+    conn <- c("of", "the", "of the", "von", "van", "del")
   } else {
     paste("Lang not found:", lang) |> stop()
   }
 
-  conn |> s2v()
+  # conn |> s2v()
+  conn
 }
 
 #' A rule based entity extractor
@@ -48,7 +52,7 @@ connectors <- function(lang = "pt") {
 # text |> extract_entity()
 extract_entity <- function(text, connect = connectors("misc"), sw = "the") {
   # connectors <- connectors |> s2v()
-  connector <- paste(connect, collapse = "|") |> gsub2("(.*)", "(\\1)")
+  connector <- paste(connect, collapse = "|") |> gsub("(.*)", "(\\1)", x = _)
 
   # rgx_ppn <- paste0("(", rgx_word, "+ ?)+", "", connector, "? (", rgx_word, " ?)*")
   rgx_ppn <- paste0("(", rgx_word, "+ ?)+", "(", connector, "? (", rgx_word, " ?)+)*")
@@ -100,7 +104,7 @@ subs_ppn <- function(text, entities, method = "normal") {
         stringr::str_replace_all(ent_df[i, "entities"], ent_df[i, "entities2"])
     }
   } else if (method == "normal") {
-    entities2 <- grep(" ",  entities)
+    entities2 <- grep(" ", entities)
     # named_vec <- stringr::str_replace_all(entities, " ", "_")
     named_vec <- gsub(" ", "_", entities2)
     # names(named_vec) <- entities2
@@ -171,9 +175,8 @@ extract_relation <- function(text, using = "sentences",
 #' extract_graph(text)
 extract_graph <- function(text, using = "sentences",
                           connect = connectors("misc"),
-                          sw = gen_stopwords("en"),
+                          sw = c("of", "the"),
                           loop = FALSE) {
-
   list_ent <- text |> extract_relation(using, connect, sw)
   graph <- tibble::tibble(n1 = as.character(""), n2 = as.character(""))
   # list_length <- list_ent |> length()
@@ -206,6 +209,3 @@ extract_graph <- function(text, using = "sentences",
 extract_graph_rgx <- function(text, pattern, sw = gen_stopwords("en"), count_graphs = FALSE) {
   text
 }
-
-
-

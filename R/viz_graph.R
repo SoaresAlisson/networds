@@ -1,4 +1,3 @@
-
 #' plot a network of coocurrence of terms
 #'
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
@@ -34,7 +33,8 @@ plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
     ggplot2::theme(legend.position = "none")
 }
 
-#' plot a network of coocurrence of terms
+#' weighted graph viz
+#' plot a network of co-ocurrence of terms
 #'
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
 #' @param text an input text
@@ -42,24 +42,29 @@ plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
 #' @param head_n number of nodes to show - the more frequent
 #' @param scale name of a function to normalize the result. Sometime, the range of numbers are so wide that the graph becomes unreadable. Applying a function to normalize the result can improve the readability, for example using `scale = "log2"`, or "log10"
 #' @export
-#' # plot_graph(txt, df= graph_count, head_n = 50, scale = "log2") 
-plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale = "scale_values"){  
-                       # c("log2", "log10")) 
+#'
+#' @examples
+#' # plot_graph(txt, df= graph_count, head_n = 50, scale = "log2")
+plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale = "scale_values") {
+  # c("log2", "log10"))
   # graph <-  g_N |> head(head_n)
-  scale_values <- function(x){ (x-min(x))/(max(x)-min(x))}
+  scale_values <- function(x) {
+    (x - min(x)) / (max(x) - min(x))
+  }
 
-  graph <- df |> head(head_n) |> 
-    dplyr::mutate(n = eval(dplyr::sym(scale))(n)) 
-  
+  graph <- df |>
+    head(head_n) |>
+    dplyr::mutate(n = eval(dplyr::sym(scale))(n))
+
   vert <- unique(c(graph$n1, graph$n2))
 
-# frequency of nodes/terms
+  # frequency of nodes/terms
   freqPPN <- lapply(vert, \(v) {
     text |> stringr::str_extract_all(v)
   }) |>
     unlist() |>
-    count_vec() 
-  
+    count_vec()
+
 
   graph |>
     igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
@@ -71,14 +76,17 @@ plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale = "sca
       # c("lightblue", "blue", "royalblue")[1],
       end_cap = ggraph::circle(6, "mm")
     ) + # afastamento do nó
-    ggraph::geom_node_text(ggplot2::aes(label = name, 
-    # normalizando o tamanho do texto
-    size = eval(dplyr::sym(scale))(freq)), 
-    repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+    ggraph::geom_node_text(
+      ggplot2::aes(
+        label = name,
+        # normalizando o tamanho do texto
+        size = eval(dplyr::sym(scale))(freq)
+      ),
+      repel = TRUE
+    ) + # TODO ajustar tamanho minimo e máximo
     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")
-
 }
 
 
@@ -86,6 +94,11 @@ plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale = "sca
 #'
 #' Visualize graphs interactively (package visNetwork). The columns must be named:
 #' "from", "label", "to" and "value" (frequency of the triplet)
+#'
+#' @param graph_df a dataframe with the graph data
+#' @param nodesIdSelection a boolean value to enable node selection. Default: TRUE.
+#'
+#' @export
 viz_graph <- function(graph_df, nodesIdSelection = TRUE, height = "900px") {
   unique_nodes <- unique(c(graph_df$from, graph_df$to)) # Create a unique list of all nodes (vertices)
 
@@ -108,4 +121,3 @@ viz_graph <- function(graph_df, nodesIdSelection = TRUE, height = "900px") {
       nodesIdSelection = nodesIdSelection
     )
 }
-
