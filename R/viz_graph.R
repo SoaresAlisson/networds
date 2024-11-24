@@ -1,4 +1,4 @@
-#' plot a network of coocurrence of terms
+#' plot a network of co-ocurrence of terms
 #'
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
 #' @param text an input text
@@ -44,7 +44,7 @@ plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
 #' @export
 #'
 #' @examples
-#' # plot_graph(txt, df= graph_count, head_n = 50, scale = "log2")
+#' # plot_graph(txt, df = graph_count, head_n = 50, scale = "log2")
 plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale = "scale_values") {
   # c("log2", "log10"))
   # graph <-  g_N |> head(head_n)
@@ -64,7 +64,6 @@ plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale = "sca
   }) |>
     unlist() |>
     count_vec()
-
 
   graph |>
     igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>

@@ -38,13 +38,16 @@ get_node_id <- function(graph, query) {
     data.frame() |>
     dplyr::mutate(id = dplyr::row_number()) |>
     # dplyr::filter(name == querie) |>
-    dplyr::filter(grepl(x = name, querie)) |>
+    dplyr::filter(grepl(x = name, query)) |>
     dplyr::pull(id)
 }
 
 #' get the neighbors of a site
 #'
+#' @description
 #' creates a sub graph with the node of reference and its Nth neighbors
+#'
+#' @export
 #'
 #' @examples
 #' g
@@ -54,6 +57,8 @@ get_node_id <- function(graph, query) {
 #' get_neighbors(g, "Alice", 1) |> plot()
 #' get_neighbors(g, "Alice", 2) |> plot()
 get_neighbors <- function(graph, query, n = 1) {
+  library(tidygraph)
+
   graph |>
     tidygraph::activate(nodes) |>
     tidygraph::convert(to_local_neighborhood,

@@ -17,8 +17,14 @@ devtools::build_vignettes()
 devtools::build_vignettes("01-Extract entity coocurrences with regex")
 #devtools::install_github("quanteda/spacyr", build_vignettes = FALSE)
 usethis::use_readme_rmd()
-devtools::build_readme()
 usethis::use_github()
+
+devtools::build_readme() # locates your README.Rmd and builds it into a README.md
+pkgdown::build_site_github_pages()
+devtools::build_manual() # Create package pdf manual
+devtools::build_site() # Execute pkgdown build_site in a package
+# build_site() is a shortcut for pkgdown::build_site()
+pkgdown::build_site()
 ```
 ```{r txt}
 txt <- c(
@@ -496,14 +502,14 @@ subgraph <- graph |>
     order = 1, mode = "all"
   )
 
-get_neighbors <- function(graph, query, n=1) {
- graph |>
-  tidygraph::activate(nodes) |>
-  tidygraph::convert(to_local_neighborhood,
-    # node = 1,
-    node = get_node_id(graph, query),
-    order = n, mode = "all"
-  ) 
+get_neighbors <- function(graph, query, n = 1) {
+  graph |>
+    tidygraph::activate(nodes) |>
+    tidygraph::convert(to_local_neighborhood,
+      # node = 1,
+      node = get_node_id(graph, query),
+      order = n, mode = "all"
+    )
 }
 
 get_neighbors(g, "Bob", 2)
