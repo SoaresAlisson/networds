@@ -1,5 +1,5 @@
 ---
-title: "Entities and relation extraction"
+title: "01 - Proper name extraction with regex"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{entities_and_relation_extraction}
