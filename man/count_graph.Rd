@@ -15,6 +15,6 @@ count_graph(graph, loop = FALSE)
 Count the graph frequency of co-occurences/Co-mentioning of triplets
 }
 \examples{
-DF <- data.frame(n1 = c("Sample1", "Sample2", "Sample3"), n2 = c("A1", "B1", "A2"), l = c("Value1", "Value2", "Value3"))
+DF <- data.frame(n1 = c("Sample1","Sample1", "Sample2", "Sample2"), n2 = c("A1","Sample1", "B1", "B1"))
 DF |> count_graph()
 }

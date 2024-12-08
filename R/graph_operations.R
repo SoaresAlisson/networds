@@ -1,7 +1,7 @@
 # functions to basic operations with graphs
 
 
-#' a sample graph dataframe
+#' a sample graph dataframe (tbl-graph)
 #'
 #' @export
 g <- tidygraph::tbl_graph(
@@ -42,7 +42,7 @@ get_node_id <- function(graph, query) {
     dplyr::pull(id)
 }
 
-#' get the neighbors of a site
+#' Get the neighbors of a site
 #'
 #' @description
 #' creates a sub graph with the node of reference and its Nth neighbors

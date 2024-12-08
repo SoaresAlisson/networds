@@ -2,8 +2,7 @@
 % Please edit documentation in R/viz_graph.R
 \name{plot_graph2}
 \alias{plot_graph2}
-\title{weighted graph viz
-plot a network of co-ocurrence of terms}
+\title{weighted graph viz}
 \usage{
 plot_graph2(text, df, head_n = 30, color = "lightblue", scale = "scale_values")
 }
@@ -17,8 +16,11 @@ plot_graph2(text, df, head_n = 30, color = "lightblue", scale = "scale_values")
 \item{scale}{name of a function to normalize the result. Sometime, the range of numbers are so wide that the graph becomes unreadable. Applying a function to normalize the result can improve the readability, for example using `scale = "log2"`, or "log10"}
 }
 \description{
+Plot a network of co-ocurrence of terms
+}
+\details{
 plot a graph of co-occurrence of terms, as returned by extract_graph
 }
 \examples{
-# plot_graph(txt, df= graph_count, head_n = 50, scale = "log2")
+# plot_graph(txt, df = graph_count, head_n = 50, scale = "log2")
 }

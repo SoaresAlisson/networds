@@ -1,6 +1,7 @@
-#' plot a network of co-ocurrence of terms
+#' Plot a network of co-ocurrence of terms
 #'
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
+#'
 #' @param text an input text
 #' @param df a dataframe of co-occurrence, extracted with `extract_graph()` and `count(n1, n2)`
 #' @param head_n number of nodes to show - the more frequent
@@ -34,7 +35,8 @@ plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
 }
 
 #' weighted graph viz
-#' plot a network of co-ocurrence of terms
+#'
+#' Plot a network of co-ocurrence of terms
 #'
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
 #' @param text an input text

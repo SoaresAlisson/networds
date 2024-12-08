@@ -3,7 +3,7 @@
 \docType{data}
 \name{g}
 \alias{g}
-\title{a sample graph dataframe}
+\title{a sample graph dataframe (tbl-graph)}
 \format{
 An object of class \code{tbl_graph} (inherits from \code{igraph}) of length 6.
 }
@@ -11,6 +11,6 @@ An object of class \code{tbl_graph} (inherits from \code{igraph}) of length 6.
 g
 }
 \description{
-a sample graph dataframe
+a sample graph dataframe (tbl-graph)
 }
 \keyword{datasets}

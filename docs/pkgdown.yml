@@ -2,5 +2,6 @@ pandoc: 3.1.11.1
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
+  02-Extract entity co-ocurrences with POS: 02-Extract entity co-ocurrences with POS.html
   entities_and_relation_extraction: entities_and_relation_extraction.html
-last_built: 2024-11-24T19:18Z
+last_built: 2024-12-08T16:55Z

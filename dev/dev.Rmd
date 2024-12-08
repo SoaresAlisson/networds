@@ -13,18 +13,19 @@ available::available("txtnet")
 ```
 ```{r devtools vignette}
 devtools::build_vignettes("First_steps")
-devtools::build_vignettes()
 devtools::build_vignettes("01-Extract entity coocurrences with regex")
+devtools::build_vignettes("02-Extract entity co-ocurrences with POS")
+devtools::build_vignettes()
 #devtools::install_github("quanteda/spacyr", build_vignettes = FALSE)
+vignette(pkgdown::metadata)
 usethis::use_readme_rmd()
 usethis::use_github()
 
 devtools::build_readme() # locates your README.Rmd and builds it into a README.md
-pkgdown::build_site_github_pages()
 devtools::build_manual() # Create package pdf manual
+pkgdown::build_site_github_pages()
 devtools::build_site() # Execute pkgdown build_site in a package
 # build_site() is a shortcut for pkgdown::build_site()
-pkgdown::build_site()
 ```
 ```{r txt}
 txt <- c(
@@ -106,17 +107,7 @@ collapse_adp <- function(pos_df) {
     # select(token, pos, entity, c_adp, lemma, lemma2)
 }
 
-#' extract entities from POS
-extract_entities <- function(pos_df) {
-  pos_df  |>
-    collapse_adp() |>
-    # conflate_ppn()
-    group_seq_pos() |>
-    dplyr::filter(pos %in% s2v("NOUN PROPN")) |>
-    dplyr::pull(collapsed)
-}
-
-#' extract_entity for each sentence
+#'' extract_entity for each sentence
 #' @return a list of all entities in each sentence
 extract_entities2 <- function(pos_df) {
   sentence <- unique(pos_df$sentence_id)
@@ -696,6 +687,7 @@ lapply(filter_ppn(pos), \(x) {
 ```
 ```{r fun extract_graph_pos}
 extract_graph_pos <- function(pos_df, count = FALSE) {
+  extract_graph
   graph <- lapply(filter_ppn(pos_df), \(x) {
     g_v <- combn(x, 2, simplify = F) |> unlist()
 

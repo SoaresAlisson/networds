@@ -1,0 +1,44 @@
+---
+title: "02-Extract entity co-ocurrences with POS"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{entities_and_relation_extraction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+Loading the library
+
+```{r setup}
+library(txtnet)
+library(spacyr)
+```
+
+Extracting proper names or entities with regex are cool, but has its limitations. 
+In this section, we will use the Part of Speech (POS) tags to extract the entities, proper names, noun phrases and its co-occurrences to generate graphs.
+
+
+```{r}
+# text from https://www.bbc.com/news/articles/c7ve36zg0e5o
+text <- r"(The manhunt for a suspect who gunned down a healthcare chief executive in New York is now in its third day, with police chasing several different leads.
+
+UnitedHealthcare boss Brian Thompson, 50, was fatally shot in the back on Wednesday morning outside the Hilton hotel in Midtown Manhattan.
+
+Police say Thompson was targeted in a pre-planned killing, for which they do not yet have a motive.
+
+Investigators are using surveillance photos, bullet casings with cryptic messages written on them, and the suspect's movements to track him down. They are also working with the FBI and authorities in other states as the search expands beyond New York.)"
+```
+
+```{r}
+POS <- text |>
+  spacyr::spacy_parse(dependency = T) |>
+  group_ppn()
+```
+
+

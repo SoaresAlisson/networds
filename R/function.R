@@ -9,7 +9,8 @@
 #' "Maria Jana ama John Smith e Maria é amada por Joaquim de Souza" |>
 #'   spacyr::spacy_parse(dependency = T) |>
 #'   group_ppn()
-group_entity <- function(DF) {
+group_ppn <- function(DF) {
+# group_entity <- function(DF) {
   DF |>
     dplyr::mutate(name = grepl("^PER_", entity)) |>
     dplyr::group_by(name = cumsum(0 + !(lag(name, default = TRUE) & name)), ) |>
@@ -191,22 +192,32 @@ entity_list_2_graph2 <- function(entities_list, count = TRUE) {
 #'
 #' @param graph a graph of co-occurrence
 #' @param loop if TRUE, include loops. Default=FALSE
+#'
 #' @export
+#'
 #' @examples
-#' DF <- data.frame(n1 = c("Sample1", "Sample2", "Sample3"), n2 = c("A1", "B1", "A2"), l = c("Value1", "Value2", "Value3"))
+# DF <- data.frame(n1 = c("Sample1", "Sample2", "Sample2"), n2 = c("A1", "B1", "A2"), l = c("Value1", "Value2", "Value3"))
+#' DF <- data.frame(n1 = c("Sample1","Sample1", "Sample2", "Sample2"), n2 = c("A1","Sample1", "B1", "B1"))
 #' DF |> count_graph()
 count_graph <- function(graph, loop=FALSE) {
+  # graph <- DF
   g <- graph |>
     dtplyr::lazy_dt() |> # do dtplyr to improve performance
     dplyr::count(n1, n2, sort = TRUE) |>
-    dplyr::rename(from = n1, to = n2, value = n) #|> head(100)
+    tibble::as_tibble()
+    # dplyr::rename(from = n1, to = n2, value = n) #|> head(100)
+    # nothing()
  # label = n2,
-  if(loop) {  g 
+  if(loop) {
+    g 
   } else{
-    g |> mutate(loop = from == to)  |>
+    g |> 
+      # dplyr::mutate(loop = (from == to))  |>
+      dplyr::mutate(loop = (n1== n2))  |>
       dplyr::filter(!loop) |>
-      select(-loop)
+      dplyr::select(-loop)
     }
+  
 }
 # count_graph2 <- function(graph) {
 #   graph |> dplyr::count(n1, n2, sort=TRUE ) |>

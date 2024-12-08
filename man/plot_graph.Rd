@@ -2,7 +2,7 @@
 % Please edit documentation in R/viz_graph.R
 \name{plot_graph}
 \alias{plot_graph}
-\title{plot a network of coocurrence of terms}
+\title{Plot a network of co-ocurrence of terms}
 \usage{
 plot_graph(text, df, head_n = 30, color = "lightblue")
 }

@@ -81,6 +81,7 @@ Using with other languages:
   extract_entity(connect = connectors("pt"))
 
 vonNeumann_txt <- "John von Neumann (/vɒn ˈnɔɪmən/ von NOY-mən; Hungarian: Neumann János Lajos [ˈnɒjmɒn ˈjaːnoʃ ˈlɒjoʃ]; December 28, 1903 – February 8, 1957) was a Hungarian and American mathematician, physicist, computer scientist and engineer"
+
 vonNeumann_txt |> extract_entity()
 ```
 
@@ -98,6 +99,7 @@ vonNeumann_txt |> extract_graph()
 One of the parameters is `sw` that means "stopwords". It is possible to add a vector stopwords.
 ```{r vonNeumann graph stopwords}
 my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
+
 vonNeumann_txt |> extract_graph(sw = my_sw)
 ```
 
@@ -105,19 +107,32 @@ vonNeumann_txt |> extract_graph(sw = my_sw)
 This process can take a while to run if the text/corpus is big. So, if you are interested only in some words, so first of all, filter the sentences/paragraphs with the desired words, and after that, extract the graph.
 Seeing another example, extracting from a wikipedia article:
 
-```{r ex wikipedia scrape GNU}
+```{r echo=FALSE, eval=T}
+# pagina <- "https://en.wikipedia.org/wiki/GNU_General_Public_License" |> rvest::read_html()
+# writeLines( as.character(pagina), "../inst/wiki_GNU.html" )
+# page <- readLines("../inst/wiki_GNU.html") 
+page <- rvest::read_html("../inst/wiki_GNU.html")
+```
+
+```{r, echo=T, eval=FALSE}
 page <- "https://en.wikipedia.org/wiki/GNU_General_Public_License" |> rvest::read_html()
+```
+
+```{r ex wikipedia scrape GNU, eval=TRUE}
 text <- page |>
   rvest::html_nodes("p") |>
   rvest::html_text()
+
 # looking at the scraped text:
 text[1:2] # seeing the head of the text
 ```
 
+
+
 And now extracting the graphs:
 
 ```{r ex wikipedia plot GNU}
-g <- text |> extract_graph(sw = gen_stopwords("en", include = "The This It"))
+g <- text |> extract_graph(sw = my_sw)
 g
 g_N <- g |> dplyr::count(n1, n2, sort = T)
 g_N
@@ -146,17 +161,31 @@ g_N |>
 
 Another text example.
 <!-- "https://en.wikipedia.org/wiki/Julia_Silge" -->
+```{r, echo=TRUE, eval=FALSE}
+# page <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
+```
+```{r echo=FALSE, eval=T}
+# pagina <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
+# writeLines( as.character(pagina), "../inst/wiki_Hurricane_Milton.html" )
+# page <- readLines("../inst/wiki_GNU.html") 
+page <- rvest::read_html("../inst/wiki_Hurricane_Milton.html")
+```
 ```{r ex2 wiki Hurricane}
-page <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
 text <- page |>
   rvest::html_nodes("p") |>
   rvest::html_text()
+
 text[1:2] # seeing the head of the tex
-g <- text |> extract_graph(sw = gen_stopwords("en", include = "The This It"))
+
+g <- text |> extract_graph(sw = my_sw)
+# option 1: use counting the edge frequency
 g_N <- g |> dplyr::count(n1, n2, sort = T)
+# option 2: use count_graph function, same results
+g_N <- g |> count_graph()
 
 plot_graph(text, g_N, head_n = 50)
 ```
+
 To plot an interactive graph, it is possible to use {networkD3}:
 
 ```{r networkD3 hurricane}
