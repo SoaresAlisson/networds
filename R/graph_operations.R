@@ -1,23 +1,9 @@
 # functions to basic operations with graphs
 
 
-#' a sample graph dataframe (tbl-graph)
-#'
-#' @export
-g <- tidygraph::tbl_graph(
-  nodes = data.frame(name = c(
-    "Alice", "Bob", "Charlie",
-    "David", "John", "Mary"
-  )),
-  edges = data.frame(
-    from = c(1, 1, 2, 3, 2, 6),
-    to = c(2, 3, 4, 4, 5, 5)
-  )
-)
 
 
-
-#' search for the id of a node in a graph
+#' Search for the id of a node in a graph
 #'
 #' @param graph a tbl_graph
 #' @param querie the name of the node

@@ -1,9 +1,9 @@
-Package: 'txtnet'
+Package: txtnet
 Type: build network of text, extract entities and its relations in graph format.
+Title: build network of text
 Version: 0.1.0
 Authors@R: 
     person("Alisson", "Soares", 
-    <!-- email="alissonmsoares@gmail.com",  -->
     email="soares.alisson@yahoo.com.br", 
     role = c("aut", "cre"), 
     comment = c(ORCID = "0009-0004-5497-5572" ) )
@@ -11,9 +11,11 @@ Maintainer: Alisson Soares <soares.alisson@yahoo.com.br>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 Imports:
+    data.table,
     dplyr,
+    dtplyr,
     tidygraph,
-    tidyr
+    tibble
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -21,3 +23,5 @@ RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 URL: https://github.com/SoaresAlisson/txtnet
 BugReports: https://github.com/SoaresAlisson/txtnet/issues
+Depends: 
+    R (>= 3.5)

@@ -20,12 +20,19 @@ devtools::build_vignettes()
 vignette(pkgdown::metadata)
 usethis::use_readme_rmd()
 usethis::use_github()
+usethis::use_github_links() #  If a package is already connected to a remote GitHub repository, usethis::use_github_links() can be called to just add the relevant links to DESCRIPTION.
 
+usethis::use_data_table() # creates all the boilerplate. https://usethis.r-lib.org/reference/use_data_table.html
 devtools::build_readme() # locates your README.Rmd and builds it into a README.md
 devtools::build_manual() # Create package pdf manual
+usethis::use_pkgdown() # is a function you run once and it does the initial, minimal setup necessary to start using pkgdown:
 pkgdown::build_site_github_pages()
+pkgdown::build_site() # is a function you’ll call repeatedly, to re-render your site locally. In an extremely barebones package, https://r-pkgs.org/website.html
 devtools::build_site() # Execute pkgdown build_site in a package
 # build_site() is a shortcut for pkgdown::build_site()
+
+# to create a data object:
+usethis::use_data()
 ```
 ```{r txt}
 txt <- c(
@@ -40,7 +47,21 @@ txt <- c(
 # txtPT_trt_full <- readLines("../../narrative_argument/data/texto_trt.txt")
 txtPT_trt_full <- readLines("../narrative_argument/data/texto_trt.txt")
 txtPT_trt_full <- "../narrative_argument/data/txts.R") |> source()
-
+```
+```{r package data txt}
+library(rvest)
+URL <- "https://en.wikipedia.org/wiki/Killing_of_Brian_Thompson"
+page <- rvest::read_html(URL)
+txt_wiki <- page |>
+  rvest::html_elements("p") |> 
+  html_text()
+attr(txt_wiki, "Font") <- URL
+# use the data in package
+# https://r-pkgs.org/data.html
+# txt_wiki <- "./data/txt_wiki.rda"
+# save(txt, file=txt_wiki)
+# usethis::use_data_raw("txt_wiki")
+usethis::use_data(txt_wiki, overwrite = T)
 ```
 # UD pipe
 ```{r Udpipe}
@@ -185,7 +206,6 @@ txtPT_trt_full  |>
   entity_list_2_graph2()
 ```
 
-
 ```{r pos group_by}
 # NAO DEU CERTO
 pos |> select(-doc_id, -sentence_id, -token_id, -head_token_id) |>
@@ -298,6 +318,110 @@ group_names <- function(DF) {
 pos_ <- txt[3] |>  spacyr::spacy_parse( dependency = T) |> group_names()
 rsyntax::plot_tree(|> as_tokenindex(pos_), token, lemma, pos)
 ```
+```{r ex DF}
+library(dplyr)
+library(tidyr)
+
+# Sample data
+# df <- data.frame(
+#   A = c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+#   B = c(FALSE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, FALSE)
+# )
+df <- data.frame(B= c(F,T, T, T, F, F, F,T,T,F)) |> mutate(A=letters[1:length(B)])
+
+# Create a grouping variable based on consecutive TRUE values in column B
+df <- df |> mutate(group = cumsum(!B))
+```
+```{r ex gemini = group sequence}
+
+# Group by the grouping variable and concatenate the text in column A
+df %>%
+  group_by(group) %>%
+  filter(any(B)) %>%
+  summarize(A = paste(A, collapse = " "))
+
+## opção 2 - nao funcionou
+# Use rle to identify runs of TRUE
+# Run Length Encoding: Compute the lengths and values of runs of equal values in a vector -- or the reverse operation
+rle_result <- rle(df$B)
+# Create a grouping variable based on runs of TRUE
+df <- df %>% mutate(group = cumsum(rle_result$lengths * rle_result$values))
+# Group and concatenate
+df %>%
+  group_by(group) %>%
+  filter(any(B)) %>%
+  summarize(A = paste(A, collapse = " "))
+
+
+## opção 3
+df %>%
+  # group_by(run = data.table::rleid(B)) #%>%
+  dplyr::group_by(run = data.table::rleidv(cols = B)) # %>%
+# summarise(count = paste(A[1], n(), sep = ":"))
+```
+```{r ex data table rleid}
+library(data.table)
+DT <- data.table::data.table(grp = rep(c("A", "B", "C", "A", "B"), c(2, 2, 3, 1, 2)), value = 1:10)
+data.table::rleid(DT$grp) # get run-length ids
+data.table::rleidv(DT, "grp") # same as above
+
+data.table::rleid(DT$grp, prefix = "grp") # prefix with 'grp'
+
+# get sum of value over run-length groups
+DT[, sum(value), by = .(grp, data.table::rleid(grp))]
+DT[, sum(value), by = .(grp, data.table::rleid(grp, prefix = "grp"))]
+DT[, paste(value, collapse = " "), by = .(grp, data.table::rleid(grp, prefix = "grp"))]
+DT[, paste(value, collapse = " "), by = .(grp, data.table::rleid(grp))]
+
+DT$grp |> rle()
+```
+```{r fun group_entities}
+# agrupa sequencia das mesmas entites se subsequentes
+t <- "UnitedHealthcare boss Brian Thompson, 5f, was fatally shot in the back on Wednesday morning outside the Hilton hotel in Midtown Manhattan... Investigators are using surveillance photos, bullet casings with cryptic messages written on them, and the suspect's movements to track him down. They are also working with the FBI and authorities in other states as the search expands beyond New York"
+
+spacyr::spacy_initialize(model = "en_core_web_lg")
+#' spacyr::spacy_parse(t, dependency = T) |> group_entities()
+#'
+#' # example in Portuguese language
+#' spacyr::spacy_initialize(model = "pt_core_news_lg")
+#' "Maria Jana ama John Smith e Maria é amada por Joaquim de Souza" |>
+#'   spacyr::spacy_parse(dependency = T) |>
+#'   group_entities()
+# group_entities <- function(DF) {
+# group_entity <- function(DF) {
+DF <- spacyr::spacy_parse(t, dependency = T) #|> group_ppn()
+entities <- "^(PER(SON)?|ORG|GPE)_"
+
+DF |>
+  dplyr::mutate(name = grepl(entities, entity)) |>
+  # dplyr::mutate(name = (entity == "(PER|PERSON|ORG)_.*")) #|>
+  dplyr::group_by(name2 = data.table::rleid(name)) %>%
+  # dplyr::group_by(name2 = cumsum(0 + !(lag(name, default = TRUE) & name)), ) |>
+  dplyr::mutate(name3 = token |>
+f   # unique() |>
+    paste(collapse = " ")) |>
+  # dplyr::filter(entity != paste0(entities, "I")) |>
+  dplyr::filter(!grepl("_I", entity), entity != "", name)
+```
+```{r teste datatable}
+DT_pos <- DF |> dplyr::mutate(name = grepl(entities, entity))# |> data.table::setDT()
+  # as.character())
+
+# DT_pos[, paste(token, collapse = " "), 
+# by(DT_pos$token, DT_pos$name fun = data.table::rleid ]
+
+DT_pos[, paste(token, collapse = " "), by = .(name, data.table::rleid(name))] 
+DT_pos[, paste(token, collapse = " "), by = .(name, data.table::rleid(name))]  |> dplyr::pull(V1)
+DT_pos[, paste(token, collapse = " "), by = .(name, data.table::rleid(name))]  |> dplyr::pull(V1) |> dplyr::filter(name)
+# DT_pos[, paste(token, collapse = " "), by = .(name, data.table::rleid(name))]
+
+# DT_pos |> dplyr::select(DT_pos, doc_id, sentence_id, token, pos, entity, name)[, paste(token, collapse = " "), by = .(name, data.table::rleid(name))]
+dplyr::select(DT_pos, token,  name)[, paste(token, collapse = " "), by = .(name, data.table::rleid(name))]
+```
+
+```
+
+
 
 ###
 
@@ -364,6 +488,106 @@ count_graph <- function(graph, from, label, to, sort = F) {
 triplets |> count_graph()
 # triplets[, from]
 ```
+```{r ex deepseek}
+In R language, I have this dataframe
+# df <- data.frame(
+#   A = c("a", "b", "c", "d", "e", "f", "g", "h", "i"),
+#   B = c(FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, FALSE)
+# )
+
+When column B is TRUE and follows another TRUE, conflate/collapse the values of column A.
+
+df <- df %>%
+  mutate(
+    A_new = ifelse(B & lag(B, default = FALSE), paste0(lag(A), A), A)
+  ) %>%
+  mutate(
+    A = ifelse(B & lag(B, default = FALSE), NA, A)
+  ) %>%
+  fill(A_new, .direction = "down") %>%
+  mutate(
+    A = ifelse(is.na(A), A_new, A)
+  ) %>%
+  select(-A_new)
+```
+```{r help grupo R - melhor opcao}
+
+Olá Pessoal,
+Tenho o seguinte DF 
+
+df <- data.frame(B= c(F,T, T, T, F, F, F,T,T,F)) |> mutate(A=letters[1:length(B)])
+
+
+Quero rodar um `paste(collapse= " ")` na coluna A, apenas quando houver sequencias de TRUE. Assim, quero obter:
+c("a", "b c d", "e","f","g", "h i", "j")
+
+Tentei com 
+df |> group_by(B = cumsum(0 + !(lag(B, default = TRUE) & B)), ) |>
+  mutate(name = A |> paste(collapse = " "))  |>  
+  cbind(L = df$B) |> 
+  mutate(L2 = L==T & lag(L)==T,
+  L3 = is.na(L2)) |> 
+  filter(L3) |> select(-L2, -L3, -L)
+  # mutate(L2 = ifelse(L && lead(L),T,F ))
+ 
+data.table::rleid( data.table::setDT(df)$B) # get run-length ids
+
+
+DT_pos |> 
+  group_by(name = cumsum(0 + !(lag(name, default = TRUE) & name)), ) |>
+  mutate(name = token |> paste(collapse = " "))  |>  
+  cbind(L = DT_pos$name ) |> 
+  mutate(L2 = L==T & lag(L)==T,
+  L3 = is.na(L2)) |> 
+  filter(L3)|> 
+  # select(-L2, -L3, -L) |>
+  pull(name)
+```
+```{r}
+extract_entities <- function(DF) {
+  DF |>
+    dplyr::mutate(name = grepl(entities, entity)) |> # data.table::setDT()
+    group_by(name = cumsum(0 + !(lag(name, default = TRUE) & name)), ) |>
+    mutate(name = token |> paste(collapse = " ")) |>
+    cbind(L = DF$name) |>
+    mutate(
+      L2 = L == T & lag(L) == T,
+      L3 = is.na(L2)
+    ) |>
+    filter(L3) |>
+    # select(-L2, -L3, -L) |>
+    pull(name)
+}
+
+DT_pos |> extract_entities()
+```
+```{r fun lapply}
+#' Extract entities in list format, by sentence
+extract_entities_l <- function(DF) {
+  doc_ids <- unique(DF$doc_id)
+  sentenc_id <- unique(DF$sentence_id)
+  # message(doc_ids)
+  # ID = 1
+  lapply(sentenc_id, \(id_sent) {
+    message("sentenc: ", id_sent)
+
+    DF |>
+      dplyr::filter(sentence_id == id_sent) |>
+      extract_entities()
+  })
+}
+
+DT_pos |> extract_entities_l()
+```
+
+
+
+
+# summarise(name = token |> unique() |> paste(collapse = " "))
+
+
+
+
 
 # selecionando a partir de x nos filhos
 ```{r test}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_operations.R
 \name{get_node_id}
 \alias{get_node_id}
-\title{search for the id of a node in a graph}
+\title{Search for the id of a node in a graph}
 \usage{
 get_node_id(graph, query)
 }
@@ -12,7 +12,7 @@ get_node_id(graph, query)
 \item{querie}{the name of the node}
 }
 \description{
-search for the id of a node in a graph
+Search for the id of a node in a graph
 }
 \examples{
 # Building a graph dataframe

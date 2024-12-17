@@ -1,4 +1,22 @@
-# nao gerar rd
+#' A gsub to be used easily with native pipe |>
+#' gsub2 is just a wrapper around gsub
+#' @param x data to search
+#' @param arg1 pattern
+#' @param arg2 replacement
+#' @param ... arguments passed to gsub.
+#' @noRd
+#'
+#' @examples
+#' c("a", "b", "c", "d") |> gsub2("a", "x")
+#' # in the case of character
+#' "a b c d" |> gsub2("a", "x")
+#' # If no second argument is provided, than it will erase the pattern:
+#' "'bla bla1 'bla" |> gsub2("'")
+gsub2 <- function(x, arg1, arg2 = "", ic = FALSE, ...) {
+  gsub(arg1, arg2, x, ignore.case = ic)
+}
+
+#' @noRd
 s2v <- function(char, sep = " |\\n|\\t|\\r", wss = "_", print = FALSE) {
   vec <- char |>
     strsplit(sep) |>
@@ -38,4 +56,3 @@ count_vec <- function(vec, sort_n = TRUE) {
   }
   tibble::as_tibble(vec_count)
 }
-

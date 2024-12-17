@@ -4,12 +4,14 @@
 \alias{count_graph}
 \title{Count the graph frequency of co-occurences/Co-mentioning of triplets}
 \usage{
-count_graph(graph, loop = FALSE)
+count_graph(graph, loop = FALSE, DT = FALSE)
 }
 \arguments{
 \item{graph}{a graph of co-occurrence}
 
 \item{loop}{if TRUE, include loops. Default=FALSE}
+
+\item{DT}{if TRUE, use data.table instead of dplyr}
 }
 \description{
 Count the graph frequency of co-occurences/Co-mentioning of triplets

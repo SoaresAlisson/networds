@@ -176,7 +176,10 @@ text <- page |>
   rvest::html_text()
 
 text[1:2] # seeing the head of the tex
+```
 
+
+```{r ex2 wiki Hurricane2}
 g <- text |> extract_graph(sw = my_sw)
 # option 1: use counting the edge frequency
 g_N <- g |> dplyr::count(n1, n2, sort = T)

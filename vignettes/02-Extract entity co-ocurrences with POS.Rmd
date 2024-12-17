@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 Loading the library
 
-```{r setup}
+```{r setup library}
 library(txtnet)
 library(spacyr)
 ```
@@ -24,7 +24,7 @@ Extracting proper names or entities with regex are cool, but has its limitations
 In this section, we will use the Part of Speech (POS) tags to extract the entities, proper names, noun phrases and its co-occurrences to generate graphs.
 
 
-```{r}
+```{r, eval=T, echo=T}
 # text from https://www.bbc.com/news/articles/c7ve36zg0e5o
 text <- r"(The manhunt for a suspect who gunned down a healthcare chief executive in New York is now in its third day, with police chasing several different leads.
 
@@ -33,12 +33,175 @@ UnitedHealthcare boss Brian Thompson, 50, was fatally shot in the back on Wednes
 Police say Thompson was targeted in a pre-planned killing, for which they do not yet have a motive.
 
 Investigators are using surveillance photos, bullet casings with cryptic messages written on them, and the suspect's movements to track him down. They are also working with the FBI and authorities in other states as the search expands beyond New York.)"
-```
 
-```{r}
 POS <- text |>
+  spacyr::spacy_parse(dependency = T)
+
+head(POS, 20)
+```
+```{r, eval=FALSE, echo=FALSE}
+# spacy_finalize()
+spacy_initialize(model = "pt_core_news_lg")
+
+"Maria Jana ama John Smith e Maria é amada por Joaquim de Souza" |>
   spacyr::spacy_parse(dependency = T) |>
   group_ppn()
 ```
+
+## Extracting entities
+
+The package {spacyr} has two functions useful in this section.
+Both of them conflate compound nouns, like "New" and "York" into "New_York".
+The first one, extract only the entities
+
+```{r spacyr::entity_extract}
+POS |> spacyr::entity_extract()
+```
+
+The second one, conflates the compound nouns and preserve the other POS tags.
+
+```{r spacyr::entity_consolidate}
+POS |> spacyr::entity_consolidate()
+```
+
+This functions is used inside {txtnet}.
+Lets use the package text example. You can use whatever you want.
+
+```{r sample_txt head}
+data(package = "txtnet")
+
+# text_sample 
+# an example of text. this comes with the package.
+txt_wiki[2:3]
+```
+
+With the function in {txtnet}, is possible to give the whole text as input, search for a term/query. The package will tokenize in sentences (or in paragraphs, if specified in parameters of the function), perform the POS tagging. Is possible to run the whole process or go step by step, to understand what is going on. 
+
+```{r}
+# tokenizing and filtering the sentces that contains "police"
+txt_wiki[2:6] |> filter_by_query("Police")
+```
+
+Is possible to return a vector instead of a list object
+
+```{r}
+txt_wiki[1:12] |> filter_by_query("Police", unlist=TRUE)
+```
+
+The next step is the POS tagging using `parsePOS()`
+
+```{r}
+txt_wiki[1:12] |> filter_by_query("Police", unlist=TRUE) |>
+   parsePOS() 
+```
+
+
+
+```{r wiki get_pairs, eval=FALSE, echo=FALSE}
+txt_wiki |> filter_by_query("Police") |> 
+  parsePOS() |>
+  get_pairs()
+
+txt_wiki |> filter_by_query("Police") |> 
+  parsePOS() |>
+  get_pairs(loop = TRUE)
+```
+
+
+
+```{r, eval=FALSE, echo=FALSE}
+graph <- text |> 
+  filter_by_query(query="Brian") |> 
+  parsePOS() |> 
+  get_pairs()
+
+options(browser="firefox")
+graph |> plot_graph(text, df=_)
+graph |> dplyr::rename(from=n1, to=n2) |>  viz_graph() 
+```
+```{r, eval=FALSE, echo=FALSE}
+graph <- sotu_text[237:240]  |> 
+  filter_by_query(query="China") |> 
+  parsePOS() |> 
+  get_pairs()
+
+graph |> dplyr::rename(from=n1, to=n2) |>  viz_graph() 
+```
+```{r, eval=FALSE, echo=FALSE}
+sotu_text[237:240] |> get_graph_from_txt("people")
+sotu_text[237:240] |> get_graph_from_txt("China", by_sentence = FALSE )
+sotu_text[237:240] |> get_graph_from_txt("Russia", by_sentence = FALSE )
+```
+
+To get the graph of entities co-occurrences:
+
+```{r entities cooc}
+graph <- filter_by_query(txt_wiki, "Police") |> 
+  parsePOS(only_entities=TRUE)  |> 
+  dplyr::filter(entity_type != "CARDINAL") |> # to clean the graph
+  get_pairs()
+
+graph
+```
+
+```{r, echo=FALSE, eval=FALSE}
+plot_graph(txt_wiki,graph)
+```
+
+```{r}
+graph |> dplyr::rename(from=n1, to=n2)|>
+viz_graph()
+```
+
+To get the graph of entities and nouns:
+
+```{r}
+graph <- filter_by_query(txt_wiki, "Police") |> 
+  parsePOS(only_entities=FALSE)  |> 
+  dplyr::filter(entity_type != "CARDINAL") |> # to clean the graph
+  get_pairs2()
+
+graph
+```
+
+```{r}
+viz_graph(graph)
+```
+
+
+
+## Sotu example
+
+Using data from [{SOTU} package](https://cran.r-project.org/web/packages/sotu/index.html),  United States Presidential State of the Union Addresses.
+
+```{r, eval=FALSE, echo=FALSE}
+library(sotu)
+# looking at availabe datasets in the package
+data(package = "sotu")
+sotu_text[237:240] |> filter_by_query("China")
+filter_by_query(sotu_text[237:240], "\\bXi\\b", unlist = TRUE)
+filter_by_query(sotu_text[237:240], "bob") # test
+
+# Trump sentences from SOTU talking about "Xi"
+filter_by_query(sotu_text[237:240], "\\Xi\\b") |> parsePOS()               
+# Trump sentences from SOTU talking about "China"                          
+filter_by_query(sotu_text[237:240], "China")[2] |> parsePOS()              
+# Trump sentences from SOTU talking about "China"                          
+filter_by_query(sotu_text[237:240], "China") |> parsePOS()                 
+filter_by_query(sotu_text[237:240], "China") |> parsePOS(entities = FALSE) 
+
+filter_by_query(sotu_text[237:240], "China") |> 
+  parsePOS() |>                                 
+  get_pairs()
+
+filter_by_query(sotu_text[237:240], "China") |> 
+  parsePOS() |>                                 
+  get_pairs(loop = TRUE)                        
+
+```
+
+## Using another languages
+
+How {txtnet} uses spacy to tag the words, the user must initialize the model for the language.
 
 

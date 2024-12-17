@@ -1,3 +1,7 @@
+# functions to plot graphs, statically and interactively.
+#
+# options(browser="firefo@")
+
 #' Plot a network of co-ocurrence of terms
 #'
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
@@ -109,13 +113,14 @@ viz_graph <- function(graph_df, nodesIdSelection = TRUE, height = "900px") {
   )
 
   graph_data <- graph_df |> # Replace node names with indices in the graph data
-    mutate(
+    dplyr::mutate(
       from = purrr::map_chr(from, ~ node_mapping$id[node_mapping$label == .x] |> as.character()),
       to = purrr::map_chr(to, ~ node_mapping$id[node_mapping$label == .x] |> as.character()),
       arrows = "to"
       # color = purrr::map_chr(, ~ node_mapping$id[node_mapping$label == .x]),
     )
 
+  # https://cran.r-project.org/web/packages/visNetwork/visNetwork.pdf
   visNetwork::visNetwork(node_mapping, graph_data, width = "100%", height = height) |>
     visNetwork::visOptions(
       highlightNearest = TRUE,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_operations.R
 \name{get_neighbors}
 \alias{get_neighbors}
-\title{get the neighbors of a site}
+\title{Get the neighbors of a site}
 \usage{
 get_neighbors(graph, query, n = 1)
 }

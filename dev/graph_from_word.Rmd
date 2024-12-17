@@ -1,0 +1,198 @@
+
+ funcoes para montar grafo 
+ - a partir do texto 
+ - e de palavras chave
+
+## Load packages texts
+```{r txt}
+# text from https://www.bbc.com/news/articles/c7ve36zg0e5o
+text <- r"(The manhunt for a suspect who gunned down a healthcare chief executive in New York is now in its third day, with police chasing several different leads.
+UnitedHealthcare boss Brian Thompson, 50, was fatally shot in the back on Wednesday morning outside the Hilton hotel in Midtown Manhattan.
+Police say Thompson was targeted in a pre-planned killing, for which they do not yet have a motive.
+Investigators are using surveillance photos, bullet casings with cryptic messages written on them, and the suspect's movements to track him down. They are also working with the FBI and authorities in other states as the search expands beyond New York.)"
+```
+```{r spacy_parse}
+POS <- text |>
+  spacyr::spacy_parse(dependency = T)
+
+head(POS, 20)
+```
+```{r rm}
+# estes objetos estão sendo carregados erroneamente sempre que o script rodar. 
+rm(list = c("filter_by_query", "get_pairs", "parsePOS")
+```
+```{r sotu}
+# install.packages("sotu")
+library(sotu)
+data(package="sotu")
+# data(package="sotu")
+str(sotu_text)
+```
+```{r sotu meta text}
+sotu_meta
+sotu_text[240]
+```
+## spacy extract entities
+```{r entity_extract}
+POS |> spacyr::entity_extract()
+```
+```{r entity_consolidate}
+POS |> spacyr::entity_consolidate()
+```
+## busca termo
+```{r}
+query <- "China"
+sotu_meta
+grepl(query, sotu_text)
+txt <-sotu_text[238:240]
+```
+```{r fun filter_by_query }
+#' from vector of texts, tokenize by sentence or paragraph and returns a list
+filter_by_query <- function(txt, query, ic = TRUE, by_sentence = TRUE) {
+
+ if (by_sentence) {
+     tokenized_txt  <- txt |> 
+        tokenizers::tokenize_sentences() 
+  } else {
+      tokenized_txt <- txt |> 
+        tokenizers::tokenize_paragraph() 
+    }
+filtered_txt  <- 
+    tokenized_txt |> 
+      lapply( \(x) grep(x=x, query, 
+      ignore.case = TRUE,#ic, 
+      # ignore.case = ic, 
+      value=TRUE ))
+
+  length_list <- filtered_txt |> lapply(length) |> unlist() |> sum()
+  if(length_list ==0){ message('Query "',query, '" not found in text.') }
+}
+
+filter_by_query(sotu_text[237:240], "China")
+```
+```{r fun }
+# txt <- filter_by_query(sotu_text[237:240], c("China", "\\bXi\\b")[2])
+# spacy_initialize()
+# spacyr::spacy_parse(txt[[3]])
+
+#' from a list of filtered text (from the function filter_by_query), tags the POS.
+#' It also renumber the doc_id and sentence_id
+parsePOS <- function(txt) {
+      # lapply( spacyr::spacy_parse )
+  message(length(txt))
+
+    lapply(1:length(txt), \(x) {
+      # check if list element is empty
+      message(length(txt[[x]]))
+
+      if( length( txt[[x]] ) == 0) {
+        txt[[x]]
+      } else {
+      spacyr::spacy_parse(txt[[x]]) |>
+          dplyr::mutate(sentence_id = gsub("text(.*)", "\\1", doc_id),
+          doc_id = paste0("text", x))
+  }
+      })
+    
+}
+# parsePOS(txt)
+filter_by_query(sotu_text[237:240], c("China", "\\bXi\\b")[2])  |> parsePOS()
+filter_by_query(sotu_text[237:240], c("China", "\\bXi\\b")[1])[2]  |> parsePOS()
+filter_by_query(sotu_text[237:240], c("China", "\\bXi\\b")[1])  |> parsePOS()
+
+```
+```{r filter list with empty elements}
+# Create a sample list
+my_list <- list(a = 1:5, b = letters[1:3], c = c(TRUE, FALSE), d=NULL, e="")
+# Create a logical vector to select elements
+logical_vector <- c(TRUE, FALSE, TRUE, FALSE, FALSE)
+# Select elements using the logical vector
+my_list[logical_vector]
+
+non_empty <- lapply(pos, \(x) { length(x) > 0 }) |> unlist() |> unname()
+# non_empty <- length(pos) > 0 #|> unlist() |> unname()
+
+pos[non_empty]
+# unlist(pos)
+# pos[[non_empty]]
+# pos[vapply( Negate(is.null), NA))]
+# pos[sapply(pos, length) > 0]
+# Filter(Negate(is.null), pos)
+```
+```{r fun erase loop, }
+# loop = FALSE
+# entities_by_txt <- filter_by_query(sotu_text[237:240], "China") |> parsePOS() 
+
+#' get graph
+get_pairs <- function(pos, loop=FALSE) {
+  entities_by_txt <-
+    if (loop){
+    pos |> 
+      group_by(doc_id) |> summarise(entities = list(entity)) 
+    } else {
+    pos |>
+      group_by(doc_id) |> summarise(entities = list(unique(entity))) 
+    }
+
+  comb <- entities_by_txt$entities |> 
+    as.list() |> 
+    lapply(combn, 2, simplify=FALSE) |>
+    unlist()
+
+    tibble::tibble(
+      n1 = comb[seq(1, length(comb), by = 2)],
+      n2 = comb[seq(2, length(comb), by = 2)]
+    )
+}
+
+filter_by_query(sotu_text[237:240], "China") |> parsePOS() |> get_pairs() |> dplyr::count(n1,n2) |> dplyr::arrange(-n)
+filter_by_query(sotu_text[237:240], "China") |> parsePOS()  |> get_pairs(loop=TRUE)
+
+
+```
+```{r fun erase loop2, }
+# utilizando Nouns e outras categorias
+
+pos <- txt_wiki |> filter_by_query("Police") |>
+  parsePOS(only_entities=FALSE)  |> 
+  dplyr::filter(! entity_type %in% c("CARDINAL"))
+
+pos_cat =  c("NOUN", "ENTITY") 
+#entities = c("PERSON", "ORG", "GPE", "FAC", "DATE")
+
+
+get_pairs2 <- function(pos_df, 
+                       pos_cat =  c("NOUN", "ENTITY")) {
+
+  pos2 <- pos_df |>
+    dplyr::filter(pos %in% pos_cat) |> 
+    dplyr::group_by(doc_id, sentence_id) |> 
+    dplyr::summarise(terms = list(token)) 
+ 
+   graph_from_coocurrence_list(pos2)
+} 
+
+filter_by_query(txt_wiki, "Police") |> parsePOS(only_entities=FALSE)  |> get_pairs2()
+
+#' get graph
+get_pairs <- function(pos, loop=FALSE) {
+  entities_by_txt <-
+    if (loop){
+    pos |> 
+      group_by(doc_id) |> summarise(entities = list(entity)) 
+    } else {
+    pos |>
+      group_by(doc_id) |> summarise(entities = list(unique(entity))) 
+    }
+
+
+filter_by_query(sotu_text[237:240], "China") |> parsePOS() |> get_pairs() |> dplyr::count(n1,n2) |> dplyr::arrange(-n)
+filter_by_query(sotu_text[237:240], "China") |> parsePOS()  |> get_pairs(loop=TRUE)
+```
+
+
+
+
+
+
+
