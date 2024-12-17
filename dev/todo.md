@@ -9,5 +9,6 @@
 - ~juntar a sequencia: NOUN ADP PROPN, rei de Roma~
 - fazer plot cooc a partir dos POS 
 - achar funcao que transforma df em nodes e edges
+- plot graph, pegar 2 primeiras colunas se nao tiver from e to
 
 

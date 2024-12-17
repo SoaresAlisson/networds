@@ -190,6 +190,23 @@ filter_by_query(sotu_text[237:240], "China") |> parsePOS() |> get_pairs() |> dpl
 filter_by_query(sotu_text[237:240], "China") |> parsePOS()  |> get_pairs(loop=TRUE)
 ```
 
+```{r rename 1st and 2nd column}
+graph_df <- data.frame(
+  col1 = 1:5,
+  col2 = letters[1:5],
+  col3 = c(TRUE, FALSE, TRUE, FALSE, TRUE)
+)
+  col_names <- graph_df |> colnames()
+
+  if(col_names %in% c("from", "to") |> any() ) {
+    col_names[1] <- "from"
+    col_names[2] <- "to"
+
+    colnames(graph_df) <- col_names
+  }
+
+```
+
 
 
 

@@ -9,11 +9,15 @@ plot_graph2(text, df, head_n = 30, color = "lightblue", scale = "scale_values")
 \arguments{
 \item{text}{an input text}
 
-\item{df}{a dataframe of co-occurrence, extracted with `extract_graph()` and `count(n1, n2)`}
+\item{df}{a dataframe of co-occurrence, extracted with `extract_graph()` and 
+`count(n1, n2)`}
 
 \item{head_n}{number of nodes to show - the more frequent}
 
-\item{scale}{name of a function to normalize the result. Sometime, the range of numbers are so wide that the graph becomes unreadable. Applying a function to normalize the result can improve the readability, for example using `scale = "log2"`, or "log10"}
+\item{scale}{name of a function to normalize the result. Sometime, the range 
+of numbers are so wide that the graph becomes unreadable. Applying a function 
+to normalize the result can improve the readability, for example using 
+`scale = "log2"`, or "log10"}
 }
 \description{
 Plot a network of co-ocurrence of terms

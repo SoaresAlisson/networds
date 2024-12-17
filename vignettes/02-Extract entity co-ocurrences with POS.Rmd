@@ -19,33 +19,27 @@ Loading the library
 library(txtnet)
 library(spacyr)
 ```
+```{r browser, echo=FALSE}
+options(browser="firefox")
+```
+
 
 Extracting proper names or entities with regex are cool, but has its limitations. 
 In this section, we will use the Part of Speech (POS) tags to extract the entities, proper names, noun phrases and its co-occurrences to generate graphs.
+In R, to tag words with POS, the main packages are {UDPipe} and {SpacyR}.
 
+The {txtnet} comes with this text sample. In this tutorial, we will different parts of the text to a better visualization.
 
-```{r, eval=T, echo=T}
-# text from https://www.bbc.com/news/articles/c7ve36zg0e5o
-text <- r"(The manhunt for a suspect who gunned down a healthcare chief executive in New York is now in its third day, with police chasing several different leads.
-
-UnitedHealthcare boss Brian Thompson, 50, was fatally shot in the back on Wednesday morning outside the Hilton hotel in Midtown Manhattan.
-
-Police say Thompson was targeted in a pre-planned killing, for which they do not yet have a motive.
-
-Investigators are using surveillance photos, bullet casings with cryptic messages written on them, and the suspect's movements to track him down. They are also working with the FBI and authorities in other states as the search expands beyond New York.)"
-
-POS <- text |>
-  spacyr::spacy_parse(dependency = T)
-
-head(POS, 20)
+```{r sample_txt}
+data(package = "txtnet") # list the available dataset in package txtnet
 ```
-```{r, eval=FALSE, echo=FALSE}
-# spacy_finalize()
-spacy_initialize(model = "pt_core_news_lg")
+```{r sample_txt head}
+# Text_sample of the package
+# An example of text. Showing only the firsts lines
+txt_wiki[1:5]
 
-"Maria Jana ama John Smith e Maria é amada por Joaquim de Souza" |>
-  spacyr::spacy_parse(dependency = T) |>
-  group_ppn()
+# parsing the POS tagging in it
+POS <- txt_wiki |> spacyr::spacy_parse()
 ```
 
 ## Extracting entities
@@ -67,105 +61,84 @@ POS |> spacyr::entity_consolidate()
 This functions is used inside {txtnet}.
 Lets use the package text example. You can use whatever you want.
 
-```{r sample_txt head}
-data(package = "txtnet")
 
-# text_sample 
-# an example of text. this comes with the package.
-txt_wiki[2:3]
-```
+With the function in {txtnet}, is possible to give the whole text as input, search for a term/query. The package will tokenize in sentences (or in paragraphs, if specified in parameters), perform the POS tagging, and extract the graph. Is possible to run the whole process or go step by step, to understand what is going on. First, we'll do the first option.
 
-With the function in {txtnet}, is possible to give the whole text as input, search for a term/query. The package will tokenize in sentences (or in paragraphs, if specified in parameters of the function), perform the POS tagging. Is possible to run the whole process or go step by step, to understand what is going on. 
+If the text worked is not great, is possible to extract the all the co-occurrences and then work, but it comes with costs. 
+It can easly escalate a lot in size in many times the origial text size, take a lot of time and computational costs.
+For example, 345Mb of text can become 15Gb of POS tagged text.
+So, another approach is to build the co-occurrences more wisely, departing from specific words, then processing only the text that matters.
 
-```{r}
-# tokenizing and filtering the sentces that contains "police"
-txt_wiki[2:6] |> filter_by_query("Police")
+The function `filter_by_query()` tokenize the text by sentence by default (to use paragraph instead, use the parameter  `by_sentence = FALSE`).
+
+```{r filter_by_query}
+# tokenizing in sentences and filtering three lines that contains the word "police"
+x <- txt_wiki[3:6] |> filter_by_query("Police")
+x
+class(x)
 ```
 
 Is possible to return a vector instead of a list object
 
-```{r}
-txt_wiki[1:12] |> filter_by_query("Police", unlist=TRUE)
+```{r filter_by_query unlist}
+x <- txt_wiki[1:12] |> filter_by_query("Police", unlist=TRUE)
+x
+class(x)
 ```
 
-The next step is the POS tagging using `parsePOS()`
+The next step is the POS tagging using `parsePOS()`. 
 
-```{r}
-txt_wiki[1:12] |> filter_by_query("Police", unlist=TRUE) |>
-   parsePOS() 
+```{r parsePOS}
+txt_wiki[1:12] |> 
+  filter_by_query("Police", unlist=TRUE) |>
+  parsePOS() 
+```
+
+The next step is to get the graph using `get_cooc_entities()`
+
+```{r wiki get_cooc_entities, eval=T, echo=T}
+x <- txt_wiki[2:44] |> 
+  filter_by_query("Police") |>
+  parsePOS()
+x
+
+g <- get_cooc_entities(x)
+g
+```
+
+Visualizing the graph. (the nodes can become in a crazy dance to find the best distance between themselves)
+
+```{r viz_graph police, eval=T}
+g$edges |>  viz_graph() 
 ```
 
 
 
-```{r wiki get_pairs, eval=FALSE, echo=FALSE}
-txt_wiki |> filter_by_query("Police") |> 
-  parsePOS() |>
-  get_pairs()
-
-txt_wiki |> filter_by_query("Police") |> 
-  parsePOS() |>
-  get_pairs(loop = TRUE)
-```
-
-
-
-```{r, eval=FALSE, echo=FALSE}
-graph <- text |> 
+```{r Brian, eval=T, echo=T}
+graph <- txt_wiki[2:44] |> 
   filter_by_query(query="Brian") |> 
   parsePOS() |> 
-  get_pairs()
+  get_cooc_entities()
 
-options(browser="firefox")
-graph |> plot_graph(text, df=_)
-graph |> dplyr::rename(from=n1, to=n2) |>  viz_graph() 
-```
-```{r, eval=FALSE, echo=FALSE}
-graph <- sotu_text[237:240]  |> 
-  filter_by_query(query="China") |> 
-  parsePOS() |> 
-  get_pairs()
+graph 
 
-graph |> dplyr::rename(from=n1, to=n2) |>  viz_graph() 
-```
-```{r, eval=FALSE, echo=FALSE}
-sotu_text[237:240] |> get_graph_from_txt("people")
-sotu_text[237:240] |> get_graph_from_txt("China", by_sentence = FALSE )
-sotu_text[237:240] |> get_graph_from_txt("Russia", by_sentence = FALSE )
-```
+# graph |> plot_graph(text, df=_)
 
-To get the graph of entities co-occurrences:
-
-```{r entities cooc}
-graph <- filter_by_query(txt_wiki, "Police") |> 
-  parsePOS(only_entities=TRUE)  |> 
-  dplyr::filter(entity_type != "CARDINAL") |> # to clean the graph
-  get_pairs()
-
-graph
-```
-
-```{r, echo=FALSE, eval=FALSE}
-plot_graph(txt_wiki,graph)
-```
-
-```{r}
-graph |> dplyr::rename(from=n1, to=n2)|>
-viz_graph()
+graph$edges |> viz_graph()
 ```
 
 To get the graph of entities and nouns:
 
-```{r}
-graph <- filter_by_query(txt_wiki, "Police") |> 
+```{r police -cardinal + viz_graph}
+graph <- filter_by_query(txt_wiki[2:44], "Police") |> 
   parsePOS(only_entities=FALSE)  |> 
   dplyr::filter(entity_type != "CARDINAL") |> # to clean the graph
-  get_pairs2()
+  dplyr::mutate(token = gsub("Police", "police", token)) |> # normalize the term "police"
+  get_cooc()
 
 graph
-```
 
-```{r}
-viz_graph(graph)
+viz_graph(graph$edges)
 ```
 
 
@@ -203,5 +176,8 @@ filter_by_query(sotu_text[237:240], "China") |>
 ## Using another languages
 
 How {txtnet} uses spacy to tag the words, the user must initialize the model for the language.
+By default, spacy loads the English model. If the model was previously used, to change the model, it is necessary to end the loaded model with `spacyr::spacy_finalize()` and then load the new model. 
+For example, to load the Portuguese model, use with `spacyr::spacy_initialize(model = "pt_core_news_lg")`.
+If you just started the package with `library(txtnet)`, you can simply run  `spacy_initialize(model = "pt_core_news_lg")` in the console.
 
 

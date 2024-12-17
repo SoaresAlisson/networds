@@ -4,18 +4,18 @@
 \alias{filter_by_query}
 \title{tokenize and filter text by query}
 \usage{
-filter_by_query(txt, query, ic = TRUE, by_sentence = TRUE, unlist = FALSE)
+filter_by_query(txt, query, i_c = TRUE, by_sentence = TRUE, unlist = FALSE)
 }
 \arguments{
 \item{txt}{vector of texts}
 
 \item{query}{query to filter the text}
 
-\item{ic}{ignore case (default TRUE)}
-
 \item{by_sentence}{tokenize by sentence (default TRUE). If FALSE, tokenize by paragraph}
 
 \item{unlist}{if TRUE (default FALSE), returns a vector instead of a list object.}
+
+\item{ic}{ignore case (default TRUE)}
 }
 \description{
 from vector of texts, tokenize by sentence or paragraph and returns a filtered list

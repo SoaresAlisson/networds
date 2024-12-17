@@ -51,11 +51,20 @@ txtPT_trt_full <- "../narrative_argument/data/txts.R") |> source()
 ```{r package data txt}
 library(rvest)
 URL <- "https://en.wikipedia.org/wiki/Killing_of_Brian_Thompson"
+
 page <- rvest::read_html(URL)
+
 txt_wiki <- page |>
   rvest::html_elements("p") |> 
-  html_text()
-attr(txt_wiki, "Font") <- URL
+  html_text() |> 
+  gsub("\\n+", " ", x=_)
+
+title <- page |> html_elements("title") |> html_text() 
+
+txt_wiki <- c(title, txt_wiki, paste0("Font: ", URL))
+
+# attr(txt_wiki, "Font") <- URL
+
 # use the data in package
 # https://r-pkgs.org/data.html
 # txt_wiki <- "./data/txt_wiki.rda"
@@ -63,6 +72,13 @@ attr(txt_wiki, "Font") <- URL
 # usethis::use_data_raw("txt_wiki")
 usethis::use_data(txt_wiki, overwrite = T)
 ```
+```{r read wikipedia}
+# list.files("data", full.names = T, pattern = "txt_wiki") |> load()
+txt_wiki |> filter_by_query("Brian", unlist=T)
+
+```
+
+
 # UD pipe
 ```{r Udpipe}
 UDmodels <- list.files("~/Documentos/Programação/R/UDpipe/", pattern="udpipe$", full.names=TRUE)

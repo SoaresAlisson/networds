@@ -9,7 +9,8 @@ plot_graph(text, df, head_n = 30, color = "lightblue")
 \arguments{
 \item{text}{an input text}
 
-\item{df}{a dataframe of co-occurrence, extracted with `extract_graph()` and `count(n1, n2)`}
+\item{df}{a dataframe of co-occurrence, extracted with `extract_graph()` and
+`count(n1, n2)`}
 
 \item{head_n}{number of nodes to show - the more frequent}
 }

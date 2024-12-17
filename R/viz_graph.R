@@ -7,7 +7,8 @@
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
 #'
 #' @param text an input text
-#' @param df a dataframe of co-occurrence, extracted with `extract_graph()` and `count(n1, n2)`
+#' @param df a dataframe of co-occurrence, extracted with `extract_graph()` and
+#' `count(n1, n2)`
 #' @param head_n number of nodes to show - the more frequent
 #' @export
 plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
@@ -44,9 +45,13 @@ plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
 #'
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
 #' @param text an input text
-#' @param df a dataframe of co-occurrence, extracted with `extract_graph()` and `count(n1, n2)`
+#' @param df a dataframe of co-occurrence, extracted with `extract_graph()` and 
+#' `count(n1, n2)`
 #' @param head_n number of nodes to show - the more frequent
-#' @param scale name of a function to normalize the result. Sometime, the range of numbers are so wide that the graph becomes unreadable. Applying a function to normalize the result can improve the readability, for example using `scale = "log2"`, or "log10"
+#' @param scale name of a function to normalize the result. Sometime, the range 
+#' of numbers are so wide that the graph becomes unreadable. Applying a function 
+#' to normalize the result can improve the readability, for example using 
+#' `scale = "log2"`, or "log10"
 #' @export
 #'
 #' @examples
@@ -98,14 +103,35 @@ plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale = "sca
 #' viz graph interactively
 #'
 #' Visualize graphs interactively (package visNetwork). The columns must be named:
-#' "from", "label", "to" and "value" (frequency of the triplet)
+#' "from", "label", "to" and "value" (frequency of the triplet) OR the 1st 2nd 
+#' and 3rd columns will be taken as such.
 #'
 #' @param graph_df a dataframe with the graph data
 #' @param nodesIdSelection a boolean value to enable node selection. Default: TRUE.
 #'
 #' @export
+#'
+#' @examples
+#' x <- txt_wiki[2:44] |> filter_by_query("Brian") |> parsePOS()
+#' g <- get_cooc_entities(x)
+#' g$edges |> dplyr::rename(from=n1, to=n2) |>  viz_graph() 
+#' g$edges |> viz_graph() 
 viz_graph <- function(graph_df, nodesIdSelection = TRUE, height = "900px") {
-  unique_nodes <- unique(c(graph_df$from, graph_df$to)) # Create a unique list of all nodes (vertices)
+ # graph_df <- g$edges 
+  #
+  # if column names are not: from to
+  col_names <- graph_df|> colnames()
+
+  if(!col_names %in% c("from", "to") |> any() ) {
+    col_names[1] <- "from"
+    col_names[2] <- "to"
+    col_names[3] <- "value"
+
+    colnames(graph_df) <- col_names
+  }
+
+  # Create a unique list of all nodes (vertices)
+  unique_nodes <- unique(c(graph_df$from, graph_df$to)) 
 
   node_mapping <- data.frame( # Create a mapping between node names and indices
     id = seq_along(unique_nodes),
