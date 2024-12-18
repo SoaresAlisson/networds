@@ -4,18 +4,18 @@
 \alias{get_graph_from_txt}
 \title{graph from text and query}
 \usage{
-get_graph_from_txt(text, query, ic = TRUE, by_sentence = TRUE, loop = FALSE)
+get_graph_from_txt(text, query, i_c = TRUE, by_sentence = TRUE, loop = FALSE)
 }
 \arguments{
 \item{text}{a vector of texts}
 
 \item{query}{query to filter the text}
 
-\item{ic}{ignore case (default TRUE)}
-
 \item{by_sentence}{tokenize by sentence (default TRUE). If FALSE, tokenize by paragraph}
 
 \item{loop}{if TRUE (default: FALSE), returns a loop (self reference) in the graph}
+
+\item{ic}{ignore case (default TRUE)}
 }
 \description{
 from text and a query, generates the graph dataframe of co-ocurrence frequency

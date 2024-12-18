@@ -13,7 +13,7 @@ viz_graph(graph_df, nodesIdSelection = TRUE, height = "900px")
 }
 \description{
 Visualize graphs interactively (package visNetwork). The columns must be named:
-"from", "label", "to" and "value" (frequency of the triplet) OR the 1st 2nd 
+"from", "label", "to" and "value" (frequency of the triplet) OR the 1st, 2nd 
 and 3rd columns will be taken as such.
 }
 \examples{

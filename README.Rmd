@@ -37,8 +37,6 @@ It extract graphs from plain text using:
 
 
 
-
-
 ## Installation
 
 You can install the development version of txtnet from [GitHub](https://github.com/) with:
@@ -50,3 +48,6 @@ pak::pak("SoaresAlisson/txtnet")
 
 ## Example
 
+Check the vignettes:
+- [01 - Proper name extraction with regex](https://htmlpreview.github.io/?https://raw.githubusercontent.com/SoaresAlisson/txtnet/refs/heads/master/vignettes/entities_and_relation_extraction.html)
+- [02 - Extract entity co-ocurrences with POS]

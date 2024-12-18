@@ -8,12 +8,12 @@
 #' 
 #' @param edge_df a dataframe of co-occurrence, extracted with `get_cooc_entities()`
 #' @param color color of the edges. Default: "lightblue".
-#' @export()
+#' @export
 #'
 #' @examples
 #' library(txtnet)
 #'
-#' g <- txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS() |
+#' g <- txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS()
 #' g <- get_cooc_entities(g)
 #' q_plot(g)
 q_plot <- function(graph_list, color="lightblue") {
@@ -25,7 +25,6 @@ graph_list$edges |>
     node_size = graph_list$nodes$freq,
     edge_colour = color, 
     edge_width = freq)
-
 }
 
 
@@ -128,11 +127,83 @@ plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale = "sca
     ggplot2::theme(legend.position = "none")
 }
 
+#' plot static graph from POS list
+#' 
+#' @description
+#' plot a graph of co-occurrence of terms, as returned by `get_cooc_entities()`.
+#' The function uses ggraph, so some color options can not work as expected due 
+#' to some package incompatibilities.
+#' The plot_pos_graph is based in ggraph, that is based on ggplot2. That means that
+#' is possible to customize the graph with ggplot2 functions, like `labs()`.
+#' @param pos_list a list of POS, as returned by `get_cooc_entities()`
+#' @param edge_color color of the edges
+#' @param edge_alpha transparency of the edges. Values between 0 and 1.
+#' @param font_size integer. font size of the nodes. Values between 1 and 2.
+#' @param font_color color of the nodes.
+#' @param point_fill color of the nodes
+#' @param point_alpha transparency of the nodes
+#' @param point_color color of the nodes
+#' @param graph_layout layout of the graph
+#'
+#' @export
+#'
+#' @examples
+#' gr <- txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS() 
+#' gr <- gr |> get_cooc_entities()
+#' plot_pos_graph(gr)
+#'
+#' gr <- txt_wiki[2:44] |> filter_by_query("Brian") |> parsePOS() 
+#' gr <- gr |> get_cooc_entities()
+#' plot_pos_graph(gr)
+
+plot_pos_graph <- function(pos_list,
+                           edge_color = "lightblue",
+                           edge_alpha = 0.1,
+                           font_size=2, 
+                           font_color = "black",
+                           point_fill = "firebrick4",
+                           point_alpha = 0.3,
+                           point_color = "firebrick4",
+                           graph_layout = "graphopt") {
+     
+  node_size <- pos_list$nodes |> 
+    dplyr::filter(! node %in% pos_list$isolated_nodes$node)
+
+  pos_list$edges |>
+    tidygraph::as_tbl_graph() |>
+      ggraph::ggraph(layout = graph_layout ) +
+      ggraph::geom_edge_link(ggplot2::aes(
+        edge_width = pos_list$edges$freq, 
+        edge_alpha = 0.5),
+        angle_calc = "along",
+        label_dodge = grid::unit(4.5, "mm"),
+        color = edge_color,
+        end_cap = ggraph::circle(6, "mm")
+        ) + # afastamento do nó
+      ggraph::geom_node_point(ggplot2::aes(
+        size = node_size$freq, 
+        alpha = point_alpha, 
+        # alpha = 0.3, 
+        fill = point_fill ,
+        color = point_color )) +
+      ggraph::geom_node_text(ggplot2::aes(
+        label = name,
+        # alpha = 0,
+      # size = node_size$freq), 
+        size = font_size,
+        # fill = "mediumpurple4",
+        color = font_color), 
+        repel = TRUE) + 
+      ggplot2::theme_void() +
+      ggplot2::theme(legend.position = "none")
+ }
+
+
 
 #' viz graph interactively
 #'
 #' Visualize graphs interactively (package visNetwork). The columns must be named:
-#' "from", "label", "to" and "value" (frequency of the triplet) OR the 1st 2nd 
+#' "from", "label", "to" and "value" (frequency of the triplet) OR the 1st, 2nd 
 #' and 3rd columns will be taken as such.
 #'
 #' @param graph_df a dataframe with the graph data
