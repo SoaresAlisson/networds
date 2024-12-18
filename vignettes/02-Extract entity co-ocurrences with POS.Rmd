@@ -28,7 +28,7 @@ Extracting proper names or entities with regex are cool, but has its limitations
 In this section, we will use the Part of Speech (POS) tags to extract the entities, proper names, noun phrases and its co-occurrences to generate graphs.
 In R, to tag words with POS, the main packages are {UDPipe} and {SpacyR}.
 
-The {txtnet} comes with this text sample. In this tutorial, we will different parts of the text to a better visualization.
+The {txtnet} comes with this text sample. In this tutorial, we will use different parts of the text to a better visualization.
 
 ```{r sample_txt}
 data(package = "txtnet") # list the available dataset in package txtnet
@@ -100,18 +100,31 @@ The next step is to get the graph using `get_cooc_entities()`
 x <- txt_wiki[2:44] |> 
   filter_by_query("Police") |>
   parsePOS()
+
 x
 
 g <- get_cooc_entities(x)
+
 g
 ```
 
-Visualizing the graph. (the nodes can become in a crazy dance to find the best distance between themselves)
+
+Visualizing the graph. It can be done with the function `q_plot()`, the quicker plot, but also with less customization options.
+
+```{r}
+g  |> q_plot()
+```
+
+Ploting an interactive graph
+(the nodes can become in a crazy dance to find the best distance between themselves)
 
 ```{r viz_graph police, eval=T}
 g$edges |>  viz_graph() 
 ```
-
+```{r}
+plot_graph(txt_wiki, dplyr::rename(g$edges, n = freq )) 
+ 
+```
 
 
 ```{r Brian, eval=T, echo=T}
