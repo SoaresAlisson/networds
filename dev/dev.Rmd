@@ -596,11 +596,79 @@ extract_entities_l <- function(DF) {
 DT_pos |> extract_entities_l()
 ```
 
+## dataviz
+```{r ex ggraph autograph}
+library(tidygraph)
+library(ggraph)
+
+gr <- create_notable('herschel') %>%
+  mutate(class = sample(letters[1:3], n(), TRUE)) %E>%
+  mutate(weight = runif(n()))
+
+# Adding node labels will cap edges
+autograph(gr, node_label = class)
+
+letters[1:10] |> create_notable()
+
+```
+
+```{r ex ggraph autograph }
+x <- txt_wiki[2:44] |> 
+  filter_by_query("Police") |>
+  parsePOS()
+
+x
+
+gr <- get_cooc_entities(x)
+
+  graph <- df |> head(head_n)
+  vert <- unique(c(graph$n1, graph$n2))
+
+  # frequency of nodes/terms
+  freqPPN <- lapply(vert, \(v) {
+    text |> stringr::str_extract_all(v)
+  }) |>
+    unlist() |>
+    count_vec()
+
+color="lightblue"
+gr$edges |> 
+  tidygraph::as_tbl_graph() |>
+  ggraph::autograph(
+    node_label= name, 
+    node_size = gr$nodes$freq,
+    edge_colour = color, 
+    edge_width = freq)
+
+```
+```{r ex ggraph}
+color="lightblue"
+
+gr$edges |> as_tbl_graph() 
+  
+gr$edges |>
+  tidygraph::as_tbl_graph() |>
+    # igraph::graph_from_data_frame(directed = FALSE, vertices = gr$nodes ) |>
+    ggraph::ggraph(layout = "graphopt") +
+    ggraph::geom_edge_link(ggplot2::aes(edge_width = 1, edge_alpha = 0.5),
+      angle_calc = "along",
+      label_dodge = grid::unit(4.5, "mm"),
+      color = color,
+      # c("lightblue", "blue", "royalblue")[1],
+      end_cap = ggraph::circle(6, "mm")
+    ) + # afastamento do nó
+    ggraph::geom_node_text(ggplot2::aes(label = name, size = 2), repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+    # ggraph::geom_node_text(ggplot2::aes(label = name, size = freq), repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+    # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
+    ggplot2::theme_void() +
+    ggplot2::theme(legend.position = "none")
+
+```
 
 
 
-# summarise(name = token |> unique() |> paste(collapse = " "))
 
+summarise(name = token |> unique() |> paste(collapse = " "))
 
 
 

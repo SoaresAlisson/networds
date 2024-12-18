@@ -2,6 +2,33 @@
 #
 # options(browser="firefo@")
 
+#' quick word graph
+#'
+#' Plot a network of co-ocurrence of terms. For more options, see `plot_graph()`.
+#' 
+#' @param edge_df a dataframe of co-occurrence, extracted with `get_cooc_entities()`
+#' @param color color of the edges. Default: "lightblue".
+#' @export()
+#'
+#' @examples
+#' library(txtnet)
+#'
+#' g <- txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS() |
+#' g <- get_cooc_entities(g)
+#' q_plot(g)
+q_plot <- function(graph_list, color="lightblue") {
+  
+graph_list$edges |> 
+  tidygraph::as_tbl_graph() |>
+  ggraph::autograph(
+    node_label= name, 
+    node_size = graph_list$nodes$freq,
+    edge_colour = color, 
+    edge_width = freq)
+
+}
+
+
 #' Plot a network of co-ocurrence of terms
 #'
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
@@ -24,7 +51,8 @@ plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
     count_vec()
 
   graph |>
-    igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
+  tidygraph::as_tbl_graph() |>
+    # igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
     ggraph::ggraph(layout = "graphopt") +
     ggraph::geom_edge_link(ggplot2::aes(edge_width = n, edge_alpha = 0.5),
       angle_calc = "along",
@@ -77,7 +105,8 @@ plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale = "sca
     count_vec()
 
   graph |>
-    igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
+  tidygraph::as_tbl_graph() |>
+    # igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
     ggraph::ggraph(layout = "graphopt") +
     ggraph::geom_edge_link(ggplot2::aes(edge_width = n, edge_alpha = 0.5),
       angle_calc = "along",
