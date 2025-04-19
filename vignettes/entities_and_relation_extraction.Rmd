@@ -1,22 +1,28 @@
 ---
 title: "01 - Proper name extraction with regex"
 output: rmarkdown::html_vignette
+knitr:
+  opts_chunk:
+    cache: true
 vignette: >
   %\VignetteIndexEntry{entities_and_relation_extraction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  cache = TRUE,
+  # dimensiongs for figure
+  fig.width = 5,
+  fig.height = 3,
+  dpi = 150
 )
-```
-
-```{r setup}
 library(txtnet)
 ```
+
 
 ##  Entity extraction and its relations
 
@@ -113,7 +119,7 @@ vonNeumann_txt |> extract_graph(sw = my_sw)
 This process can take a while to run if the text/corpus is big. So, if you are interested only in some words, so first of all, filter the sentences/paragraphs with the desired words, and after that, extract the graph.
 Seeing another example, extracting from a wikipedia article:
 
-```{r read_html echo=FALSE, eval=T}
+```{r read_html, echo=FALSE, eval=T}
 # pagina <- "https://en.wikipedia.org/wiki/GNU_General_Public_License" |> rvest::read_html()
 # writeLines( as.character(pagina), "../inst/wiki_GNU.html" )
 # page <- readLines("../inst/wiki_GNU.html") 
@@ -146,6 +152,7 @@ g_N
 ```{r ploting the graph}
 plot_graph(text, g_N)
 ```
+
 There are different information in the graph
 - The size of words and compound words means the individual frequency of each one
 - The thickness of the links indicates how often the pair occur together.
@@ -166,10 +173,10 @@ g_N |>
 
 Another text example.
 <!-- "https://en.wikipedia.org/wiki/Julia_Silge" -->
-```{r, echo=TRUE, eval=FALSE}
+```{r read_html hurricane, echo=TRUE, eval=FALSE}
 # page <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
 ```
-```{r read_html wiki_Hurricane_Milton.html,  echo=FALSE, eval=T}
+```{r read_html wiki_Hurricane_Milton,  echo=FALSE, eval=T}
 # pagina <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
 # writeLines( as.character(pagina), "../inst/wiki_Hurricane_Milton.html" )
 # page <- readLines("../inst/wiki_GNU.html") 
@@ -182,7 +189,6 @@ text <- page |>
 
 text[1:2] # seeing the head of the tex
 ```
-
 
 ```{r ex2 wiki Hurricane2}
 g <- text |> extract_graph(sw = my_sw)
@@ -209,19 +215,30 @@ g_N |>
 
 ## Testing with State of the Union data
 
+
+Using the package [SOTU](https://github.com/taylor-arnold/sotu), that contains the [State of the Union Addresses](https://en.wikipedia.org/wiki/State_of_the_Union).
+The Sotu:
+
+    "is an annual message delivered by the president of the United States to a joint session of the United States Congress near the beginning of most calendar years on the current condition of the nation. The speech generally includes reports on the nation's budget, economy, news, agenda, progress, achievements and the president's priorities and legislative proposals." 
+
+
 ```{r sotu}
 library(sotu) #  text examples of US presidents speeches
 
 # checking the DF with the speeches
 tibble::as_tibble(sotu_meta)
+```
 
+Checking Obama speech of the first year of his first mandate
+
+```{r sotu obama}
 # checking what are the speeches of Obama
 sotu_meta |> 
   dplyr::filter(grepl("Obama", president, ignore.case = T),
   grepl("2009", years_active))
 
 # I picked this speech
-text_sotu <- sotu_text[229:230] |> 
+text_sotu <- sotu_text[229] |> 
   paste(collapse = " ") # turning the vector into a single element
 str(text_sotu) # first lines of the text
 
@@ -239,38 +256,54 @@ sotu_g_Ob <- text_sotu |>
 plot_graph2(
   sotu_g_Ob ,
   dplyr::count(sotu_g_Ob, n1, n2, sort = T),
+  head_n = 70,
+  edge_color = "blue", edge_alpha = 0.1,
+  text_size = 10,
   scale_graph = "log2") +
-    ggplot2::labs(title= "Obama speeches")
+    ggplot2::labs(title= "Obama SOTU - First Year")
 ```
 
-```{r trump}
+Checking Trump speech of the first year of his first mandate
+
+```{r sotu Trump}
 # Trump, first Mandate
 sotu_meta |> 
   dplyr::filter(grepl("Trump", president, ignore.case = T)  )
 
-sotu_g_Tr  <- sotu_text[237:240] |> 
+sotu_g_Tr  <- sotu_text[237] |> 
   paste(collapse = " ") |>
   extract_graph(sw = my_sw) 
+
+#  the most frequent entities
+sotu_g_Tr  |> 
+  extract_entity(sw = my_sw ) |> 
+  plyr::count() |> 
+  dplyr::arrange(-freq) |>
+  head(30)
 
 plot_graph2(
   sotu_g_Tr ,
   dplyr::count(sotu_g_Tr, n1, n2, sort = T),
+  head_n = 70,
   edge_color = "red",
-  scale_graph = "log2"
+  scale_graph = "log2",
+  text_size = 10,
 ) +
-    ggplot2::labs(title= "Trump")
+    ggplot2::labs(title= "Trump SOTU - First Year")
 ```
 
 Now, comparing speeches on a certain topic
 
-```{r sotu graph }
+```{r sotu obama trump graph }
+# a regex to capture some words/patterns
 term <- "\\bChin|Beijing|\\bXi\\b|Jinping"
+term_  <- "China"
 
 # checking what are the speeches of Obama
 sotu_meta |> 
   dplyr::filter(grepl("Obama", president, ignore.case = T))
 
-# checking what are the speeches of Obama
+# Get all Obama speeches of his first mandate 
 text_sotu_Ob  <- sotu_text[229:234]|>
   filter_by_query(term) 
 
@@ -281,9 +314,12 @@ sotu_g_Ob <- text_sotu_Ob |>
 g_Ob  <- plot_graph2(
   sotu_g_Ob ,
   dplyr::count(sotu_g_Ob, n1, n2, sort = T),
+  edge_color = "blue", edge_alpha = 0.1,
   scale_graph = "log2"
 ) +
-    ggplot2::labs(title= paste("Obama about", term))
+    # ggplot2::labs(title= paste("Obama about", term))
+    ggplot2::labs(title= "Obama")
+
 
 # Trump, first Mandate
 sotu_meta |> 
@@ -299,14 +335,18 @@ sotu_g_Tr <- text_sotu_Tr |>
 g_Tr  <- plot_graph2(
   sotu_g_Tr ,
   dplyr::count(sotu_g_Tr, n1, n2, sort = T),
+  edge_color = "red",
   scale_graph = "log2"
 ) +
-  ggplot2::labs(title= paste("Trump about", term))
+  # ggplot2::labs(title= paste("Trump about", term))
+  ggplot2::labs(title= "Trump")
 
 # joining the graphs
 library(patchwork)
 (g_Ob + g_Tr) +
    plot_annotation(
-  title = paste('Coocurrence of terms in the phrases that contains term: "', term, '"') )
+  title = 
+    paste('Coocurrence of terms related to: "', 
+      term_, '"') )
 ```
 

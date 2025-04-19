@@ -179,7 +179,7 @@ graph_ppn
 ```
 
 
-```{r police -cardinal + viz_graph}
+```{r police -cardinal + viz_graph 2}
 viz_graph(graph_ppn$edges)
 ```
 

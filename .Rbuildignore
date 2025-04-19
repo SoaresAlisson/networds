@@ -5,4 +5,5 @@
 ^docs$
 ^pkgdown$
 ^data-raw$
-./vignettes/02-Extract entity co-ocurrences with POS.Rmd$
+^doc$
+^Meta$
