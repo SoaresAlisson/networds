@@ -3,7 +3,8 @@ title: "01 - Proper name extraction with regex"
 output: rmarkdown::html_vignette
 knitr:
   opts_chunk:
-    cache: true
+    # cache: true
+    cache: false 
 vignette: >
   %\VignetteIndexEntry{entities_and_relation_extraction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,6 +16,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   cache = TRUE,
+  # cache = FALSE,
   # dimensiongs for figure
   fig.width = 5,
   fig.height = 3,
@@ -45,19 +47,16 @@ The function captures all words that:
 - begins with uppercase,   
 - followed by other uppercases, lowercase or numbers, without white space  
 - it can contain symbols like `_`, `-` or `.`.
-- the user can specify a connector, so, words like "United States of America" are also captured.
+- the user can specify a connector, like "of"or "of the" so, words like "United States of America" or "Covid-19" are also captured
 
-In this way, words like "Covid-19" are also captured
 In languages such as English and Portuguese, it extracts proper names. In German, it also extracts nouns.
-
 There is some trade-off, of course.
 It will capture a lot of undesired words and will demand posterior cleaning, like:  
 - It does not contain any sort of built-in classification.  
 - "Obama Chief of Staff Rahm Emanuel" will be captured as one entity, what is not wrong et al, but maybe not what was expect.
 
-The downsides are 
-
- It will not capture:
+The downsides are,
+it will not capture:  
 - entities that begin with lowercase. To do that, take a look at other already mentioned packages, like spacyr and UDpipe.
 - it does not delves with words ambiguity. For example, is "WHO" referring to question or World Health Organization? Washington is a person or a place?
 
@@ -111,7 +110,8 @@ vonNeumann_txt |> extract_graph()
 
 One of the parameters is `sw` that means "stopwords". It is possible to add a vector stopwords.
 ```{r vonNeumann graph stopwords}
-my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
+my_sw <- c(stopwords::stopwords(language = "en", 
+  source = "snowball", simplify = TRUE), "lol")
 
 vonNeumann_txt |> extract_graph(sw = my_sw)
 ```
@@ -153,11 +153,12 @@ g_N
 plot_graph(text, g_N)
 ```
 
-There are different information in the graph
+There are different information in the graph:
+
 - The size of words and compound words means the individual frequency of each one
 - The thickness of the links indicates how often the pair occur together.
 
-This function uses {[ggraph](https://ggraph.data-imaginist.com/reference/)} and ggplot. So, you can change some ggplot or add another ones __a posteriori__.
+This function uses {[ggraph](https://ggraph.data-imaginist.com/reference/)} and ggplot. So, you can change some ggplot or add another ones _a posteriori_.
 
 To plot an interactive graph, it is possible to use {[networkD3](https://christophergandrud.github.io/networkD3/)}:
 
@@ -173,9 +174,11 @@ g_N |>
 
 Another text example.
 <!-- "https://en.wikipedia.org/wiki/Julia_Silge" -->
+
 ```{r read_html hurricane, echo=TRUE, eval=FALSE}
-# page <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
+page <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
 ```
+
 ```{r read_html wiki_Hurricane_Milton,  echo=FALSE, eval=T}
 # pagina <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
 # writeLines( as.character(pagina), "../inst/wiki_Hurricane_Milton.html" )
@@ -213,11 +216,11 @@ g_N |>
 ```
 
 
-## Testing with State of the Union data
+## Using State of the Union data
 
 
 Using the package [SOTU](https://github.com/taylor-arnold/sotu), that contains the [State of the Union Addresses](https://en.wikipedia.org/wiki/State_of_the_Union).
-The Sotu:
+It :
 
     "is an annual message delivered by the president of the United States to a joint session of the United States Congress near the beginning of most calendar years on the current condition of the nation. The speech generally includes reports on the nation's budget, economy, news, agenda, progress, achievements and the president's priorities and legislative proposals." 
 
@@ -237,7 +240,7 @@ sotu_meta |>
   dplyr::filter(grepl("Obama", president, ignore.case = T),
   grepl("2009", years_active))
 
-# I picked this speech
+# Picking this speech of his first year
 text_sotu <- sotu_text[229] |> 
   paste(collapse = " ") # turning the vector into a single element
 str(text_sotu) # first lines of the text
@@ -253,9 +256,14 @@ sotu_g_Ob <- text_sotu |>
   paste(collapse = " ") |>
   extract_graph(sw = my_sw) 
 
+count_graph_ob <- dplyr::count(sotu_g_Ob, 
+  n1, n2, sort = T)
+
+count_graph_ob
+
 plot_graph2(
   sotu_g_Ob ,
-  dplyr::count(sotu_g_Ob, n1, n2, sort = T),
+  count_graph_ob,
   head_n = 70,
   edge_color = "blue", edge_alpha = 0.1,
   text_size = 10,
@@ -276,7 +284,7 @@ sotu_g_Tr  <- sotu_text[237] |>
 
 #  the most frequent entities
 sotu_g_Tr  |> 
-  extract_entity(sw = my_sw ) |> 
+  extract_entity(sw = my_sw ) |>
   plyr::count() |> 
   dplyr::arrange(-freq) |>
   head(30)
@@ -286,6 +294,7 @@ plot_graph2(
   dplyr::count(sotu_g_Tr, n1, n2, sort = T),
   head_n = 70,
   edge_color = "red",
+  edge_alpha = 0.3,
   scale_graph = "log2",
   text_size = 10,
 ) +
@@ -299,10 +308,6 @@ Now, comparing speeches on a certain topic
 term <- "\\bChin|Beijing|\\bXi\\b|Jinping"
 term_  <- "China"
 
-# checking what are the speeches of Obama
-sotu_meta |> 
-  dplyr::filter(grepl("Obama", president, ignore.case = T))
-
 # Get all Obama speeches of his first mandate 
 text_sotu_Ob  <- sotu_text[229:234]|>
   filter_by_query(term) 
@@ -314,17 +319,16 @@ sotu_g_Ob <- text_sotu_Ob |>
 g_Ob  <- plot_graph2(
   sotu_g_Ob ,
   dplyr::count(sotu_g_Ob, n1, n2, sort = T),
-  edge_color = "blue", edge_alpha = 0.1,
+  edge_color = "blue", 
+  edge_alpha = 0.1,
+  text_size = 5,
   scale_graph = "log2"
 ) +
     # ggplot2::labs(title= paste("Obama about", term))
     ggplot2::labs(title= "Obama")
 
 
-# Trump, first Mandate
-sotu_meta |> 
-  dplyr::filter(grepl("Trump", president, ignore.case = T)  )
-
+# Trump
 text_sotu_Tr <- sotu_text[237:240] |> 
   filter_by_query(term) 
 
@@ -336,6 +340,8 @@ g_Tr  <- plot_graph2(
   sotu_g_Tr ,
   dplyr::count(sotu_g_Tr, n1, n2, sort = T),
   edge_color = "red",
+  edge_alpha = 0.2,
+  text_size = 5,
   scale_graph = "log2"
 ) +
   # ggplot2::labs(title= paste("Trump about", term))
@@ -346,7 +352,11 @@ library(patchwork)
 (g_Ob + g_Tr) +
    plot_annotation(
   title = 
-    paste('Coocurrence of terms related to: "', 
-      term_, '"') )
+    'Coocurrence of terms related to China'
+    # paste0('Coocurrence of terms related to "', term_, '"') 
+  )
 ```
+
+As mentioned, this approach based on text patterns (regex) has its limitations. 
+Is possible to use grammar classification to get more precise results.
 

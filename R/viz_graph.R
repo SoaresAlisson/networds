@@ -124,7 +124,8 @@ plot_graph2 <- function(text, df, head_n = 30,
     # igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
     ggraph::ggraph(layout = "graphopt") +
     ggraph::geom_edge_link(ggplot2::aes(
-      edge_width = n, edge_alpha = 0.5),
+      edge_width = n),
+      edge_alpha = edge_alpha , 
       angle_calc = "along",
       label_dodge = grid::unit(4.5, "mm"),
       colour = edge_color,

@@ -306,9 +306,9 @@ entity_list_2_graph2 <- function(entities_list, count = TRUE) {
 #'
 #' @examples
 #' DF <- data.frame(n1 = c("Sample1","Sample1", "Sample2", "Sample2"), n2 = c("A1","Sample1", "B1", "B1"))
-#' DF |> count_graph()
+#' DF |> count_graph()  
 count_graph <- function(graph, loop = FALSE, DT=FALSE) {
-# count_graph <- function(graph, loop = FALSE, DT=FALSE) {
+  # count_graph <- function(graph, loop = FALSE, DT=FALSE) {
   # graph <- DF
   # if(!DT){
     g <- graph |>
