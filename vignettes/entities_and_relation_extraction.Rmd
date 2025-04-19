@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 library(txtnet)
 ```
 
-## Named Entity extraction and its relations
+##  Entity extraction and its relations
 
 The package {txtnet} provides a set of tools to extract entities and relations from text. 
 The first of this tools uses one of the simples form: by using the rule based approach. It contains a rule based extraction algorithm and a rule based relation extraction algorithm.
@@ -53,11 +53,15 @@ The downsides are
 
  It will not capture:
 - entities that begin with lowercase. To do that, take a look at other already mentioned packages, like spacyr and UDpipe.
-- it does not delves with ambiguity. For example, is "WHO" referring to question or World Health Organization?
+- it does not delves with words ambiguity. For example, is "WHO" referring to question or World Health Organization? Washington is a person or a place?
 
-In my experience, this approach works better to certain types of text than others. Books, formal articles can be a good option that works well with this function. Text from social media, because it lacks formalities of the language and have a lot of types, it will not work so well.
+In my experience, this approach works better to certain types of text than others. very well formatted text, like Books, formal articles can be a good option that works well with this function. Text from social media, because it lacks formalities of the language and have a lot of types, it will not work so well.
 
 So, let's extract some proper names from a simple text:
+
+```{r ll libs}
+library(txtnet)
+```
 
 ```{r NER}
 "John Does lives in New York in United States of America." |> extract_entity()
@@ -65,9 +69,13 @@ So, let's extract some proper names from a simple text:
 
 Or it is possible to use other languages, specifying the parameter `connectors` using the function `connectors(lang)`. Checking the connectors:
 
-```{r}
+```{r connectors}
 connectors("eng")
+# or you can also use for english, to get the same result:
+connectors("en")
+# For portuguese
 connectors("pt")
+# to get the same result:
 connectors("port")
 
 # by default, the functions uses the parameter "misc". meaning "miscellaneous".
@@ -75,13 +83,12 @@ connectors("misc")
 ```
 
 Using with other languages:
-
+suppressWarnings(
 ```{r NER pt}
 "João Ninguém mora em São José do Rio Preto. Ele esteve antes em Sergipe" |>
   extract_entity(connect = connectors("pt"))
 
 vonNeumann_txt <- "John von Neumann (/vɒn ˈnɔɪmən/ von NOY-mən; Hungarian: Neumann János Lajos [ˈnɒjmɒn ˈjaːnoʃ ˈlɒjoʃ]; December 28, 1903 – February 8, 1957) was a Hungarian and American mathematician, physicist, computer scientist and engineer"
-
 vonNeumann_txt |> extract_entity()
 ```
 
@@ -103,7 +110,6 @@ my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify =
 vonNeumann_txt |> extract_graph(sw = my_sw)
 ```
 
-
 This process can take a while to run if the text/corpus is big. So, if you are interested only in some words, so first of all, filter the sentences/paragraphs with the desired words, and after that, extract the graph.
 Seeing another example, extracting from a wikipedia article:
 
@@ -111,6 +117,7 @@ Seeing another example, extracting from a wikipedia article:
 # pagina <- "https://en.wikipedia.org/wiki/GNU_General_Public_License" |> rvest::read_html()
 # writeLines( as.character(pagina), "../inst/wiki_GNU.html" )
 # page <- readLines("../inst/wiki_GNU.html") 
+# page <- rvest::read_html("inst/wiki_GNU.html")
 page <- rvest::read_html("../inst/wiki_GNU.html")
 ```
 
@@ -126,8 +133,6 @@ text <- page |>
 # looking at the scraped text:
 text[1:2] # seeing the head of the text
 ```
-
-
 
 And now extracting the graphs:
 
@@ -202,5 +207,105 @@ g_N |>
 ```
 
 
+## Testing with State of the Union data
 
+```{r sotu}
+library(sotu) #  text examples of US presidents speeches
+
+# checking the DF with the speeches
+tibble::as_tibble(sotu_meta)
+
+# checking what are the speeches of Obama
+sotu_meta |> 
+  dplyr::filter(grepl("Obama", president, ignore.case = T),
+  grepl("2009", years_active))
+
+# I picked this speech
+text_sotu <- sotu_text[229:230] |> 
+  paste(collapse = " ") # turning the vector into a single element
+str(text_sotu) # first lines of the text
+
+# As a matter of curiosity, checking the most frequent entities
+text_sotu |> 
+  extract_entity(sw = my_sw ) |> 
+  plyr::count() |> 
+  dplyr::arrange(-freq) |>
+  head(30)
+
+sotu_g_Ob <- text_sotu |> 
+  paste(collapse = " ") |>
+  extract_graph(sw = my_sw) 
+
+plot_graph2(
+  sotu_g_Ob ,
+  dplyr::count(sotu_g_Ob, n1, n2, sort = T),
+  scale_graph = "log2") +
+    ggplot2::labs(title= "Obama speeches")
+```
+
+```{r trump}
+# Trump, first Mandate
+sotu_meta |> 
+  dplyr::filter(grepl("Trump", president, ignore.case = T)  )
+
+sotu_g_Tr  <- sotu_text[237:240] |> 
+  paste(collapse = " ") |>
+  extract_graph(sw = my_sw) 
+
+plot_graph2(
+  sotu_g_Tr ,
+  dplyr::count(sotu_g_Tr, n1, n2, sort = T),
+  scale_graph = "log2"
+) +
+  ggplot2::labs(title= "Trump")
+```
+
+Now, comparing speeches on a certain topic
+
+```{r sotu graph }
+term <- "\\bChin|Beijing|Jiping"
+
+# checking what are the speeches of Obama
+sotu_meta |> 
+  dplyr::filter(grepl("Obama", president, ignore.case = T))
+
+# checking what are the speeches of Obama
+text_sotu_Ob  <- sotu_text[229:234]|>
+  filter_by_query(term) 
+
+sotu_g_Ob <- text_sotu_Ob |> 
+  paste(collapse = " ") |>
+  extract_graph(sw = my_sw) 
+
+g_Ob  <- plot_graph2(
+  sotu_g_Ob ,
+  dplyr::count(sotu_g_Ob, n1, n2, sort = T),
+  scale_graph = "log2"
+) +
+    ggplot2::labs(title= paste("Obama about", term))
+
+# Trump, first Mandate
+sotu_meta |> 
+  dplyr::filter(grepl("Trump", president, ignore.case = T)  )
+
+text_sotu_Tr <- sotu_text[237:240] |> 
+  filter_by_query(term) 
+
+sotu_g_Tr <- text_sotu_Tr |> 
+  paste(collapse = " ") |>
+  extract_graph(sw = my_sw) 
+
+g_Tr  <- plot_graph2(
+  sotu_g_Tr ,
+  dplyr::count(sotu_g_Tr, n1, n2, sort = T),
+  scale_graph = "log2"
+) +
+  ggplot2::labs(title= paste("Trump about", term))
+
+# joining the graphs
+library(patchwork)
+(g_Ob + g_Tr) +
+   plot_annotation(
+  title = paste('Coocurrence of terms in the phrases that contains term: "', term, '"') )
+```
 

@@ -13,12 +13,16 @@ viz_graph(graph_df, nodesIdSelection = TRUE, height = "900px")
 }
 \description{
 Visualize graphs interactively (package visNetwork). The columns must be named:
-"from", "label", "to" and "value" (frequency of the triplet) OR the 1st, 2nd 
+"from", "label", "to" and "value" (frequency of the triplet) OR the 1st, 2nd
 and 3rd columns will be taken as such.
 }
 \examples{
-x <- txt_wiki[2:44] |> filter_by_query("Brian") |> parsePOS()
+x <- txt_wiki[2:44] |>
+  filter_by_query("Brian") |>
+  parsePOS()
 g <- get_cooc_entities(x)
-g$edges |> dplyr::rename(from=n1, to=n2) |>  viz_graph() 
-g$edges |> viz_graph() 
+g$edges |>
+  dplyr::rename(from = n1, to = n2) |>
+  viz_graph()
+g$edges |> viz_graph()
 }

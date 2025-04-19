@@ -17,7 +17,9 @@ Plot a network of co-ocurrence of terms. For more options, see `plot_graph()`.
 \examples{
 library(txtnet)
 
-g <- txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS()
+g <- txt_wiki[2:44] |>
+  filter_by_query("Police") |>
+  parsePOS()
 g <- get_cooc_entities(g)
 q_plot(g)
 }

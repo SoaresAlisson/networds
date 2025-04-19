@@ -1,0 +1,13 @@
+## Anaphora Resolution:
+https://github.com/EmoryNLP-Franzosi/automatic-svo-extraction
+
+    Replace mentions of entities (e.g. pronouns like "he" and "she") with their most representative representations using Stanford CoreNLP's coreference (anaphora) resolution
+    Used to maximize and validate SVO extraction by correctly identifying actors
+
+For example:
+
+> Bill Cato Attempted to Assault Mrs. Vickers. He was shot to death. 
+will look like 
+>  Bill Cato Attempted to Assault Mrs. Vickers. Bill Cato was shot to death. 
+after anaphora resolution.
+

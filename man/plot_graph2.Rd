@@ -4,20 +4,40 @@
 \alias{plot_graph2}
 \title{weighted graph viz}
 \usage{
-plot_graph2(text, df, head_n = 30, color = "lightblue", scale = "scale_values")
+plot_graph2(
+  text,
+  df,
+  head_n = 30,
+  edge_color = "lightblue",
+  edge_alpha = 0.5,
+  node_alpha = 0.5,
+  text_color = "black",
+  text_size = 1,
+  scale_graph = "scale_values"
+)
 }
 \arguments{
 \item{text}{an input text}
 
-\item{df}{a dataframe of co-occurrence, extracted with `extract_graph()` and 
+\item{df}{a dataframe of co-occurrence, extracted with `extract_graph()` and
 `count(n1, n2)`}
 
 \item{head_n}{number of nodes to show - the more frequent}
 
-\item{scale}{name of a function to normalize the result. Sometime, the range 
-of numbers are so wide that the graph becomes unreadable. Applying a function 
-to normalize the result can improve the readability, for example using 
-`scale = "log2"`, or "log10"}
+\item{edge_color}{color of the edges}
+
+\item{edge_alpha}{transparency of the edges. Values between 0 and 1.}
+
+\item{node_alpha}{transparency of the nodes}
+
+\item{text_color}{color of the text in nodes}
+
+\item{text_size}{font size of the nodes}
+
+\item{scale_graph}{name of a function to normalize the result. Sometime, the range
+of numbers are so wide that the graph becomes unreadable. Applying a function
+to normalize the result can improve the readability, for example using
+`scale_graph = "log2"`, or `"log10"`}
 }
 \description{
 Plot a network of co-ocurrence of terms
@@ -26,5 +46,5 @@ Plot a network of co-ocurrence of terms
 plot a graph of co-occurrence of terms, as returned by extract_graph
 }
 \examples{
-# plot_graph(txt, df = graph_count, head_n = 50, scale = "log2")
+# plot_graph(txt, df = graph_count, head_n = 50, scale_graph = "log2")
 }

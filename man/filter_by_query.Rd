@@ -4,7 +4,14 @@
 \alias{filter_by_query}
 \title{tokenize and filter text by query}
 \usage{
-filter_by_query(txt, query, i_c = TRUE, by_sentence = TRUE, unlist = FALSE)
+filter_by_query(
+  txt,
+  query,
+  i_c = TRUE,
+  by_sentence = TRUE,
+  unlist = FALSE,
+  msg = TRUE
+)
 }
 \arguments{
 \item{txt}{vector of texts}
@@ -15,6 +22,8 @@ filter_by_query(txt, query, i_c = TRUE, by_sentence = TRUE, unlist = FALSE)
 
 \item{unlist}{if TRUE (default FALSE), returns a vector instead of a list object.}
 
+\item{msg}{if TRUE (default TRUE), returns a message if the query is not found.}
+
 \item{ic}{ignore case (default TRUE)}
 }
 \description{
@@ -22,7 +31,7 @@ from vector of texts, tokenize by sentence or paragraph and returns a filtered l
 }
 \examples{
 # loading data
-data(package="txtnet")
+data(package = "txtnet")
 # sample
 txt_wiki[2:3]
 txt_wiki |> filter_by_query("York")

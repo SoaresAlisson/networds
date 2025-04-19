@@ -7,12 +7,19 @@ knitr::opts_chunk$set(
 ## ----setup--------------------------------------------------------------------
 library(txtnet)
 
+## ----ll libs------------------------------------------------------------------
+library(txtnet)
+
 ## ----NER----------------------------------------------------------------------
 "John Does lives in New York in United States of America." |> extract_entity()
 
-## -----------------------------------------------------------------------------
+## ----connectors---------------------------------------------------------------
 connectors("eng")
+# or you can also use for english, to get the same result:
+connectors("en")
+# For portuguese
 connectors("pt")
+# to get the same result:
 connectors("port")
 
 # by default, the functions uses the parameter "misc". meaning "miscellaneous".
@@ -23,7 +30,6 @@ connectors("misc")
   extract_entity(connect = connectors("pt"))
 
 vonNeumann_txt <- "John von Neumann (/vɒn ˈnɔɪmən/ von NOY-mən; Hungarian: Neumann János Lajos [ˈnɒjmɒn ˈjaːnoʃ ˈlɒjoʃ]; December 28, 1903 – February 8, 1957) was a Hungarian and American mathematician, physicist, computer scientist and engineer"
-
 vonNeumann_txt |> extract_entity()
 
 ## ----vonNeumann graph---------------------------------------------------------
@@ -38,6 +44,7 @@ vonNeumann_txt |> extract_graph(sw = my_sw)
 # pagina <- "https://en.wikipedia.org/wiki/GNU_General_Public_License" |> rvest::read_html()
 # writeLines( as.character(pagina), "../inst/wiki_GNU.html" )
 # page <- readLines("../inst/wiki_GNU.html") 
+# page <- rvest::read_html("inst/wiki_GNU.html")
 page <- rvest::read_html("../inst/wiki_GNU.html")
 
 ## ----echo=T, eval=FALSE-------------------------------------------------------
@@ -102,4 +109,83 @@ g_N |>
     linkDistance = 50,
     fontSize = 16
   )
+
+## ----sotu---------------------------------------------------------------------
+library(sotu) #  text examples of US presidents speeches
+
+# checking the DF with the speeches
+tibble::as_tibble(sotu_meta)
+
+# checking what are the speeches of Obama
+sotu_meta |> 
+  dplyr::filter(grepl("Obama", president, ignore.case = T),
+  grepl("2009", years_active))
+
+# I picked this speech
+text_sotu <- sotu_text[229:230] |> paste(collapse = " ")
+str(text_sotu) # first lines of the text
+
+# As a matter of curiosity, checking the most frequent entities
+text_sotu |> 
+  extract_entity(sw = my_sw ) |> 
+  plyr::count() |> 
+  dplyr::arrange(-freq) |>
+  head(30)
+
+## ----sotu graph---------------------------------------------------------------
+term <- "China"
+
+# checking which are the speeches from Obama
+sotu_meta |> 
+  dplyr::filter(grepl("Obama", president, ignore.case = T))
+
+# get the text data
+text_sotu_Ob  <- sotu_text[229:234]|>
+  filter_by_query(term) 
+
+sotu_g_Ob <- text_sotu_Ob |> 
+  paste(collapse = " ") |>
+  extract_graph(sw = my_sw) 
+
+g_Ob  <- plot_graph2(
+  sotu_g_Ob ,
+  dplyr::count(sotu_g_Ob, n1, n2, sort = T),
+  text_size = 3,
+  scale_graph = "log2"
+) +
+  # ggplot2::labs(title= paste("Obama about", term))
+  ggplot2::labs(title= "Obama")
+
+g_Ob
+
+## ----sotu trump---------------------------------------------------------------
+# Trump, first Mandate
+sotu_meta |> 
+  dplyr::filter(grepl("Trump", president, ignore.case = T)  )
+
+text_sotu_Tr <- sotu_text[237:240] |> 
+  filter_by_query(term) 
+
+sotu_g_Tr <- text_sotu_Tr |> 
+  paste(collapse = " ") |>
+  extract_graph(sw = my_sw) 
+
+g_Tr  <- plot_graph2(
+  sotu_g_Tr ,
+  dplyr::count(sotu_g_Tr, n1, n2, sort = T),
+  scale_graph = "log2",
+  edge_color ="darkred",
+  edge_alpha = 0.3,
+  text_size = 3,
+) +
+  # ggplot2::labs(title= paste("Trump about", term))
+    ggplot2::labs(title= "Trump")
+
+
+# joining the graphs
+library(patchwork)
+(g_Ob + g_Tr) +
+   plot_annotation( title = 
+    paste('Coocurrence of terms in the phrases that contains term: "', 
+      term, '"') )
 

@@ -19,6 +19,10 @@ It also renumber the doc_id and sentence_id. It runs spacyr::entity_extract() or
 but also runs os lists with empty elements,  and can returns a single dataframe (if `bind = TRUE`) renaming doc_id and sentence_id,
 }
 \examples{
-txt_wiki |> filter_by_query("Police") |> parsePOS()
-txt_wiki |> filter_by_query("Police") |> parsePOS(only_entities = FALSE)
+txt_wiki |>
+  filter_by_query("Police") |>
+  parsePOS()
+txt_wiki |>
+  filter_by_query("Police") |>
+  parsePOS(only_entities = FALSE)
 }

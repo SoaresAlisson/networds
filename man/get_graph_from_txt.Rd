@@ -22,7 +22,7 @@ from text and a query, generates the graph dataframe of co-ocurrence frequency
 }
 \examples{
 # loading data
-data(package="txtnet")
+data(package = "txtnet")
 # sample
 txt_wiki[2:3]
 txt_wiki |> get_graph_from_txt("York")
