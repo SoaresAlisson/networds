@@ -113,7 +113,7 @@ vonNeumann_txt |> extract_graph(sw = my_sw)
 This process can take a while to run if the text/corpus is big. So, if you are interested only in some words, so first of all, filter the sentences/paragraphs with the desired words, and after that, extract the graph.
 Seeing another example, extracting from a wikipedia article:
 
-```{r echo=FALSE, eval=T}
+```{r read_html echo=FALSE, eval=T}
 # pagina <- "https://en.wikipedia.org/wiki/GNU_General_Public_License" |> rvest::read_html()
 # writeLines( as.character(pagina), "../inst/wiki_GNU.html" )
 # page <- readLines("../inst/wiki_GNU.html") 
@@ -169,7 +169,7 @@ Another text example.
 ```{r, echo=TRUE, eval=FALSE}
 # page <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
 ```
-```{r echo=FALSE, eval=T}
+```{r read_html wiki_Hurricane_Milton.html,  echo=FALSE, eval=T}
 # pagina <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
 # writeLines( as.character(pagina), "../inst/wiki_Hurricane_Milton.html" )
 # page <- readLines("../inst/wiki_GNU.html") 
@@ -255,15 +255,16 @@ sotu_g_Tr  <- sotu_text[237:240] |>
 plot_graph2(
   sotu_g_Tr ,
   dplyr::count(sotu_g_Tr, n1, n2, sort = T),
+  edge_color = "red",
   scale_graph = "log2"
 ) +
-  ggplot2::labs(title= "Trump")
+    ggplot2::labs(title= "Trump")
 ```
 
 Now, comparing speeches on a certain topic
 
 ```{r sotu graph }
-term <- "\\bChin|Beijing|Jiping"
+term <- "\\bChin|Beijing|\\bXi\\b|Jinping"
 
 # checking what are the speeches of Obama
 sotu_meta |> 

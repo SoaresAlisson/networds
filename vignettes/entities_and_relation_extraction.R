@@ -122,7 +122,8 @@ sotu_meta |>
   grepl("2009", years_active))
 
 # I picked this speech
-text_sotu <- sotu_text[229:230] |> paste(collapse = " ")
+text_sotu <- sotu_text[229:230] |> 
+  paste(collapse = " ") # turning the vector into a single element
 str(text_sotu) # first lines of the text
 
 # As a matter of curiosity, checking the most frequent entities
@@ -132,60 +133,13 @@ text_sotu |>
   dplyr::arrange(-freq) |>
   head(30)
 
-## ----sotu graph---------------------------------------------------------------
-term <- "China"
-
-# checking which are the speeches from Obama
-sotu_meta |> 
-  dplyr::filter(grepl("Obama", president, ignore.case = T))
-
-# get the text data
-text_sotu_Ob  <- sotu_text[229:234]|>
-  filter_by_query(term) 
-
-sotu_g_Ob <- text_sotu_Ob |> 
+sotu_g_Ob <- text_sotu |> 
   paste(collapse = " ") |>
   extract_graph(sw = my_sw) 
 
-g_Ob  <- plot_graph2(
+plot_graph2(
   sotu_g_Ob ,
   dplyr::count(sotu_g_Ob, n1, n2, sort = T),
-  text_size = 3,
-  scale_graph = "log2"
-) +
-  # ggplot2::labs(title= paste("Obama about", term))
-  ggplot2::labs(title= "Obama")
-
-g_Ob
-
-## ----sotu trump---------------------------------------------------------------
-# Trump, first Mandate
-sotu_meta |> 
-  dplyr::filter(grepl("Trump", president, ignore.case = T)  )
-
-text_sotu_Tr <- sotu_text[237:240] |> 
-  filter_by_query(term) 
-
-sotu_g_Tr <- text_sotu_Tr |> 
-  paste(collapse = " ") |>
-  extract_graph(sw = my_sw) 
-
-g_Tr  <- plot_graph2(
-  sotu_g_Tr ,
-  dplyr::count(sotu_g_Tr, n1, n2, sort = T),
-  scale_graph = "log2",
-  edge_color ="darkred",
-  edge_alpha = 0.3,
-  text_size = 3,
-) +
-  # ggplot2::labs(title= paste("Trump about", term))
-    ggplot2::labs(title= "Trump")
-
-
-# joining the graphs
-library(patchwork)
-(g_Ob + g_Tr) +
-   plot_annotation( title = 
-    paste('Coocurrence of terms in the phrases that contains term: "', 
-      term, '"') )
+  scale_graph = "log2") +
+    ggplot2::labs(title= "Obama speeches")
 
