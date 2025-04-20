@@ -69,7 +69,7 @@ g_N <- g |> dplyr::count(n1, n2, sort = T)
 g_N
 
 ## ----ploting the graph--------------------------------------------------------
-plot_graph(text, g_N)
+net_wordcloud(text, g_N)
 
 ## ----networkD3----------------------------------------------------------------
 g_N |>
@@ -103,7 +103,7 @@ g_N <- g |> dplyr::count(n1, n2, sort = T)
 # option 2: use count_graph function, same results
 g_N <- g |> count_graph()
 
-plot_graph(text, g_N, head_n = 50)
+net_wordcloud(text, g_N, head_n = 50)
 
 ## ----networkD3 hurricane------------------------------------------------------
 g_N |>

@@ -116,7 +116,7 @@ graph <- text |>
   get_pairs()
 
 options(browser="firefox")
-graph |> plot_graph(text, df=_)
+graph |> net_wordcloud(text, df=_)
 graph |> dplyr::rename(from=n1, to=n2) |>  viz_graph() 
 ```
 ```{r, eval=FALSE, echo=FALSE}
@@ -145,7 +145,7 @@ graph
 ```
 
 ```{r, echo=FALSE, eval=FALSE}
-plot_graph(txt_wiki,graph)
+net_wordcloud(txt_wiki,graph)
 ```
 
 ```{r}

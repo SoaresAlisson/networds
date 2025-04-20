@@ -30,7 +30,7 @@ q_plot <- function(graph_list, color = "lightblue") {
 
 sotu_g <- text |> extract_graph(sw = my_sw) 
 
-plot_graph(
+net_wordcloud(
   sotu_g ,
   dplyr::count(sotu_g, n1, n2, sort = T)
 )
@@ -46,7 +46,8 @@ plot_graph(
 #' `count(n1, n2)`
 #' @param head_n number of nodes to show - the more frequent
 #' @export
-plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
+net_wordcloud <- function(text, df, head_n = 30, color = "lightblue") {
+# plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
 
   # df <- dplyr::count(sotu_g, n1, n2, sort = T)
   freq <- df[["n"]]
@@ -221,7 +222,7 @@ plot_graph3(
   sotu_g ,
   dplyr::count(sotu_g, n1, n2, sort = T),
   edge_color =  cores[4],
-  edge_alpha = 1,
+  edge_alpha = 0.1,
   text_color = cores[5],
   node_alpha = 0.5,
   # scale_graph = "log10",

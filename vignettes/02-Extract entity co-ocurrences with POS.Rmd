@@ -150,7 +150,7 @@ Ploting an interactive graph
 graph_wiki$edges |> viz_graph()
 ```
 ```{r}
-plot_graph(txt_wiki, dplyr::rename(g$edges, n = freq )) 
+net_wordcloud(txt_wiki, dplyr::rename(g$edges, n = freq )) 
  
 ```
 

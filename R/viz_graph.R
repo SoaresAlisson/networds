@@ -4,7 +4,7 @@
 
 #' quick word graph
 #'
-#' Plot a network of co-ocurrence of terms. For more options, see `plot_graph()`.
+#' Plot a network of co-ocurrence of terms. For more options, see `net_wordcloud()`.
 # #' @param edge_df a dataframe of co-occurrence, extracted with `get_cooc_entities()`
 #' @param edge_df a dataframe of co-occurrence, extracted with `extract_graph()`
 #' @param color color of the edges. Default: "lightblue".

@@ -46,5 +46,5 @@ Plot a network of co-ocurrence of terms
 plot a graph of co-occurrence of terms, as returned by extract_graph
 }
 \examples{
-# plot_graph(txt, df = graph_count, head_n = 50, scale_graph = "log2")
+# net_wordcloud(txt, df = graph_count, head_n = 50, scale_graph = "log2")
 }

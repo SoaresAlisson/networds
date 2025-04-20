@@ -9,10 +9,10 @@ q_plot(graph_list, color = "lightblue")
 \arguments{
 \item{color}{color of the edges. Default: "lightblue".}
 
-\item{edge_df}{a dataframe of co-occurrence, extracted with `get_cooc_entities()`}
+\item{edge_df}{a dataframe of co-occurrence, extracted with `extract_graph()`}
 }
 \description{
-Plot a network of co-ocurrence of terms. For more options, see `plot_graph()`.
+Plot a network of co-ocurrence of terms. For more options, see `net_wordcloud()`.
 }
 \examples{
 library(txtnet)
