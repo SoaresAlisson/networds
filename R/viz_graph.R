@@ -5,10 +5,11 @@
 #' quick word graph
 #'
 #' Plot a network of co-ocurrence of terms. For more options, see `plot_graph()`.
-#'
-#' @param edge_df a dataframe of co-occurrence, extracted with `get_cooc_entities()`
+# #' @param edge_df a dataframe of co-occurrence, extracted with `get_cooc_entities()`
+#' @param edge_df a dataframe of co-occurrence, extracted with `extract_graph()`
 #' @param color color of the edges. Default: "lightblue".
-#' @export
+#' 
+#' @export()
 #'
 #' @examples
 #' library(txtnet)
@@ -27,6 +28,13 @@ q_plot <- function(graph_list, color = "lightblue") {
       edge_colour = color,
       edge_width = freq
     )
+# #' g <- txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS() |
+# #' g <- get_cooc_entities(g)
+# #' q_plot(g)
+# q_plot <- function(edge_df) {
+#   edge_df$edges |> 
+#     tidygraph::as_tbl_graph() |>
+#     ggraph::autograph(node_label= name)
 }
 
 

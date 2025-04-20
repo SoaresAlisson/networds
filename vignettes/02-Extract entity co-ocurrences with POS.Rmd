@@ -142,13 +142,17 @@ plot_pos_graph(graph_wiki,
 ```
 
 
+
 Ploting an interactive graph
 (the nodes can become in a crazy dance to find the best distance between themselves)
 
 ```{r viz_graph police, eval=T}
 graph_wiki$edges |> viz_graph()
 ```
-
+```{r}
+plot_graph(txt_wiki, dplyr::rename(g$edges, n = freq )) 
+ 
+```
 
 
 

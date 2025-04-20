@@ -602,6 +602,7 @@ DT_pos |> extract_entities_l()
 ```
 
 # dataviz
+
 ```{r ex ggraph autograph}
 library(tidygraph)
 library(ggraph)
@@ -636,6 +637,7 @@ gr <- get_cooc_entities(x)
     unlist() |>
     count_vec()
 
+# <<<<<<< HEAD
 color="lightblue"
 gr$edges |> 
   tidygraph::as_tbl_graph() |>
@@ -796,12 +798,39 @@ uber_g |> plot_pos_graph(font_size=75, n_head = n_head ) + labs(title = f('Os {n
 ggsave(f("~/Documentos/Programação/R/cebrap/analise_tribunais/www/uber_coocorrencias_{termo}_{n_head}.png"), width = 8, height = 8)
 ```
 ```{r}
+# gr$edges |> 
+#   tidygraph::as_tbl_graph() |>
+#   ggraph::autograph(node_label= name)
+#
+# ```
+# ```{r ex ggraph}
+# color="lightblue"
+#
+# gr$edges |> as_tbl_graph() 
+#
+# gr$edges |>
+#   tidygraph::as_tbl_graph() |>
+#     # igraph::graph_from_data_frame(directed = FALSE, vertices = gr$nodes ) |>
+#     ggraph::ggraph(layout = "graphopt") +
+#     ggraph::geom_edge_link(ggplot2::aes(edge_width = 1, edge_alpha = 0.5),
+#       angle_calc = "along",
+#       label_dodge = grid::unit(4.5, "mm"),
+#       color = color,
+#       # c("lightblue", "blue", "royalblue")[1],
+#       end_cap = ggraph::circle(6, "mm")
+#     ) + # afastamento do nó
+#     ggraph::geom_node_text(ggplot2::aes(label = name, size = 2), repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+#     # ggraph::geom_node_text(ggplot2::aes(label = name, size = freq), repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+#     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
+#     ggplot2::theme_void() +
+#     ggplot2::theme(legend.position = "none")
 
 ```
 
 
 
 
+summarise(name = token |> unique() |> paste(collapse = " "))
 
 
 

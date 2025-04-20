@@ -15,3 +15,4 @@
 - head_n pega o n da tablea de frequencia, mas não seria melhor pegar as entidades? Por outro lado, talvez
 - rename plot_graph  to net_wordcloud
 - rename plot_graph2
+
