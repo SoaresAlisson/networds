@@ -15,7 +15,7 @@ get_cooc(pos_df, pos_cat = c("NOUN", "ENTITY"))
 from a POS dataframe (using `filter_by_query() |> parsePOS()` ) get the pairs of co-ocurrences.
 }
 \examples{
-x <- txt_wiki |> filter_by_query("Police") 
-x  <- x |>  parsePOS(only_entities=FALSE) 
+x <- txt_wiki |> filter_by_query("Police")
+x <- x |> parsePOS(only_entities = FALSE)
 get_cooc(x)
 }

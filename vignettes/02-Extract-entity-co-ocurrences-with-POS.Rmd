@@ -148,10 +148,7 @@ Ploting an interactive graph
 ```{r viz_graph police, eval=T}
 graph_wiki$edges |> viz_graph()
 ```
-```{r}
-net_wordcloud(txt_wiki, dplyr::rename(g$edges, n = freq )) 
- 
-```
+
 
 
 

@@ -9,15 +9,17 @@ q_plot(graph_list, color = "lightblue")
 \arguments{
 \item{color}{color of the edges. Default: "lightblue".}
 
-\item{edge_df}{a dataframe of co-occurrence, extracted with `get_cooc_entities()`}
+\item{edge_df}{a dataframe of co-occurrence, extracted with `extract_graph()`}
 }
 \description{
-Plot a network of co-ocurrence of terms. For more options, see `plot_graph()`.
+Plot a network of co-ocurrence of terms. For more options, see `net_wordcloud()`.
 }
 \examples{
 library(txtnet)
 
-g <- txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS()
+g <- txt_wiki[2:44] |>
+  filter_by_query("Police") |>
+  parsePOS()
 g <- get_cooc_entities(g)
 q_plot(g)
 }

@@ -14,11 +14,15 @@ graph_from_coocurrence_list(coocurrence_list, strip_rgx = "^the_", freq = TRUE)
 \item{freq}{if TRUE (default), returns a dataframe with frequency. If FALSE, returns only the pairs}
 }
 \description{
-given a listed dataframe of co-ocurrence, returns a dataframe with frequency. 
+given a listed dataframe of co-ocurrence, returns a dataframe with frequency.
 If list element has only one element, it is removed.
 }
 \examples{
-pos <- txt_wiki |> filter_by_query("Police") |> parsePOS() 
-entities_by_txt <- pos |> dplyr::group_by(doc_id) |> dplyr::summarise(entities = list(unique(entity))) 
+pos <- txt_wiki |>
+  filter_by_query("Police") |>
+  parsePOS()
+entities_by_txt <- pos |>
+  dplyr::group_by(doc_id) |>
+  dplyr::summarise(entities = list(unique(entity)))
 graph_from_coocurrence_list(entities_by_txt)
 }

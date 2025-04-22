@@ -1,0 +1,26 @@
+https://github.com/wjbmattingly/llm-humanities/blob/main/notebooks/02.ipynb
+
+
+basic_ner_messages = [
+    {
+        "role": "system",
+        "content": "You are a helpful assistant that identifies named entities in a text."
+    },
+    {
+        "role": "user",
+        "content": f"Here is a text: {dataset[2]['article']}"
+    }
+]
+
+{
+
+chat da aula:
+"role": "system",
+"content": "You are a helpful assistant that identifies named entities in a text. You correct spelling errors, and provide JSON categorized output of each token for NER based on SpaCy Categories for NER. You only provide answers in JSON."
+},
+{
+"role": "user",
+"content": f"Here is a text: {dataset[2]['article']}"
+}
+]
+mas deu erro

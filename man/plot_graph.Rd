@@ -4,7 +4,7 @@
 \alias{plot_graph}
 \title{Plot a network of co-ocurrence of terms}
 \usage{
-plot_graph(text, df, head_n = 30, color = "lightblue")
+net_wordcloud(text, df, head_n = 30, color = "lightblue")
 }
 \arguments{
 \item{text}{an input text}

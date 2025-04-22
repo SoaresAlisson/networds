@@ -1,5 +1,6 @@
 # Dev de extract relations
 
+## LL, devtools
 ```{r ll}
 sto::ll("dplyr spacyr udpipe sto rsyntax tibble tidygraph ggraph")
 options(browser = "firefox")
@@ -12,9 +13,13 @@ available::available("nettext")
 available::available("txtnet")
 ```
 ```{r devtools vignette}
-devtools::build_vignettes("First_steps")
-devtools::build_vignettes("01-Extract entity coocurrences with regex")
-devtools::build_vignettes("02-Extract entity co-ocurrences with POS")
+list.files("vignettes")
+devtools::build_vignettes("vignettes")
+devtools::build_vignettes("vignettes/entities_and_relation_extraction.Rmd")
+# devtools::build_vignettes("First_steps")
+# devtools::build_vignettes("entities_and_relation_extraction.Rmd")
+# devtools::build_vignettes("01-Extract entity coocurrences with regex")
+# devtools::build_vignettes("02-Extract entity co-ocurrences with POS")
 devtools::build_vignettes()
 #devtools::install_github("quanteda/spacyr", build_vignettes = FALSE)
 vignette(pkgdown::metadata)
@@ -34,6 +39,7 @@ devtools::build_site() # Execute pkgdown build_site in a package
 # to create a data object:
 usethis::use_data()
 ```
+## txt
 ```{r txt}
 txt <- c(
   "Maria Jana ama John Smith e Maria é amada por Joaquim de Souza.",
@@ -46,7 +52,7 @@ txt <- c(
 # txtPT_trt_full <- readLines("../narrative_argument/texto_trt.txt")
 # txtPT_trt_full <- readLines("../../narrative_argument/data/texto_trt.txt")
 txtPT_trt_full <- readLines("../narrative_argument/data/texto_trt.txt")
-txtPT_trt_full <- "../narrative_argument/data/txts.R") |> source()
+txtPT_trt_full <- "../narrative_argument/data/txts.R" |> source()
 ```
 ```{r package data txt}
 library(rvest)
@@ -77,7 +83,6 @@ usethis::use_data(txt_wiki, overwrite = T)
 txt_wiki |> filter_by_query("Brian", unlist=T)
 
 ```
-
 
 # UD pipe
 ```{r Udpipe}
@@ -720,12 +725,26 @@ plot_pos_graph <- function(pos_list,
                            point_alpha = 0.3,
                            point_color = "firebrick4",
                            graph_layout = "graphopt") {
+# === Updated upstream
     # pos_list <- graph_ppn
   # 
-  node_size <- pos_list$nodes |> 
-    dplyr::filter(!node %in% pos_list$isolated_nodes$node)
+  # node_size <- pos_list$nodes |> 
+  #   dplyr::filter(!node %in% pos_list$isolated_nodes$node)
+  #
+  # pos_list$edges |>
+# =======
+# pos_list <- graph_ppn
+  # pos_list <- uber_g 
 
-  pos_list$edges |>
+  head_edges <- pos_list$edges |> head(n_head)
+  head_nodes <- c(head_edges$n1, head_edges$n2) |> unique()
+
+  node_size <- pos_list$nodes |> dplyr::filter(node %in% head_nodes)
+  # node_size <- head_edges  #|> dplyr::filter(!node %in% pos_list$isolated_nodes$node)
+  # nrow(pos_list$nodes)
+
+ head_edges |> 
+## ===== Stashed changes
     tidygraph::as_tbl_graph() |>
       ggraph::ggraph(layout = graph_layout) +
       ggraph::geom_edge_link(ggplot2::aes(
@@ -754,15 +773,15 @@ plot_pos_graph <- function(pos_list,
       ggplot2::theme(legend.position = "none")
  }
 
-graph_ppn |> plot_pos_graph()
+graph_ppn |> plot_pos_graph(font_size = 5)
+# ggsave("www/graph_pos_wikiText.png", width = 8, height = 8)
 ```
 ```{r testing}
 # outros dados para testar a funcao plot_pos_graph
 arq <- "~/Documentos/Programação/R/cebrap/analise_tribunais/data/uber-agregado-acordaos.Rds"; file.exists(arq)
 # file.exists("arq")
 uber_acor <- readRDS(arq)
-glimpse(uber_acor)
-
+dplyr::glimpse(uber_acor)
 try(spacyr::spacy_finalize() )
 spacyr::spacy_initialize(model = "pt_core_news_lg")
 tictoc::tic()
@@ -771,9 +790,38 @@ uber_g  <-
     filter_by_query("onerosidade") |>
     parsePOS() |>
     get_cooc_entities()
-tictoc::toc()
-uber_g  
-uber_g |> plot_pos_graph()  
+tictoc::toc() # uber:342.445 sec = 5,7 min
+# uber_g
+uber_g |> plot_pos_graph(font_size=75, n_head = n_head ) + labs(title = f('Os {n_head} termos coocorrentes ao termo "{termo}"'))
+ggsave(f("~/Documentos/Programação/R/cebrap/analise_tribunais/www/uber_coocorrencias_{termo}_{n_head}.png"), width = 8, height = 8)
+```
+```{r}
+# gr$edges |> 
+#   tidygraph::as_tbl_graph() |>
+#   ggraph::autograph(node_label= name)
+#
+# ```
+# ```{r ex ggraph}
+# color="lightblue"
+#
+# gr$edges |> as_tbl_graph() 
+#
+# gr$edges |>
+#   tidygraph::as_tbl_graph() |>
+#     # igraph::graph_from_data_frame(directed = FALSE, vertices = gr$nodes ) |>
+#     ggraph::ggraph(layout = "graphopt") +
+#     ggraph::geom_edge_link(ggplot2::aes(edge_width = 1, edge_alpha = 0.5),
+#       angle_calc = "along",
+#       label_dodge = grid::unit(4.5, "mm"),
+#       color = color,
+#       # c("lightblue", "blue", "royalblue")[1],
+#       end_cap = ggraph::circle(6, "mm")
+#     ) + # afastamento do nó
+#     ggraph::geom_node_text(ggplot2::aes(label = name, size = 2), repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+#     # ggraph::geom_node_text(ggplot2::aes(label = name, size = freq), repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+#     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
+#     ggplot2::theme_void() +
+#     ggplot2::theme(legend.position = "none")
 
 ```
 
@@ -781,6 +829,7 @@ uber_g |> plot_pos_graph()
 
 
 summarise(name = token |> unique() |> paste(collapse = " "))
+
 
 
 
