@@ -274,9 +274,9 @@ get_cooc <- function(pos_df,
 #' txt_wiki[2:3]
 #' txt_wiki |> get_graph_from_txt("York")
 #' txt_wiki |> get_graph_from_txt("Police")
-get_graph_from_txt <- function(text, query, ic = TRUE, by_sentence = TRUE, loop = FALSE) {
+get_graph_from_txt <- function(text, query, i_c = TRUE, by_sentence = TRUE, loop = FALSE) {
   text |>
-    filter_by_query(query = query, ic = ic, by_sentence = by_sentence) |>
+    filter_by_query(query = query, i_c = i_c, by_sentence = by_sentence) |>
     parsePOS() |>
     get_pairs(loop = loop)
 }

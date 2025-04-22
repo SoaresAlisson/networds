@@ -8,7 +8,7 @@
 - ~função para pegar nós filhos em tibble~
 - ~juntar a sequencia: NOUN ADP PROPN, rei de Roma~
 - fazer plot cooc a partir dos POS 
-- achar funcao que transforma df em nodes e edges
+- ~achar funcao que transforma df em nodes e edges: tidygraph::as_tbl_graph()~
 - ~plot graph, pegar 2 primeiras colunas se nao tiver from e to~
-
+- conferir se collapse PPN esta funcionando
 

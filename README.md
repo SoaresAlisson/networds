@@ -5,6 +5,9 @@
 
 # {txtnet} - a package to build graphs from text
 
+<!-- badges: start -->
+<!-- badges: end -->
+
 **THIS PACKAGE IS NOW UNDER DEVELOPMENT**
 
 # Extracting co-occurences and relations in text
@@ -22,18 +25,13 @@ It extract graphs from plain text using:
 - extraction of relations (verbs, in most cases) like in {rsyntax} and
   {semgram}
 
-3)  (under development) Maybe a extraction using Local Large Language
-    Models with {rollama}.
+3)  (Planned future development) Maybe a relation extraction using Local
+    Large Language Models with {rollama}.
 
 [Universal Stanford Dependencies: A cross-linguistic
 typology](https://nlp.stanford.edu/pubs/USD_LREC14_paper_camera_ready.pdf)
 “propose an improved taxonomy to capture grammatical relations across
 languages, including morphologically rich ones”
-
-# txtnet
-
-<!-- badges: start -->
-<!-- badges: end -->
 
 ## Installation
 
@@ -46,3 +44,7 @@ pak::pak("SoaresAlisson/txtnet")
 ```
 
 ## Example
+
+Check the vignettes: - [01 - Proper name extraction with
+regex](https://htmlpreview.github.io/?https://raw.githubusercontent.com/SoaresAlisson/txtnet/refs/heads/master/vignettes/entities_and_relation_extraction.html) -
+\[02 - Extract entity co-ocurrences with POS\]

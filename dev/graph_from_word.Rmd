@@ -70,7 +70,7 @@ filtered_txt  <-
 
 filter_by_query(sotu_text[237:240], "China")
 ```
-```{r fun }
+```{r fun parsePOS}
 # txt <- filter_by_query(sotu_text[237:240], c("China", "\\bXi\\b")[2])
 # spacy_initialize()
 # spacyr::spacy_parse(txt[[3]])
