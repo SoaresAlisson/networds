@@ -8,8 +8,8 @@
 # #' @param edge_df a dataframe of co-occurrence, extracted with `get_cooc_entities()`
 #' @param edge_df a dataframe of co-occurrence, extracted with `extract_graph()`
 #' @param color color of the edges. Default: "lightblue".
-#' 
-#' @export()
+#'
+#' @export
 #'
 #' @examples
 #' library(txtnet)
@@ -28,26 +28,43 @@ q_plot <- function(graph_list, color = "lightblue") {
       edge_colour = color,
       edge_width = freq
     )
-# #' g <- txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS() |
-# #' g <- get_cooc_entities(g)
-# #' q_plot(g)
-# q_plot <- function(edge_df) {
-#   edge_df$edges |> 
-#     tidygraph::as_tbl_graph() |>
-#     ggraph::autograph(node_label= name)
+  # #' g <- txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS() |
+  # #' g <- get_cooc_entities(g)
+  # #' q_plot(g)
+  # q_plot <- function(edge_df) {
+  #   edge_df$edges |>
+  #     tidygraph::as_tbl_graph() |>
+  #     ggraph::autograph(node_label= name)
 }
 
 
-#' Plot a network of co-ocurrence of terms
+#' plot net wordcloud
 #'
-#' plot a graph of co-occurrence of terms, as returned by extract_graph
+#' plot a network of co-occurrence of terms, as returned by extract_graph and
+#' then by dplyr::count(). The size of words and compound words means the
+#' individual frequency of each word/compound word. The thickness of the links
+#' indicates how often the pair occur together.
+
 #'
-#' @param text an input text
+#' @param text the original text used to extract the graph. It is necessary to
+#' calculate the individual frequency of the words.
 #' @param df a dataframe of co-occurrence, extracted with `extract_graph()` and
 #' `count(n1, n2)`
 #' @param head_n number of nodes to show - the more frequent
 #' @export
-plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
+#'
+#' @examples
+#'
+#' # stopwords:
+#' my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
+#'
+#' txt_wiki |> # text available in the package
+#'   # because it is a vector, let's collapse it into a single element:
+#'   paste(collapse = " ") |>
+#'   extract_graph(sw = my_sw) |>
+#'   dplyr::count(n1, n2, sort = TRUE) |> # counting the graphs
+#'   net_wordcloud(txt_wiki, df = _) # plotting
+net_wordcloud <- function(text, df, head_n = 30, color = "lightblue") {
   # graph <-  g_N |> head(head_n)
   graph <- df |> head(head_n)
   vert <- unique(c(graph$n1, graph$n2))
@@ -70,19 +87,26 @@ plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
       # c("lightblue", "blue", "royalblue")[1],
       end_cap = ggraph::circle(6, "mm")
     ) + # afastamento do nó
-    ggraph::geom_node_text(ggplot2::aes(label = name, 
-      size = freqPPN$freq 
-      # size = freq
-    ),
-      repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+    ggraph::geom_node_text(
+      ggplot2::aes(
+        label = name,
+        size = freqPPN$freq
+        # size = freq
+      ),
+      repel = TRUE
+    ) + # TODO ajustar tamanho minimo e máximo
     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")
 }
 
-#' weighted graph viz
+#' weighted word graph viz
 #'
-#' Plot a network of co-ocurrence of terms
+#' Plot a network of co-ocurrence of terms. Because word frequencies can vary
+#' significantly, differences in text size can be substantial. Therefore,
+#' instead of adjusting text size, we vary the dot/node size, ensuring the
+#' text remains consistently sized and maintains readability. It is also
+#' possible to normalize the result with log.
 #'
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
 #' @param text an input text
@@ -102,26 +126,27 @@ plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
 #'
 #' @examples
 #' # plot_graph(txt, df = graph_count, head_n = 50, scale_graph = "log2")
-plot_graph2 <- function(text, df, head_n = 30, 
-                        edge_color = "lightblue", 
+plot_graph2 <- function(text, df, head_n = 30,
+                        edge_color = "lightblue",
                         edge_alpha = 0.5,
                         node_alpha = 0.5,
-                        text_color = "black", 
+                        text_color = "black",
                         text_size = 1,
                         scale_graph = "scale_values") {
-
   scale_values <- function(x) {
-    (x - min(x)) / (max(x) - min(x)) }
+    (x - min(x)) / (max(x) - min(x))
+  }
 
   graph <- df |>
     head(head_n) |>
-    dplyr::mutate(n = eval(dplyr::sym(scale_graph ))(n))
+    dplyr::mutate(n = eval(dplyr::sym(scale_graph))(n))
 
   vert <- unique(c(graph$n1, graph$n2))
 
   # frequency of nodes/terms
   freqPPN <- lapply(vert, \(v) {
-    text |> stringr::str_extract_all(v) |>
+    text |>
+      stringr::str_extract_all(v) |>
       suppressWarnings()
   }) |>
     unlist() |>
@@ -131,9 +156,11 @@ plot_graph2 <- function(text, df, head_n = 30,
     tidygraph::as_tbl_graph() |>
     # igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
     ggraph::ggraph(layout = "graphopt") +
-    ggraph::geom_edge_link(ggplot2::aes(
-      edge_width = n),
-      edge_alpha = edge_alpha , 
+    ggraph::geom_edge_link(
+      ggplot2::aes(
+        edge_width = n
+      ),
+      edge_alpha = edge_alpha,
       angle_calc = "along",
       label_dodge = grid::unit(4.5, "mm"),
       colour = edge_color,
@@ -143,11 +170,12 @@ plot_graph2 <- function(text, df, head_n = 30,
       ggplot2::aes(
         # normalizando o tamanho do texto
         size = eval(dplyr::sym(scale_graph))(freqPPN$freq)
-      ), 
+      ),
       # colour = node_color,
       colour = edge_color,
       alpha = node_alpha,
-      repel = TRUE) + 
+      repel = TRUE
+    ) +
     ggraph::geom_node_text(
       ggplot2::aes(
         label = name,
@@ -155,7 +183,8 @@ plot_graph2 <- function(text, df, head_n = 30,
         size = text_size
       ),
       colour = text_color,
-      repel = TRUE) +
+      repel = TRUE
+    ) +
     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")
@@ -194,7 +223,6 @@ plot_graph2 <- function(text, df, head_n = 30,
 #'   parsePOS()
 #' gr <- gr |> get_cooc_entities()
 #' plot_pos_graph(gr)
-
 plot_pos_graph <- function(pos_list,
                            edge_color = "lightblue",
                            edge_alpha = 0.1,
@@ -204,16 +232,16 @@ plot_pos_graph <- function(pos_list,
                            point_alpha = 0.3,
                            point_color = "firebrick4",
                            graph_layout = "graphopt") {
-# #  Updated upstream
-     
-  # node_size <- pos_list$nodes |> 
+  # #  Updated upstream
+
+  # node_size <- pos_list$nodes |>
   #   dplyr::filter(! node %in% pos_list$isolated_nodes$node)
   #
   # pos_list$edges |>
   #   tidygraph::as_tbl_graph() |>
   #     ggraph::ggraph(layout = graph_layout ) +
   #     ggraph::geom_edge_link(ggplot2::aes(
-  #       edge_width = pos_list$edges$freq, 
+  #       edge_width = pos_list$edges$freq,
   #       edge_alpha = 0.5),
   #       angle_calc = "along",
   #       label_dodge = grid::unit(4.5, "mm"),
@@ -221,13 +249,13 @@ plot_pos_graph <- function(pos_list,
   #       end_cap = ggraph::circle(6, "mm")
   #       ) + # afastamento do nó
   #     ggraph::geom_node_point(ggplot2::aes(
-  #       size = node_size$freq, 
-  #       alpha = point_alpha, 
-  #       # alpha = 0.3, 
+  #       size = node_size$freq,
+  #       alpha = point_alpha,
+  #       # alpha = 0.3,
   #       fill = point_fill ,
   #       color = point_color )) +
   #     ggraph::geom_node_text(ggplot2::aes(
-# # =======
+  # # =======
   # pos_list <- graph_ppn
   # pos_list <- uber_g
 
@@ -261,7 +289,7 @@ plot_pos_graph <- function(pos_list,
     )) +
     ggraph::geom_node_text(
       ggplot2::aes(
-# Stashed changes
+        # Stashed changes
         label = name,
         # alpha = 0,
         # size = node_size$freq),
@@ -297,7 +325,8 @@ plot_pos_graph <- function(pos_list,
 #'   dplyr::rename(from = n1, to = n2) |>
 #'   viz_graph()
 #' g$edges |> viz_graph()
-viz_graph <- function(graph_df, nodesIdSelection = TRUE, height = "900px") {
+interactive_graph <- function(graph_df, nodesIdSelection = TRUE, height = "900px") {
+  # viz_graph <- function(graph_df, nodesIdSelection = TRUE, height = "900px") {
   # graph_df <- g$edges
   #
   # if column names are not: from to

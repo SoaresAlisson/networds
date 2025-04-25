@@ -4,6 +4,7 @@
 ```{r ll}
 sto::ll("dplyr spacyr udpipe sto rsyntax tibble tidygraph ggraph")
 options(browser = "firefox")
+detach("package:txtnet", unload = T)
 # library("txtnet")
 ```
 ```{r available}

@@ -1,10 +1,21 @@
+# Library
 ```{r ll sw sotu_text}
 library(sotu) #  text examples of US presidents speeches
+options(browser = "firefox")
 my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
 text_sotu <- sotu_text[229:230] |> paste(collapse = " ")
-sotu_g <- text_sotu |> extract_graph(sw = my_sw) 
+sotu_g <- text_sotu |> txtnet::extract_graph(sw = my_sw)
 cores <- c("lightblue", "blue", "royalblue", "purple", "darkgreen")
+page <- rvest::read_html("inst/wiki_GNU.html")
+# page <- rvest::read_html("../inst/wiki_GNU.html")
+
+text <- page |>
+  rvest::html_nodes("p") |>
+  rvest::html_text()
+
+detach("package:txtnet", unload = T)
 ```
+# fun
 ```{r fun q_plot}
 #' g <- txt_wiki[2:44] |>
 q_plot <- function(graph_list, color = "lightblue") {
@@ -17,26 +28,27 @@ q_plot <- function(graph_list, color = "lightblue") {
       edge_width = freq
     )
 }
-}
 
- g <- txt_wiki[2:44] |>
-   # filter_by_query("Police") |>
-   filter_by_query("Police", unlist = T) |>
-   parsePOS()
 
- g <- get_cooc_entities(g)
+g <- txt_wiki[2:44] |>
+  # filter_by_query("Police") |>
+  filter_by_query("Police", unlist = T) |>
+  parsePOS()
 
- q_plot(g)
+g <- get_cooc_entities(g)
 
-sotu_g <- text |> extract_graph(sw = my_sw) 
+q_plot(g)
+
+sotu_g <- text |> extract_graph(sw = my_sw)
 
 net_wordcloud(
-  sotu_g ,
+  sotu_g,
   dplyr::count(sotu_g, n1, n2, sort = T)
 )
-
 ```
-```{r fun plot_graph }
+```{r fun net_wordcloud}
+data(package = "txtnet")
+
 #' Plot a network of co-ocurrence of terms
 #'
 #' plot a graph of co-occurrence of terms, as returned by extract_graph
@@ -47,7 +59,7 @@ net_wordcloud(
 #' @param head_n number of nodes to show - the more frequent
 #' @export
 net_wordcloud <- function(text, df, head_n = 30, color = "lightblue") {
-# plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
+  # plot_graph <- function(text, df, head_n = 30, color = "lightblue") {
 
   # df <- dplyr::count(sotu_g, n1, n2, sort = T)
   freq <- df[["n"]]
@@ -76,18 +88,29 @@ net_wordcloud <- function(text, df, head_n = 30, color = "lightblue") {
       # c("lightblue", "blue", "royalblue")[1],
       end_cap = ggraph::circle(6, "mm")
     ) + # afastamento do nó
-    ggraph::geom_node_text(ggplot2::aes(label = name, 
-      # size =  graph[["n"]]), 
-      size = freqPPN$freq), 
-      repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+    ggraph::geom_node_text(
+      ggplot2::aes(
+        label = name,
+        # size =  graph[["n"]]),
+        size = freqPPN$freq
+      ),
+      repel = TRUE
+    ) + # TODO ajustar tamanho minimo e máximo
     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")
 }
-}
 
+# stopwords
+my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
+txt_wiki |> # text available in the package
+  # because it is a vector, let's collapse it into a single element:
+  paste(collapse = " ") |>
+  extract_graph(sw = my_sw) |>
+  dplyr::count(n1, n2, sort = TRUE) |>
+  net_wordcloud(txt_wiki, df = _)
 ```
-```{r fun plor_graph2u}
+```{r fun plot_graph2u}
 #'
 #' @examples
 #' # plot_graph(txt, df = graph_count, head_n = 50, scale_graph = "log2")
@@ -104,7 +127,7 @@ plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale_graph 
 
   graph <- df |>
     head(head_n) |>
-    dplyr::mutate(n = eval(dplyr::sym(scale_graph ))(n))
+    dplyr::mutate(n = eval(dplyr::sym(scale_graph))(n))
 
   vert <- unique(c(graph$n1, graph$n2))
 
@@ -129,22 +152,23 @@ plot_graph2 <- function(text, df, head_n = 30, color = "lightblue", scale_graph 
     ggraph::geom_node_text(
       ggplot2::aes(
         label = name,
-        # size = 1, 
+        # size = 1,
         # normalizando o tamanho do texto
         size = eval(dplyr::sym(scale_graph))(freqPPN$freq)
       ),
-      repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+      repel = TRUE
+    ) + # TODO ajustar tamanho minimo e máximo
     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")
 }
 
 library(sotu) #  text examples of US presidents speeches
-sotu_g <- text_sotu |> extract_graph(sw = my_sw) 
+sotu_g <- text_sotu |> extract_graph(sw = my_sw)
 text_sotu <- sotu_text[229:230] |> paste(collapse = " ")
 
 plot_graph2(
-  sotu_g ,
+  sotu_g,
   dplyr::count(sotu_g, n1, n2, sort = T),
   head_n = 70
 )
@@ -153,12 +177,12 @@ plot_graph2(
 #'
 #' @examples
 #' # plot_graph(txt, df = graph_count, head_n = 50, scale_graph = "log2")
-plot_graph3 <- function(text, df, head_n = 30, 
-                        edge_color = "lightblue", 
+plot_graph3 <- function(text, df, head_n = 30,
+                        edge_color = "lightblue",
                         edge_alpha = 0.5,
-                        # node_color = "lightblue", 
+                        # node_color = "lightblue",
                         node_alpha = 0.5,
-                        text_color = "black", 
+                        text_color = "black",
                         text_size = 1,
                         scale_graph = "scale_values") {
   # c("log2", "log10"))
@@ -167,17 +191,19 @@ plot_graph3 <- function(text, df, head_n = 30,
   # df = dplyr::count(sotu_g, n1, n2, sort = T)
 
   scale_values <- function(x) {
-    (x - min(x)) / (max(x) - min(x)) }
+    (x - min(x)) / (max(x) - min(x))
+  }
 
   graph <- df |>
     head(head_n) |>
-    dplyr::mutate(n = eval(dplyr::sym(scale_graph ))(n))
+    dplyr::mutate(n = eval(dplyr::sym(scale_graph))(n))
 
   vert <- unique(c(graph$n1, graph$n2))
 
   # frequency of nodes/terms
   freqPPN <- lapply(vert, \(v) {
-    text |> stringr::str_extract_all(v) |>
+    text |>
+      stringr::str_extract_all(v) |>
       suppressWarnings()
   }) |>
     unlist() |>
@@ -187,9 +213,11 @@ plot_graph3 <- function(text, df, head_n = 30,
     tidygraph::as_tbl_graph() |>
     # igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
     ggraph::ggraph(layout = "graphopt") +
-    ggraph::geom_edge_link(ggplot2::aes(
-      edge_width = n),
-      edge_alpha = edge_alpha , 
+    ggraph::geom_edge_link(
+      ggplot2::aes(
+        edge_width = n
+      ),
+      edge_alpha = edge_alpha,
       angle_calc = "along",
       label_dodge = grid::unit(4.5, "mm"),
       colour = edge_color,
@@ -198,13 +226,14 @@ plot_graph3 <- function(text, df, head_n = 30,
     ggraph::geom_node_point(
       ggplot2::aes(
         # normalizando o tamanho do texto
-        # size = 1, 
+        # size = 1,
         size = eval(dplyr::sym(scale_graph))(freqPPN$freq)
-      ), 
+      ),
       # colour = node_color,
       colour = edge_color,
       alpha = node_alpha,
-      repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+      repel = TRUE
+    ) + # TODO ajustar tamanho minimo e máximo
     ggraph::geom_node_text(
       ggplot2::aes(
         label = name,
@@ -212,16 +241,17 @@ plot_graph3 <- function(text, df, head_n = 30,
         size = text_size
       ),
       colour = text_color,
-      repel = TRUE) + # TODO ajustar tamanho minimo e máximo
+      repel = TRUE
+    ) + # TODO ajustar tamanho minimo e máximo
     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")
 }
 
 plot_graph3(
-  sotu_g ,
+  sotu_g,
   dplyr::count(sotu_g, n1, n2, sort = T),
-  edge_color =  cores[4],
+  edge_color = cores[4],
   edge_alpha = 0.1,
   text_color = cores[5],
   node_alpha = 0.5,
@@ -230,9 +260,122 @@ plot_graph3(
 )
 ```
 
-# interacive 
+# Interactive 
+```{r ex vignette pacote visNetwork}
+nb <- 10
+nodes <- data.frame(
+  id = 1:nb, label = paste("Label", 1:nb),
+  group = sample(LETTERS[1:3], nb, replace = TRUE), value = 1:nb,
+  title = paste0("<p>", 1:nb, "<br>Tooltip !</p>"), stringsAsFactors = FALSE
+)
 
-```{r networkD3}
+edges <- data.frame(
+  from = trunc(runif(nb) * (nb - 1)) + 1,
+  to = trunc(runif(nb) * (nb - 1)) + 1,
+  value = rnorm(nb, 10), label = paste("Edge", 1:nb),
+  title = paste0("<p>", 1:nb, "<br>Edge Tooltip !</p>")
+)
+
+visNetwork::visNetwork(nodes, edges, width = "100%") |>
+  visNetwork::visLegend()
+```
+```{r ex vignette pacote visNetwork > net_}
+nb <- 10
+nodes <- data.frame(
+  id = 1:nb, label = paste("Label", 1:nb),
+  # group = sample(LETTERS[1:3], nb, replace = TRUE),
+  value = 1:nb,
+  # title = paste0("<p>", 1:nb,"<br>Tooltip !</p>"),
+  stringsAsFactors = FALSE
+)
+
+edges <- data.frame(
+  from = trunc(runif(nb) * (nb - 1)) + 1,
+  to = trunc(runif(nb) * (nb - 1)) + 1,
+  value = rnorm(nb, 10),
+  # label = paste("Edge", 1:nb),
+  # title = paste0("<p>", 1:nb,"<br>Edge Tooltip !</p>")
+)
+
+visNetwork::visNetwork(nodes, edges, width = "100%") |>
+  visNetwork::visLegend()
+```
+```{r dados para o exemplo}
+page <- rvest::read_html("inst/wiki_GNU.html")
+page <- rvest::read_html("../inst/wiki_GNU.html")
+
+text <- page |>
+  rvest::html_nodes("p") |>
+  rvest::html_text()
+
+g <- text |> extract_graph(sw = my_sw)
+
+g_count <- g |> dplyr::count(n1, n2, sort = T)
+```
+```{r ex vignette pacote visNetwork > net_}
+nb <- 10
+nodes <- data.frame(
+  id = 1:nb, label = paste("Label", 1:nb),
+  # group = sample(LETTERS[1:3], nb, replace = TRUE),
+  value = 1:nb,
+  # title = paste0("<p>", 1:nb,"<br>Tooltip !</p>"),
+  stringsAsFactors = FALSE
+)
+
+edges <- data.frame(
+  from = trunc(runif(nb) * (nb - 1)) + 1,
+  to = trunc(runif(nb) * (nb - 1)) + 1,
+  value = rnorm(nb, 10),
+  # label = paste("Edge", 1:nb),
+  # title = paste0("<p>", 1:nb,"<br>Edge Tooltip !</p>")
+)
+
+visNetwork::visNetwork(nodes, edges, width = "100%") |>
+  visNetwork::visLegend()
+```
+```{r fun graph_cooc_interactive}
+g <- text |> extract_graph(sw = my_sw)
+
+g_count |> # dplyr::count(n1, n2, sort = T) |>
+  head(100) |> # to reduce the amount of nodes and edges in the graph
+  networkD3::simpleNetwork(
+    height = "10px", width = "30px",
+    linkDistance = 50,
+    fontSize = 16
+  )
+
+
+g |>
+  dplyr::count(n1, n2, sort = T) |>
+  head(100) |> # to reduce the amount of nodes and edges in the graph
+  networkD3::simpleNetwork(
+    height = "10px", width = "30px",
+    linkDistance = 50,
+    fontSize = 16
+  )
+
+networkD3::visNetwork(nodes, edges, width = "100%") %>%
+  networkD3::visLegend()
+
+graph_cooc_interactive <- function(g) {
+  g |>
+    dplyr::count(n1, n2, sort = T) |>
+    head(100) |> # to reduce the amount of nodes and edges in the graph
+    networkD3::visNetwork(
+      height = "10px", width = "30px",
+      linkDistance = 50,
+      fontSize = 16
+    )
+}
+
+g |>
+  dplyr::count(n1, n2, sort = T) |>
+  graph_cooc_interactive()
+```
+
+```{r fun interactive_graph }
+# antiga função viz_graph
+
 #' viz graph interactively
 #'
 #' Visualize graphs interactively (package visNetwork). The columns must be named:
@@ -253,6 +396,7 @@ plot_graph3(
 #'   dplyr::rename(from = n1, to = n2) |>
 #'   viz_graph()
 #' g$edges |> viz_graph()
+# viz_graph <- function(graph_df, nodesIdSelection = TRUE, height = "900px") {
 interactive_graph <- function(graph_df, nodesIdSelection = TRUE, height = "900px") {
   # graph_df <- g$edges
   #
@@ -284,16 +428,18 @@ interactive_graph <- function(graph_df, nodesIdSelection = TRUE, height = "900px
     )
 
   # https://cran.r-project.org/web/packages/visNetwork/visNetwork.pdf
-  visNetwork::visNetwork(node_mapping, graph_data, 
+  visNetwork::visNetwork(node_mapping, graph_data,
     width = "100%",
-   # "value" : size of the node 
-    height = height) |>
+    # "value" : size of the node
+    height = height
+  ) |>
     visNetwork::visOptions(
       highlightNearest = TRUE,
       nodesIdSelection = nodesIdSelection
     )
 }
 
+# ------
 x <- txt_wiki[2:44] |>
   filter_by_query("Brian") |>
   parsePOS()
@@ -301,8 +447,11 @@ x <- txt_wiki[2:44] |>
 g <- get_cooc_entities(x)
 
 g$edges |>
-  dplyr::rename(from = n1, to = n2) |>
+  txtnet::rename_cols() |>
+  # dplyr::rename(from = n1, to = n2) |>
   viz_graph()
 g$edges |> interactive_graph()
+# ---------
+g_N |> interactive_graph()
 ```
 

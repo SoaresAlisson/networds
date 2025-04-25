@@ -1,6 +1,6 @@
 Package: txtnet
 Type: build network of text, extract entities and its relations in graph format.
-Title: build network of text
+Title: extract network from text
 Version: 0.1.0
 Authors@R: 
     person("Alisson", "Soares", 

@@ -23,8 +23,30 @@ library(spacyr)
 Extracting proper names or entities with regex are cool, but has its limitations. 
 In this section, we will use the Part of Speech (POS) tags to extract the entities, proper names, noun phrases and its co-occurrences to generate graphs.
 
+## Installing SpacyR
+First of all, we need to install the {[spacyR](https://spacyr.quanteda.io/)} package.
+It is a wrap around the Spacy package in Python, and SpacyR deals with the boring parts of creating an exclusive python virtual environment.
+This package will extract the NER (named entities) and POS (part of speech tagging).
 
-```{r, eval=T, echo=T}
+```{r install spacyR, eval = FALSE}
+install.packages("spacyR")
+# if you prefer, or if the CRAN version is buggy, install the github version:
+pak::pkg_install("quanteda/spacyr")
+
+# to Install spaCy and requirements (python env). With empty parameters, it will
+# install the default “en_core_web_sm” model.
+spacyr::spacy_install()
+
+# To download other language model, check https://spacy.io/usage/models
+# Ex. installing portuguese, the model available are:
+modelsPT <- c("pt_core_news_sm", "pt_core_news_md", "pt_core_news_lg")
+# installing the bigger model
+spacyr::spacy_download_langmodel(modelsPT[3])
+```
+
+## Using txtnet package
+
+```{r text, eval=T, echo=T}
 # text from https://www.bbc.com/news/articles/c7ve36zg0e5o
 text <- r"(The manhunt for a suspect who gunned down a healthcare chief executive in New York is now in its third day, with police chasing several different leads.
 
@@ -33,7 +55,8 @@ UnitedHealthcare boss Brian Thompson, 50, was fatally shot in the back on Wednes
 Police say Thompson was targeted in a pre-planned killing, for which they do not yet have a motive.
 
 Investigators are using surveillance photos, bullet casings with cryptic messages written on them, and the suspect's movements to track him down. They are also working with the FBI and authorities in other states as the search expands beyond New York.)"
-
+```
+```{r POS}
 POS <- text |>
   spacyr::spacy_parse(dependency = T)
 
@@ -70,7 +93,7 @@ Lets use the package text example. You can use whatever you want.
 ```{r sample_txt head}
 data(package = "txtnet")
 
-# text_sample 
+# text_sample
 # an example of text. this comes with the package.
 txt_wiki[2:3]
 ```
@@ -85,24 +108,27 @@ txt_wiki[2:6] |> filter_by_query("Police")
 Is possible to return a vector instead of a list object
 
 ```{r}
-txt_wiki[1:12] |> filter_by_query("Police", unlist=TRUE)
+txt_wiki[1:12] |> filter_by_query("Police", unlist = TRUE)
 ```
 
 The next step is the POS tagging using `parsePOS()`
 
 ```{r}
-txt_wiki[1:12] |> filter_by_query("Police", unlist=TRUE) |>
-   parsePOS() 
+txt_wiki[1:12] |>
+  filter_by_query("Police", unlist = TRUE) |>
+  parsePOS()
 ```
 
 
 
 ```{r wiki get_pairs, eval=FALSE, echo=FALSE}
-txt_wiki |> filter_by_query("Police") |> 
+txt_wiki |>
+  filter_by_query("Police") |>
   parsePOS() |>
   get_pairs()
 
-txt_wiki |> filter_by_query("Police") |> 
+txt_wiki |>
+  filter_by_query("Police") |>
   parsePOS() |>
   get_pairs(loop = TRUE)
 ```
@@ -110,34 +136,38 @@ txt_wiki |> filter_by_query("Police") |>
 
 
 ```{r, eval=FALSE, echo=FALSE}
-graph <- text |> 
-  filter_by_query(query="Brian") |> 
-  parsePOS() |> 
+graph <- text |>
+  filter_by_query(query = "Brian") |>
+  parsePOS() |>
   get_pairs()
 
-options(browser="firefox")
-graph |> net_wordcloud(text, df=_)
-graph |> dplyr::rename(from=n1, to=n2) |>  viz_graph() 
+options(browser = "firefox")
+graph |> net_wordcloud(text, df = _)
+graph |>
+  dplyr::rename(from = n1, to = n2) |>
+  viz_graph()
 ```
 ```{r, eval=FALSE, echo=FALSE}
-graph <- sotu_text[237:240]  |> 
-  filter_by_query(query="China") |> 
-  parsePOS() |> 
+graph <- sotu_text[237:240] |>
+  filter_by_query(query = "China") |>
+  parsePOS() |>
   get_pairs()
 
-graph |> dplyr::rename(from=n1, to=n2) |>  viz_graph() 
+graph |>
+  dplyr::rename(from = n1, to = n2) |>
+  viz_graph()
 ```
 ```{r, eval=FALSE, echo=FALSE}
 sotu_text[237:240] |> get_graph_from_txt("people")
-sotu_text[237:240] |> get_graph_from_txt("China", by_sentence = FALSE )
-sotu_text[237:240] |> get_graph_from_txt("Russia", by_sentence = FALSE )
+sotu_text[237:240] |> get_graph_from_txt("China", by_sentence = FALSE)
+sotu_text[237:240] |> get_graph_from_txt("Russia", by_sentence = FALSE)
 ```
 
 To get the graph of entities co-occurrences:
 
 ```{r entities cooc}
-graph <- filter_by_query(txt_wiki, "Police") |> 
-  parsePOS(only_entities=TRUE)  |> 
+graph <- filter_by_query(txt_wiki, "Police") |>
+  parsePOS(only_entities = TRUE) |>
   dplyr::filter(entity_type != "CARDINAL") |> # to clean the graph
   get_pairs2()
 
@@ -145,19 +175,20 @@ graph
 ```
 
 ```{r, echo=FALSE, eval=FALSE}
-net_wordcloud(txt_wiki,graph)
+net_wordcloud(txt_wiki, graph)
 ```
 
 ```{r}
-graph |> dplyr::rename(from=n1, to=n2)|>
-viz_graph()
+graph |>
+  dplyr::rename(from = n1, to = n2) |>
+  viz_graph()
 ```
 
 To get the graph of entities and nouns:
 
 ```{r}
-graph <- filter_by_query(txt_wiki, "Police") |> 
-  parsePOS(only_entities=FALSE)  |> 
+graph <- filter_by_query(txt_wiki, "Police") |>
+  parsePOS(only_entities = FALSE) |>
   dplyr::filter(entity_type != "CARDINAL") |> # to clean the graph
   get_pairs2()
 
@@ -183,21 +214,20 @@ filter_by_query(sotu_text[237:240], "\\bXi\\b", unlist = TRUE)
 filter_by_query(sotu_text[237:240], "bob") # test
 
 # Trump sentences from SOTU talking about "Xi"
-filter_by_query(sotu_text[237:240], "\\Xi\\b") |> parsePOS()               
-# Trump sentences from SOTU talking about "China"                          
-filter_by_query(sotu_text[237:240], "China")[2] |> parsePOS()              
-# Trump sentences from SOTU talking about "China"                          
-filter_by_query(sotu_text[237:240], "China") |> parsePOS()                 
-filter_by_query(sotu_text[237:240], "China") |> parsePOS(entities = FALSE) 
+filter_by_query(sotu_text[237:240], "\\Xi\\b") |> parsePOS()
+# Trump sentences from SOTU talking about "China"
+filter_by_query(sotu_text[237:240], "China")[2] |> parsePOS()
+# Trump sentences from SOTU talking about "China"
+filter_by_query(sotu_text[237:240], "China") |> parsePOS()
+filter_by_query(sotu_text[237:240], "China") |> parsePOS(entities = FALSE)
 
-filter_by_query(sotu_text[237:240], "China") |> 
-  parsePOS() |>                                 
+filter_by_query(sotu_text[237:240], "China") |>
+  parsePOS() |>
   get_pairs()
 
-filter_by_query(sotu_text[237:240], "China") |> 
-  parsePOS() |>                                 
-  get_pairs(loop = TRUE)                        
-
+filter_by_query(sotu_text[237:240], "China") |>
+  parsePOS() |>
+  get_pairs(loop = TRUE)
 ```
 
 ## Using another languages

@@ -2,8 +2,8 @@
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  # cache = TRUE,
-  cache = FALSE,
+  cache = TRUE,
+  # cache = FALSE,
   # dimensiongs for figure
   fig.width = 5,
   fig.height = 3,
@@ -29,7 +29,7 @@ connectors("port")
 # by default, the functions uses the parameter "misc". meaning "miscellaneous".
 connectors("misc")
 
-## ----NER pt-------------------------------------------------------------------
+## ----entities pt--------------------------------------------------------------
 "João Ninguém mora em São José do Rio Preto. Ele esteve antes em Sergipe" |>
   extract_entity(connect = connectors("pt"))
 
@@ -40,14 +40,17 @@ vonNeumann_txt |> extract_entity()
 vonNeumann_txt |> extract_graph()
 
 ## ----vonNeumann graph stopwords-----------------------------------------------
-my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
+my_sw <- c(stopwords::stopwords(
+  language = "en",
+  source = "snowball", simplify = TRUE
+), "lol")
 
 vonNeumann_txt |> extract_graph(sw = my_sw)
 
 ## ----read_html, echo=FALSE, eval=T--------------------------------------------
 # pagina <- "https://en.wikipedia.org/wiki/GNU_General_Public_License" |> rvest::read_html()
 # writeLines( as.character(pagina), "../inst/wiki_GNU.html" )
-# page <- readLines("../inst/wiki_GNU.html") 
+# page <- readLines("../inst/wiki_GNU.html")
 # page <- rvest::read_html("inst/wiki_GNU.html")
 page <- rvest::read_html("../inst/wiki_GNU.html")
 
@@ -86,7 +89,7 @@ g_N |>
 ## ----read_html wiki_Hurricane_Milton,  echo=FALSE, eval=T---------------------
 # pagina <- "https://en.wikipedia.org/wiki/Hurricane_Milton" |> rvest::read_html()
 # writeLines( as.character(pagina), "../inst/wiki_Hurricane_Milton.html" )
-# page <- readLines("../inst/wiki_GNU.html") 
+# page <- readLines("../inst/wiki_GNU.html")
 page <- rvest::read_html("../inst/wiki_Hurricane_Milton.html")
 
 ## ----ex2 wiki Hurricane-------------------------------------------------------
@@ -122,53 +125,64 @@ tibble::as_tibble(sotu_meta)
 
 ## ----sotu obama---------------------------------------------------------------
 # checking what are the speeches of Obama
-sotu_meta |> 
-  dplyr::filter(grepl("Obama", president, ignore.case = T),
-  grepl("2009", years_active))
+sotu_meta |>
+  dplyr::filter(
+    grepl("Obama", president, ignore.case = T),
+    grepl("2009", years_active)
+  )
 
-# I picked this speech
-text_sotu <- sotu_text[229] |> 
+# Picking this speech of his first year
+text_sotu <- sotu_text[229] |>
   paste(collapse = " ") # turning the vector into a single element
 str(text_sotu) # first lines of the text
 
 # As a matter of curiosity, checking the most frequent entities
-text_sotu |> 
-  extract_entity(sw = my_sw ) |> 
-  plyr::count() |> 
+text_sotu |>
+  extract_entity(sw = my_sw) |>
+  plyr::count() |>
   dplyr::arrange(-freq) |>
   head(30)
 
-sotu_g_Ob <- text_sotu |> 
+sotu_g_Ob <- text_sotu |>
   paste(collapse = " ") |>
-  extract_graph(sw = my_sw) 
+  extract_graph(sw = my_sw)
 
+count_graph_ob <- dplyr::count(sotu_g_Ob,
+  n1, n2,
+  sort = T
+)
+
+count_graph_ob
+
+## ----plot---------------------------------------------------------------------
 plot_graph2(
-  sotu_g_Ob ,
-  dplyr::count(sotu_g_Ob, n1, n2, sort = T),
+  sotu_g_Ob,
+  count_graph_ob,
   head_n = 70,
   edge_color = "blue", edge_alpha = 0.1,
   text_size = 10,
-  scale_graph = "log2") +
-    ggplot2::labs(title= "Obama SOTU - First Year")
+  scale_graph = "log2"
+) +
+  ggplot2::labs(title = "Obama SOTU - First Year")
 
 ## ----sotu Trump---------------------------------------------------------------
 # Trump, first Mandate
-sotu_meta |> 
-  dplyr::filter(grepl("Trump", president, ignore.case = T)  )
+sotu_meta |>
+  dplyr::filter(grepl("Trump", president, ignore.case = T))
 
-sotu_g_Tr  <- sotu_text[237] |> 
+sotu_g_Tr <- sotu_text[237] |>
   paste(collapse = " ") |>
-  extract_graph(sw = my_sw) 
+  extract_graph(sw = my_sw)
 
 #  the most frequent entities
-sotu_g_Tr  |> 
-  extract_entity(sw = my_sw ) |> 
-  plyr::count() |> 
+sotu_g_Tr |>
+  extract_entity(sw = my_sw) |>
+  plyr::count() |>
   dplyr::arrange(-freq) |>
   head(30)
 
 plot_graph2(
-  sotu_g_Tr ,
+  sotu_g_Tr,
   dplyr::count(sotu_g_Tr, n1, n2, sort = T),
   head_n = 70,
   edge_color = "red",
@@ -176,43 +190,43 @@ plot_graph2(
   scale_graph = "log2",
   text_size = 10,
 ) +
-    ggplot2::labs(title= "Trump SOTU - First Year")
+  ggplot2::labs(title = "Trump SOTU - First Year")
 
 ## ----sotu obama trump graph---------------------------------------------------
 # a regex to capture some words/patterns
 term <- "\\bChin|Beijing|\\bXi\\b|Jinping"
-term_  <- "China"
+term_ <- "China"
 
-# Get all Obama speeches of his first mandate 
-text_sotu_Ob  <- sotu_text[229:234]|>
-  filter_by_query(term) 
+# Get all Obama speeches of his first mandate
+text_sotu_Ob <- sotu_text[229:234] |>
+  filter_by_query(term)
 
-sotu_g_Ob <- text_sotu_Ob |> 
+sotu_g_Ob <- text_sotu_Ob |>
   paste(collapse = " ") |>
-  extract_graph(sw = my_sw) 
+  extract_graph(sw = my_sw)
 
-g_Ob  <- plot_graph2(
-  sotu_g_Ob ,
+g_Ob <- plot_graph2(
+  sotu_g_Ob,
   dplyr::count(sotu_g_Ob, n1, n2, sort = T),
-  edge_color = "blue", 
+  edge_color = "blue",
   edge_alpha = 0.1,
   text_size = 5,
   scale_graph = "log2"
 ) +
-    # ggplot2::labs(title= paste("Obama about", term))
-    ggplot2::labs(title= "Obama")
+  # ggplot2::labs(title= paste("Obama about", term))
+  ggplot2::labs(title = "Obama")
 
 
 # Trump
-text_sotu_Tr <- sotu_text[237:240] |> 
-  filter_by_query(term) 
+text_sotu_Tr <- sotu_text[237:240] |>
+  filter_by_query(term)
 
-sotu_g_Tr <- text_sotu_Tr |> 
+sotu_g_Tr <- text_sotu_Tr |>
   paste(collapse = " ") |>
-  extract_graph(sw = my_sw) 
+  extract_graph(sw = my_sw)
 
-g_Tr  <- plot_graph2(
-  sotu_g_Tr ,
+g_Tr <- plot_graph2(
+  sotu_g_Tr,
   dplyr::count(sotu_g_Tr, n1, n2, sort = T),
   edge_color = "red",
   edge_alpha = 0.2,
@@ -220,14 +234,13 @@ g_Tr  <- plot_graph2(
   scale_graph = "log2"
 ) +
   # ggplot2::labs(title= paste("Trump about", term))
-  ggplot2::labs(title= "Trump")
+  ggplot2::labs(title = "Trump")
 
-# joining the graphs
+# Joining the graphs
 library(patchwork)
 (g_Ob + g_Tr) +
-   plot_annotation(
-  title = 
-    'Coocurrence of terms related to China'
-    # paste0('Coocurrence of terms related to "', term_, '"') 
+  plot_annotation(
+    title =
+      "Coocurrence of terms related to China"
   )
 

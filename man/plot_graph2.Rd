@@ -2,7 +2,7 @@
 % Please edit documentation in R/viz_graph.R
 \name{plot_graph2}
 \alias{plot_graph2}
-\title{weighted graph viz}
+\title{weighted word graph viz}
 \usage{
 plot_graph2(
   text,
@@ -40,11 +40,15 @@ to normalize the result can improve the readability, for example using
 `scale_graph = "log2"`, or `"log10"`}
 }
 \description{
-Plot a network of co-ocurrence of terms
+Plot a network of co-ocurrence of terms. Because word frequencies can vary
+significantly, differences in text size can be substantial. Therefore,
+instead of adjusting text size, we vary the dot/node size, ensuring the
+text remains consistently sized and maintains readability. It is also
+possible to normalize the result with log.
 }
 \details{
 plot a graph of co-occurrence of terms, as returned by extract_graph
 }
 \examples{
-# net_wordcloud(txt, df = graph_count, head_n = 50, scale_graph = "log2")
+# plot_graph(txt, df = graph_count, head_n = 50, scale_graph = "log2")
 }

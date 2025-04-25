@@ -89,6 +89,10 @@ plot_pos_graph(graph_wiki,
 ## ----viz_graph police, eval=T-------------------------------------------------
 graph_wiki$edges |> viz_graph()
 
+## -----------------------------------------------------------------------------
+net_wordcloud(txt_wiki, dplyr::rename(g$edges, n = freq )) 
+ 
+
 
 ## ----Brian, eval=T, echo=T----------------------------------------------------
 graph <- txt_wiki[2:44] |> 
