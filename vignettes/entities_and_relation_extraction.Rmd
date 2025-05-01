@@ -337,7 +337,7 @@ Now, comparing speeches on a certain topic
 
 ```{r sotu obama trump graph}
 # a regex to capture some words/patterns
-term <- "\\bChin|Beijing|\\bXi\\b|Jinping"
+term <- "\\bChin|Beijing|Shanghai|\\bXi\\b|Jinping"
 term_ <- "China"
 
 # Get all Obama speeches of his first mandate

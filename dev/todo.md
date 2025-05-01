@@ -10,9 +10,10 @@
 - ~fazer plot cooc a partir dos POS~ 
 - ~achar funcao que transforma df em nodes e edges: tidygraph::as_tbl_graph()~
 - ~plot graph, pegar 2 primeiras colunas se nao tiver from e to~
+- ~rename plot_graph to net_wordcloud~
 - conferir se collapse PPN esta funcionando
 - add _ underscore to compounded words
 - head_n pega o n da tabela de frequencia, mas não seria melhor pegar as entidades? Por outro lado, talvez
-- rename plot_graph to net_wordcloud
 - rename plot_graph2 to something else
+- rename package to netword
 

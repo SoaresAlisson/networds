@@ -8,8 +8,8 @@ Authors@R:
     role = c("aut", "cre"), 
     comment = c(ORCID = "0009-0004-5497-5572" ) )
 Maintainer: Alisson Soares <soares.alisson@yahoo.com.br>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: build network of text, extract entities and its relations in 
+    graph format, visualize it with ggplot based graphs.
 Imports:
     data.table,
     dplyr,

@@ -12,6 +12,8 @@ pak::pkg_install("available")
 available::available("textnetwork")
 available::available("nettext")
 available::available("txtnet")
+available::available("netword")
+available::available("networds")
 ```
 ```{r devtools vignette}
 list.files("vignettes")

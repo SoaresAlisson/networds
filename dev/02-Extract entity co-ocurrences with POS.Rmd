@@ -18,6 +18,7 @@ Loading the library
 ```{r setup library}
 library(txtnet)
 library(spacyr)
+library(igraph) # library/4.5/igraph/libs/igraph.so': libxml2.so.2: não é possível abrir arquivo compartilhado: Arquivo ou diretório inexistente
 ```
 
 Extracting proper names or entities with regex are cool, but has its limitations. 
@@ -132,8 +133,6 @@ txt_wiki |>
   parsePOS() |>
   get_pairs(loop = TRUE)
 ```
-
-
 
 ```{r, eval=FALSE, echo=FALSE}
 graph <- text |>
