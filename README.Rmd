@@ -1,5 +1,5 @@
 ---
-title: "{txtnet} - package to build text network"
+title: "{networds} - package to build text network"
 output: github_document
 ---
 
@@ -15,11 +15,11 @@ knitr::opts_chunk$set(
 ```
 
 
-# {txtnet} -  a package to build graphs from text
+# {networds} -  a package to build graphs from text
 <!-- badges: start -->
 <!-- badges: end -->
 
-![](./txtnet_hex.svg)
+![](./networds_hex.svg)
 
 **THIS PACKAGE IS NOW UNDER DEVELOPMENT**
 
@@ -49,11 +49,11 @@ We are working on the implementation of this feature to reduce the number of red
 
 ## Installation
 
-You can install the development version of txtnet from [GitHub](https://github.com/) with:
+You can install the development version of networds from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
-pak::pak("SoaresAlisson/txtnet")
+pak::pak("SoaresAlisson/networds")
 ```
 
 ## Example
@@ -63,7 +63,7 @@ pak::pak("SoaresAlisson/txtnet")
 ![Obama and Trump SOTU about China](www/obama_trump_china.png)
 
 Check the vignettes:  
-- [01 - Proper name extraction with regex](https://htmlpreview.github.io/?https://raw.githubusercontent.com/SoaresAlisson/txtnet/refs/heads/master/vignettes/entities_and_relation_extraction.html)
+- [01 - Proper name extraction with regex](https://htmlpreview.github.io/?https://raw.githubusercontent.com/SoaresAlisson/networds/refs/heads/master/vignettes/entities_and_relation_extraction.html)
 - [02 - Extract entity co-ocurrences with POS]
 
 ## Similar Projects

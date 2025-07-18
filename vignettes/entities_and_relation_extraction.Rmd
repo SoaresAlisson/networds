@@ -22,13 +22,13 @@ knitr::opts_chunk$set(
   fig.height = 3,
   dpi = 150
 )
-library(txtnet)
+library(networds)
 ```
 
 
 ##  Entity extraction and its relations
 
-The package {txtnet} provides a set of tools to extract entities and relations from text. 
+The package {networds} provides a set of tools to extract entities and relations from text. 
 The first of this tools uses one of the simples form: by using the rule based approach. It contains a rule based extraction algorithm and a rule based relation extraction algorithm.
 <!-- For more advanced NER, there is other packages such as  -->
 <!-- [{crfsuite}](https://cran.r-project.org/web/packages/crfsuite/index.html), {[UDpipe](https://cran.r-project.org/web/packages/udpipe/)} and {[spacyR](https://spacyr.quanteda.io/)}. -->
@@ -37,7 +37,7 @@ To extract entities based on Part of speech tagging, see other functions of this
 
 <!-- Carley 1993, MAP analysis -->
 
-The functions of {txtnet} do not work so well like the NER, but we think that, in some situations, they can be better job than traditional joining unigram, bigrams, trigrams and so on.
+The functions of {networds} do not work so well like the NER, but we think that, in some situations, they can be better job than traditional joining unigram, bigrams, trigrams and so on.
 Because it is a rule based approach, it is very simple to use, need less dependencies and runs also fast (or maybe less slower). It will also requires a lot of post-cleaning, but you have the absolute control over which words are extracted and what words are rejected.
 
 In Natural Language Processing, to find proper names or terms that frequently appears together is called "collocation", e.g., to find "United Kingdom". You can learn more what is collocation and its statistical details and r function in this [article](https://sigil.r-forge.r-project.org/materials/04_collocation_analysis.pdf), and it is also possible to functions like [`quanteda.textstats::textstat_collocations()`](https://quanteda.io/reference/textstat_collocations.html), [`TextForecast::get_collocations()`](https://cran.r-project.org/web/packages/TextForecast/) to identify them, but it also will require a lot of data cleaning, specially if you want is proper names.
@@ -67,18 +67,18 @@ It will not capture:
 <!-- To do that, take a look at other already mentioned packages, like spacyr and UDpipe. -->
 - it does not delves with words ambiguity. For example, is "WHO" referring to question or World Health Organization? Washington is a person or a place?
 
-To overthrow this problemas, txtnet has a set of other functions that works with Part of Speech tagging and Named Entity Recognition. 
+To overthrow this problemas, networds has a set of other functions that works with Part of Speech tagging and Named Entity Recognition. 
 If the problems enumerated are a big problem to your case, take a look at the next session "Extract entity co-ocurrences with POS".
 
 ## Conclusion 
 In my experience, the approach of this section using regex works better to certain types of text than others. Very well formatted text, like Books, formal articles can be a good option that works well with this function. Text from social media, because it lacks formalities of the language and have a lot of typos, lacking uppercase sometimes, or written all in uppercase, this approach will not work so well.
 
-## Using txtnet: extracting entities with regex
+## Using networds: extracting entities with regex
 
 After installing the package (see Readme), load it:
 
 ```{r ll libs}
-library(txtnet)
+library(networds)
 ```
 
 So, let's extract some proper names from a simple text:

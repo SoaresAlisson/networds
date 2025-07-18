@@ -2,11 +2,14 @@
 
 ## LL, devtools
 ```{r ll}
-sto::ll("dplyr spacyr udpipe sto rsyntax tibble tidygraph ggraph")
+library(devtools)
+sto::ll("dplyr spacyr udpipe sto rsyntax tibble tidygraph ggraph networds")
 options(browser = "firefox")
-detach("package:txtnet", unload = T)
+# detach("package:txtnet", unload = T)
+detach("package:networds", unload = T)
+devtools::un
 # library("txtnet")
-ls("package:txtnet")
+ls("package:networds")
 ```
 ```{r available}
 pak::pkg_install("available")

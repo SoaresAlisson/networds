@@ -1,5 +1,6 @@
 ---
 title: "02-Extract entity co-ocurrences with POS"
+check_title: FALSE
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{entities_and_relation_extraction}
@@ -16,7 +17,7 @@ knitr::opts_chunk$set(
 Loading the library
 
 ```{r setup library}
-library(txtnet)
+library(networds)
 library(spacyr)
 ```
 ```{r browser, echo=FALSE}
@@ -47,13 +48,14 @@ spacyr::spacy_initialize()
 ```
 ```{r spacyR init, echo = FALSE, eval=false}
 py_venvs <- list.files("~/.virtualenvs", full.names=TRUE)
-spacyr::spacy_initialize(python_executable = paste0("~/.virtualenvs/", py_venvs[2], "/bin/python")
+py_venvs <- py_venvs[grepl("spacy", py_venvs)]
+spacyr::spacy_initialize(python_executable = paste0("~/.virtualenvs/", py_venvs, "/bin/python"))
 ```
 
-The {txtnet} comes with this text sample. In this tutorial, we will use different parts of the text to a better visualization.
+The {networds} comes with this text sample. In this tutorial, we will use different parts of the text to a better visualization.
 
 ```{r sample_txt}
-data(package = "txtnet") # list the available dataset in package txtnet
+data(package = "networds") # list the available dataset in package txtnet
 ```
 ```{r sample_txt head}
 # Text_sample of the package
@@ -71,16 +73,18 @@ Both of them conflate compound nouns, like "New" and "York" into "New_York".
 The first one, extract only the entities
 
 ```{r spacyr::entity_extract}
-POS |> spacyr::entity_extract()
+POS |> spacyr::entity_extract() |> 
+  dplyr::as_tibble() # use tibble to better visualize
 ```
 
 The second one, conflates the compound nouns and preserve the other POS tags.
 
 ```{r spacyr::entity_consolidate}
-POS |> spacyr::entity_consolidate()
+POS |> spacyr::entity_consolidate() |> 
+    dplyr::as_tibble() # use tibble to better visualize
 ```
 
-This functions is used inside {txtnet}.
+This functions is used inside {networds}.
 Lets use the package text example. 
 <!-- You can use whatever you want. -->
 
@@ -88,7 +92,7 @@ Lets use the package text example.
 POS |> group_ppn()
 ```
 
-With the function in {txtnet}, is possible to give the whole text as input, search for a term/query. The package will tokenize in sentences (or in paragraphs, if specified in parameters), perform the POS tagging, and extract the graph. Is possible to run the whole process or go step by step, to understand what is going on. First, we'll do the first option.
+With the function in {networds}, is possible to give the whole text as input, search for a term/query. The package will tokenize in sentences (or in paragraphs, if specified in parameters), perform the POS tagging, and extract the graph. Is possible to run the whole process or go step by step, to understand what is going on. First, we'll do the first option.
 
 If the text worked is not great, is possible to extract the all the co-occurrences and then work, but it comes with costs. 
 It can easly escalate a lot in size in many times the origial text size, take a lot of time and computational costs.
@@ -127,7 +131,7 @@ x <- txt_wiki[2:44] |>
   filter_by_query("Police") |>
   parsePOS()
 
-x
+x |> dplyr::as_tibble() # use tibble to better visualize
 
 g <- get_cooc_entities(x)
 
@@ -170,12 +174,11 @@ plot_pos_graph(graph_wiki,
 
 Plotting an interactive graph
 (the nodes can become in a crazy dance to find the best distance between themselves)
+<!-- era graph_wiki$edges |> viz_graph() -->
 
 ```{r viz_graph police, eval=T}
-graph_wiki$edges |> viz_graph()
+graph_wiki$graphs |> interactive_graph()
 ```
-
-
 
 
 ```{r Brian, eval=T, echo=T}
@@ -189,7 +192,7 @@ plot_pos_graph(graph)
 
 
 ```{r Brian viz_graph, eval=T, echo=T}
-graph$edges |> viz_graph()
+graph$graphs |> interactive_graph()
 ```
 
 To get the graph of entities and nouns:
@@ -206,7 +209,7 @@ graph_ppn
 
 
 ```{r police -cardinal + viz_graph 2}
-viz_graph(graph_ppn$edges)
+interactive_graph(graph_ppn$graphs)
 ```
 
 
@@ -247,10 +250,10 @@ filter_by_query(sotu_text[237:240], "China") |>
 
 ## Using another languages
 
-How {txtnet} uses spacy to tag the words, the user must initialize the model for the language.
+How {networds} uses spacy to tag the words, the user must initialize the model for the language.
 By default, spacy loads the English model. If the model was previously used, to change the model, it is necessary to end the loaded model with `spacyr::spacy_finalize()` and then load the new model. 
 For example, to load the Portuguese model, use with `spacyr::spacy_initialize(model = "pt_core_news_lg")`.
-If you just started the package with `library(txtnet)`, you can simply run  `spacy_initialize(model = "pt_core_news_lg")` in the console.
+If you just started the package with `library(networds)`, you can simply run  `spacy_initialize(model = "pt_core_news_lg")` in the console.
 
 
 To download other language model, check models available at [spacy.io/usage/models](https://spacy.io/usage/models)

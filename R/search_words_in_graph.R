@@ -195,9 +195,12 @@ graph_from_coocurrence_list <- function(coocurrence_list, strip_rgx = "^the_", f
       all_nodes |>
       plyr::count() |>
       dplyr::arrange(-freq) |>
-      dplyr::rename(node = x)
+      dplyr::rename(node = x) |> 
+      dplyr::as_tibble()
   } else {
-    all_nodes <- all_nodes |> unique()
+    all_nodes <- all_nodes |> 
+      unique() |> 
+      dplyr::as_tibble() 
   }
 
   # print result
