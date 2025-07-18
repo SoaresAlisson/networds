@@ -42,8 +42,12 @@ Because it is a rule based approach, it is very simple to use, need less depende
 
 In Natural Language Processing, to find proper names or terms that frequently appears together is called "collocation", e.g., to find "United Kingdom". You can learn more what is collocation and its statistical details and r function in this [article](https://sigil.r-forge.r-project.org/materials/04_collocation_analysis.pdf), and it is also possible to functions like [`quanteda.textstats::textstat_collocations()`](https://quanteda.io/reference/textstat_collocations.html), [`TextForecast::get_collocations()`](https://cran.r-project.org/web/packages/TextForecast/) to identify them, but it also will require a lot of data cleaning, specially if you want is proper names.
 
+
+
 ## How it works?  
-The function captures all words that:   
+
+The function captures all words that:
+
 - begins with uppercase,   
 - followed by other uppercases, lowercase or numbers, without white space  
 - it can contain symbols like `_`, `-` or `.`. In this way, words like "Covid-19" are captured.
@@ -57,7 +61,7 @@ It will capture a lot of undesired words and will demand posterior cleaning, lik
 
 ## The downsides
 
-it will not capture:  
+It will not capture:  
 
 - entities that begin with lowercase. 
 <!-- To do that, take a look at other already mentioned packages, like spacyr and UDpipe. -->

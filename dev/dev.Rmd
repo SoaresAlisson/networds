@@ -6,13 +6,14 @@ sto::ll("dplyr spacyr udpipe sto rsyntax tibble tidygraph ggraph")
 options(browser = "firefox")
 detach("package:txtnet", unload = T)
 # library("txtnet")
+ls("package:txtnet")
 ```
 ```{r available}
 pak::pkg_install("available")
 available::available("textnetwork")
 available::available("nettext")
 available::available("txtnet")
-available::available("netword")
+available::available("netword") # 
 available::available("networds")
 ```
 ```{r devtools vignette}
@@ -99,6 +100,11 @@ txt[1]  |>
 ```{r spacy init}
 spacy_finalize()
 spacyr::spacy_initialize(model = "pt_core_news_lg")
+```
+```{r }
+spacy_uninstall()
+spacy_install()
+spacy_initialize(refresh_settings = TRUE)
 ```
 ```{r spacy pos}
 pos <- txt[1] |> spacyr::spacy_parse(, dependency = T)
@@ -1187,28 +1193,31 @@ extract_graph_pos(pos, T)
 as_tibble(txtPT_trt_full_pos) |> extract_graph_pos(F)
 ```
 
+## test 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-I have a dataframe in R. One column is `entity = c(PER_B, NA ,NA, NA, PER_B, PER_I, PER_I )`. How to paste/conflate all the lines of the other column `tokens = c("Amanda","é", "amada", "por", "Joaquim", "de", "Souza")` so the new column became `new = c("Amanda","é", "amada","por", "Joaquim de Souza")`
-
-## rollama
-```{r rollama}
-library(rollama)
-"tinyllama"
+```{r antivax news read}
+Dir  <- "~/Documentos/Programação/R/meus_pacotes/busca_empregos/diario_oficial/dev/"
+files <- list.files(Dir)
+texto  <- readLines(paste0(Dir, files[1]))
+texto <- texto[1:308] |> 
+  tail(50) |>
+  trimws() |> stringi::stri_remove_empty()
 ```
+```{r extract}
+sto::show_sw("pt")
+my_sw <- sto::gen_stopwords("pt", cat = "IN CC CD DT PREP PP PPZ demonstrativo", add = "Já")
+texto |> paste(collapse = " ") |> extract_entity(sw = my_sw)
+```
+
+
+
+
+
+
+
+
+
+
 
 
 

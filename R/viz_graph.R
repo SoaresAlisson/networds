@@ -14,7 +14,7 @@
 #' @examples
 #' library(txtnet)
 #'
-#' g <- txt_wiki[2:44] |>
+#' g <- ex_txt_wiki[2:44] |>
 #'   filter_by_query("Police") |>
 #'   parsePOS()
 #' g <- get_cooc_entities(g)
@@ -28,7 +28,7 @@ q_plot <- function(graph_list, color = "lightblue") {
       edge_colour = color,
       edge_width = freq
     )
-  # #' g <- txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS() |
+  # #' g <- ex_txt_wiki[2:44] |> filter_by_query("Police") |> parsePOS() |
   # #' g <- get_cooc_entities(g)
   # #' q_plot(g)
   # q_plot <- function(edge_df) {
@@ -58,12 +58,12 @@ q_plot <- function(graph_list, color = "lightblue") {
 #' # stopwords:
 #' my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
 #'
-#' txt_wiki |> # text available in the package
+#' ex_txt_wiki |> # text available in the package
 #'   # because it is a vector, let's collapse it into a single element:
 #'   paste(collapse = " ") |>
 #'   extract_graph(sw = my_sw) |>
 #'   dplyr::count(n1, n2, sort = TRUE) |> # counting the graphs
-#'   net_wordcloud(txt_wiki, df = _) # plotting
+#'   net_wordcloud(ex_txt_wiki, df = _) # plotting
 net_wordcloud <- function(text, df, head_n = 30, color = "lightblue") {
   # graph <-  g_N |> head(head_n)
   graph <- df |> head(head_n)
@@ -198,7 +198,9 @@ plot_graph2 <- function(text, df, head_n = 30,
 #' to some package incompatibilities.
 #' The plot_pos_graph is based in ggraph, that is based on ggplot2. That means that
 #' is possible to customize the graph with ggplot2 functions, like `labs()`.
+#'
 #' @param pos_list a list of POS, as returned by `get_cooc_entities()`
+# TODO
 #' @param n_head maximum number of edges to show. The freq column must be ordered
 #' @param edge_color color of the edges
 #' @param edge_alpha transparency of the edges. Values between 0 and 1.
@@ -212,18 +214,19 @@ plot_graph2 <- function(text, df, head_n = 30,
 #' @export
 #'
 #' @examples
-#' gr <- txt_wiki[2:44] |>
+#' gr <- ex_txt_wiki[2:44] |>
 #'   filter_by_query("Police") |>
 #'   parsePOS()
 #' gr <- gr |> get_cooc_entities()
 #' plot_pos_graph(gr)
 #'
-#' gr <- txt_wiki[2:44] |>
+#' gr <- ex_txt_wiki[2:44] |>
 #'   filter_by_query("Brian") |>
 #'   parsePOS()
 #' gr <- gr |> get_cooc_entities()
 #' plot_pos_graph(gr)
 plot_pos_graph <- function(pos_list,
+                           n_head = 30,
                            edge_color = "lightblue",
                            edge_alpha = 0.1,
                            font_size = 2,
@@ -317,7 +320,7 @@ plot_pos_graph <- function(pos_list,
 #' @export
 #'
 #' @examples
-#' x <- txt_wiki[2:44] |>
+#' x <- ex_txt_wiki[2:44] |>
 #'   filter_by_query("Brian") |>
 #'   parsePOS()
 #' g <- get_cooc_entities(x)

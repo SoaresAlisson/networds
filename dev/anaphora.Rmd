@@ -11,3 +11,16 @@ will look like
 >  Bill Cato Attempted to Assault Mrs. Vickers. Bill Cato was shot to death. 
 after anaphora resolution.
 
+--- 
+Deepseek:
+- **Anaphora Resolution**: A subset of coreference resolution focusing on backward references (e.g., "he" → "Bill Cato").
+- **Cataphora Resolution**: When a pronoun precedes its referent (e.g., "When he arrived, Bill Cato was angry.").
+- **Lexical Pronoun Substitution**: A manual or computational replacement of pronouns with names.
+
+
+https://www.sciencedirect.com/topics/computer-science/anaphora-resolution 
+"Anaphora occurs when there is repeated reference to the same entities in a discourse. Anaphora resolution is the process of interpreting the link between the anaphor (i.e., the repeated reference) and its antecedent (i.e., the previous mention of the entity). The process is of interest because it frequently involves interpretation across a sentence boundary. Thus, despite playing a crucial role in discourse comprehension, it falls outside the scope of traditional psycholinguistic accounts of sentence processing. There are two main issues that have driven the psychological research on anaphora resolution. First, there is the issue of how the resolution process relates to more basic sentence comprehension processes, such as syntactic parsing and semantic interpretation. This issue has been addressed principally by investigating the time course of anaphora resolution as compared with other sentence interpretation processes. The second issue concerns the nature of the mental representation of the discourse context that is required to support anaphora resolution. The research indicates that the process depends on access to mental models of discourse containing discourse entities that reflect the people and other things up to that point." 
+[2001, International Encyclopedia of the Social & Behavioral Sciences S. Garrod](https://www.sciencedirect.com/referencework/9780080430768/international-encyclopedia-of-the-social-and-behavioral-sciences)
+[A Survey on Semantic Processing Technique](https://arxiv.org/pdf/2310.18345)
+In computational linguistics, Ruslan Mitkov defined anaphora as a phenomena of pointing back a previously mentioned item in the text (Mitkov, 2022). The pointing back phrase is called an **anaphor** while the previously mentioned item is called an **antecedent**.
+

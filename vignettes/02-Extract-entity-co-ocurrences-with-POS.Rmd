@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -24,9 +24,31 @@ options(browser="firefox")
 ```
 
 
-Extracting proper names or entities with regex are cool, but has its limitations. 
+Extracting proper names or entities with regex are quick, but has its limitations. 
 In this section, we will use the Part of Speech (POS) tags to extract the entities, proper names, noun phrases and its co-occurrences to generate graphs.
 In R, to tag words with POS, the main packages are {UDPipe} and {SpacyR}.
+
+## Installing SpacyR
+First of all, we need to install the {[spacyR](https://spacyr.quanteda.io/)} package.
+It is a wrap around the Spacy package in Python, and SpacyR deals with the boring parts of creating an exclusive python virtual environment.
+This package will extract the NER (named entities) and POS (part of speech tagging).
+
+```{r install spacyR, eval = FALSE}
+install.packages("spacyr")
+
+# if you prefer, or maybe if the CRAN version is buggy, install the GitHub one:
+pak::pkg_install("quanteda/spacyr")
+
+# to Install spaCy and requirements (python env). With empty parameters, it will
+# install the default “en_core_web_sm” model.
+spacyr::spacy_install()
+
+spacyr::spacy_initialize()
+```
+```{r spacyR init, echo = FALSE, eval=false}
+py_venvs <- list.files("~/.virtualenvs", full.names=TRUE)
+spacyr::spacy_initialize(python_executable = paste0("~/.virtualenvs/", py_venvs[2], "/bin/python")
+```
 
 The {txtnet} comes with this text sample. In this tutorial, we will use different parts of the text to a better visualization.
 
@@ -38,8 +60,8 @@ data(package = "txtnet") # list the available dataset in package txtnet
 # An example of text. Showing only the firsts lines
 txt_wiki[1:5]
 
-# parsing the POS tagging in it
 POS <- txt_wiki |> spacyr::spacy_parse()
+# parsing the POS tagging in it
 ```
 
 ## Extracting entities
@@ -59,8 +81,12 @@ POS |> spacyr::entity_consolidate()
 ```
 
 This functions is used inside {txtnet}.
-Lets use the package text example. You can use whatever you want.
+Lets use the package text example. 
+<!-- You can use whatever you want. -->
 
+```{r }
+POS |> group_ppn()
+```
 
 With the function in {txtnet}, is possible to give the whole text as input, search for a term/query. The package will tokenize in sentences (or in paragraphs, if specified in parameters), perform the POS tagging, and extract the graph. Is possible to run the whole process or go step by step, to understand what is going on. First, we'll do the first option.
 
@@ -127,7 +153,7 @@ graph_wiki <- txt_wiki[2:44] |>
   parsePOS() |>
   get_cooc_entities()  
   
-plot_pos_graph(graph_wiki)
+plot_pos_graph(graph_wiki) # TODO estava dando erro
 ```
 
 This viz function is based on {ggraph}, that is based on {ggplot2}. So it is possible to customize it even more.
@@ -142,7 +168,7 @@ plot_pos_graph(graph_wiki,
 ```
 
 
-Ploting an interactive graph
+Plotting an interactive graph
 (the nodes can become in a crazy dance to find the best distance between themselves)
 
 ```{r viz_graph police, eval=T}
@@ -226,4 +252,26 @@ By default, spacy loads the English model. If the model was previously used, to 
 For example, to load the Portuguese model, use with `spacyr::spacy_initialize(model = "pt_core_news_lg")`.
 If you just started the package with `library(txtnet)`, you can simply run  `spacy_initialize(model = "pt_core_news_lg")` in the console.
 
+
+To download other language model, check models available at [spacy.io/usage/models](https://spacy.io/usage/models)
+Ex.: installing portuguese, the model available are:
+
+```{r install spacy models PT, eval = FALSE}
+modelsPT <- c("pt_core_news_sm", "pt_core_news_md", "pt_core_news_lg")
+
+# installing the bigger model
+spacyr::spacy_download_langmodel(modelsPT[3])
+```
+
+```{r, eval=FALSE, echo=FALSE}
+# if you initialized spacyR with another model, first finalize it
+spacyr::spacy_finalize()
+
+# load the model of another language
+spacy_initialize(model = "pt_core_news_lg")
+
+"Maria Jana ama John Smith e Maria é amada por Joaquim de Souza" |>
+  spacyr::spacy_parse(dependency = T) |>
+  group_ppn()
+```
 

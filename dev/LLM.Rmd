@@ -1,6 +1,5 @@
 https://github.com/wjbmattingly/llm-humanities/blob/main/notebooks/02.ipynb
 
-
 basic_ner_messages = [
     {
         "role": "system",
@@ -24,3 +23,193 @@ chat da aula:
 }
 ]
 mas deu erro
+
+
+I have a dataframe in R. One column is `entity = c(PER_B, NA ,NA, NA, PER_B, PER_I, PER_I )`. How to paste/conflate all the lines of the other column `tokens = c("Amanda","é", "amada", "por", "Joaquim", "de", "Souza")` so the new column became `new = c("Amanda","é", "amada","por", "Joaquim de Souza")`
+
+
+## LL
+```{r ll}
+sto::ll("dplyr rollama sto")
+# library(rollama)
+```
+## rollama
+```{r rollama}
+rollama::ping_ollama()
+models <- rollama::list_models()
+models$name
+choosen_model <- models$name[2]
+choosen_model <- grep2(models$name, "gaia")
+# "tinyllama"
+rollama::new_chat()
+```
+```{r ex semantic role}
+prompt_semantic <- tribble(
+  ~role,    ~content,
+  "system", "Atribua funções semânticas ao texto",
+  "user", "Presidente francês Macron será recebido no Senado nesta quinta-feira",
+  "assistant", "{ 'quem' : 'Macron', 'função' : 'presidente francês', 'o quê':'será recebido', 'onde': 'Senado', 'quando':  'nesta quinta-feira'}" ,
+  "user", texto
+)
+
+```
+```{r texts}
+frase  <- c('Nesta 5ª feira (14.mar.2024), dia em que o assassinato da vereadora carioca Marielle Franco e de seu motorista, Anderson Gomes, completa 6 anos, o caso foi enviado ao Supremo Tribunal Federal.
+Segundo apurou o Poder360, a investigação foi encaminhada ao STF pelo STJ (Superior Tribunal de Justiça) depois de surgir a suspeita de envolvimento de uma pessoa com foro privilegiado no caso. A investigação está sob sigilo e não há detalhes sobre quem é a pessoa supostamente envolvida. O foro privilegiado é concedido a autoridades da administração federal que podem ser julgadas diretamente pelo Supremo. Também nesta 5ª feira (14.mar), o presidente Luiz Inácio Lula da Silva (PT), ministros e congressistas fizeram homenagens às duas vítimas. Em seu perfil no X (antigo Twitter), Lula afirmou que seguirá incansável “nessa luta por justiça”.
+Marielle e Anderson foram mortos na noite de 4ª feira, 14 de março de 2018. Ela tinha saído de um encontro no Instituto Casa das Pretas, no centro do Rio de Janeiro.',
+"In the fifth Thursday of the month (April 14, 2024), on that day in which Marielle Franco and Anderson Gomes were murdered, they completed six years' age before the case was sent to the Supreme Tribunal for federal investigation. Following the Supreme Tribunal's purging process, the investigation was led by the Supreme Court of Justice (STF) and then directed at the Superior Tribunal of Justice (STJ), where an investigation was conducted by an authority that could directly judge it against Marielle Franco and Anderson Gomes. On this fifth Thursday, President Luiz Inácio Lula da Silva, ministers and Congressistas, and X, an old Twitter profile, expressed her hope to “this fight for justice.” Mariaelle and Anderson were dead on April 4th, 2018, in a neighborhood called the Casa das Pretas. She had been at the Institute of Casa das Pretas since December 2017.",
+
+r"(On Friday, March 14, 2024 (the day six years ago that Marielle Franco and her driver Anderson Gomes were murdered), the case was sent to the Supreme Court of Brazil.
+According to Poder360, the investigation was transferred from the STJ (Supreme Court of Justice) to the STF (Supreme Federal Tribunal) after a suspicion emerged about involvement by someone with special privileges in the case. The investigation is under seal and there are no details on who the supposed involved person is. Special privileges are granted to authorities in federal administration that can be judged directly by the Supreme Court.
+On the same Friday, March 14, President Luiz Inácio Lula da Silva (PT), ministers, and legislators paid tributes to the two victims. On his Twitter profile (formerly known as X), Lula stated that he will continue fighting "this battle for justice."
+Marielle and Anderson were murdered on Thursday night, March 14, 2018. She had been at an event at the Casa das Pretas Institute in the heart of Rio de Janeiro.)",
+  "Marielle and Anderson were murdered on Thursday night, March 14, 2018. She had been at an event at the Casa das Pretas Institute in the heart of Rio de Janeiro")
+```
+```{r translate pt >en}
+rollama::query(paste("Translate from portuguese to English:", frase),  model = choosen_model)
+```
+
+## Anaphora, Cataphora
+```{r llm anaphora, tibble}
+# system_instruction <- 'You are a grammar analyzer, doing Named Entity Relation tool like Spacy Python package, that looks at the relation dependency between phrases to resolve anaphoras. Break the text into sentences and substitute words like "he", "she", "it" for the original reference'
+# ex <- 'Anaphora Resolution: A subset of coreference resolution focusing on backward references (e.g., "he" → "Bill Cato").
+#     Cataphora Resolution: When a pronoun precedes its referent (e.g., "When he arrived, Bill Cato was angry.").
+#     Lexical Pronoun Substitution: A manual or computational replacement of pronouns with names."'
+#
+ex <- 'In computational linguistics, **anaphora** is a phenomena of pointing back a previously mentioned item in the text. For example, “John Doe gave Mary a flower and she loved it,” the pronoun “she” is the anaphor of “Mary.  
+  The pointing back phrase is called an anaphor while the previously mentioned item is called an **antecedent**. 
+  Anaphora Resolution: A subset of coreference resolution focusing on backward references, replacing pronouns by antecedents (e.g., "he" → "Bill Cato").
+    Cataphora Resolution: When a pronoun precedes its referent (e.g. "Because **he** was very Cold, **John** put on a coat."). 
+    Lexical Pronoun Substitution: the replacement of pronouns with names."'
+
+system_instruction <- paste('All what you do is to do Natural Language Processing (NLP).', ex,
+   'Solve all the anaphora and cataphora, substitute all the pronouns (like "he", "she", "it") by the antecedent in the following text: <text>'
+  # 'Do the same in the following text:'
+)
+
+
+query <- tibble::tribble(
+  ~role,    ~content,
+  "system", system_instruction,
+
+  "user", "Bill Cato Attempted to Assault Mrs. Vickers. He was shot to death",
+  "assistant", "Bill Cato Attempted to Assault Mrs. Vickers. Bill Cato was shot to death" ,
+
+  "user", "Marielle and Anderson were murdered on Thursday night, March 14, 2018. She had been at an event at the Casa das Pretas Institute in the heart of Rio de Janeiro",
+  "assistant", "Marielle and Anderson were murdered on Thursday night, March 14, 2018. Marielle  had been at an event at the Casa das Pretas Institute in the heart of Rio de Janeiro",
+
+  "user", paste("<text>", frase, "</text>", collapse = " ")) |> dplyr::mutate_all(as.character)
+
+  # query(model = "tinyllama:latest" ) # 1m 16.7s]
+
+# rollama::new_chat(model = choosen_model )
+r <- rollama::query(query, model = choosen_model)
+r
+```
+```{r anaphora 2, vector}
+txt_query <- paste('All what you do is to do Natural Language Processing (NLP).', ex,
+  'Solve all the anaphora and cataphora, substitute all the pronouns (like "he", "she", "it") by the antecedent in the following text: <text>',
+    'For Example: "Bill Cato Attempted to Assault Mrs. Vickers. He was shot to death" becomes "Bill Cato Attempted to Assault Mrs. Vickers. Bill Cato was shot to death"', 
+    frase[3], "</text>" )
+
+r <- rollama::query(
+  txt_query,
+  model = choosen_model)
+r
+```
+anaphora, another approach.
+- 1) analyse this sentence, checking if there is an anaphora or cataphora on it. 2) If there is, solve it based on the whole paragraph to understand the context. 3) answer only with the phrase and nothing more. 
+  send the paragraph
+
+
+Extract NER
+```{r NER}
+text_to_llm <- ""
+
+q <- paste0('"content": "You are a helpful assistant that identifies named entities in a text. You correct spelling errors, and provide JSON categorized output of each token for NER based on SpaCy Categories for NER. You only provide answers in JSON." },
+{ "role": "user",
+"content": "Here is a text to work with:"', 
+text_to_llm)
+
+rollama::query(q, model = choosen_model)
+```
+
+## Anaphora com custom LLM
+Feito com modelfile
+
+### testes anaphora
+```{r }
+rollama::query(frase[2], model = "anaphora")
+```
+
+```{txt modelfile}
+All what you do is to do Natural Language Processing (NLP). 
+In computational linguistics, **anaphora** is a phenomena of pointing back a previously mentioned item in the text. For example, “John Doe gave Mary a flower and she loved it,” the pronoun “she” is the anaphor of “Mary.  
+The pointing back phrase is called an anaphor while the previously mentioned item is called an **antecedent**. 
+Anaphora Resolution: A subset of correferente resolution focusing on backward references, replacing pronouns by antecedents (e.g., "he" → "Bill Cato").
+Cataphora Resolution: When a pronoun precedes its referent (e.g. "Because **he** was very Cold, **John** put on a coat."). 
+Lexical Pronoun Substitution: the replacement of pronouns with names."'Solve all the anaphora and cataphora, substitute all the pronouns (like "he", "she", "it") by the antecedent in the following text: ',
+For Example: "Bill Cato Attempted to Assault Mrs. Vickers. He was shot to death" becomes after anaphora resolution "Bill Cato Attempted to Assault Mrs. Vickers. Bill Cato was shot to death"'.
+Given that, correct all the anaphoras and cataphoras of the following text:
+```
+Error: ora is thinking
+! in callr subprocess.
+Caused by error in `(function (req, path = NULL, verbosity = NULL, mock = getOption("httr2_mock", …`:
+! Failed to perform HTTP request.
+Caused by error in `curl::curl_fetch_memory()`:
+! Timeout was reached [localhost]: Operation too slow. Less than 1 bytes/sec transferred the last 600 secon
+ds
+Type .Last.error to see the more details.
+
+```{txt anaphora modelfile 2}
+All what you do is Natural Language Processing (NLP). 
+In computational linguistics, **anaphora** is a phenomena of pointing back a previously mentioned item in the text. For example, “John Doe gave Mary a flower and she loved it,” the pronoun “she” is the anaphor of “Mary".  
+Anaphora Resolution: A subset of correferente resolution focusing on backward references, replacing pronouns by antecedents 
+For Example: "Bill Cato Attempted to Assault Mrs. Vickers. He was shot to death" becomes after anaphora resolution "Bill Cato Attempted to Assault Mrs. Vickers. Bill Cato was shot to death"'.
+(e.g., "he" → "Bill Cato").
+Lexical Pronoun Substitution: the replacement of pronouns with names.
+
+If the following text, if the phrase do not has pronouns (like "he", "she", "it"), leave it untouched, just repeat it as it is. But if the phrase contains pronouns, replace it with the reference (anaphora resolution).
+```
+
+## modelfile from Rollama
+Não consegui fazer rodar
+https://jbgruber.github.io/rollama/reference/create_model.html
+```{r }
+modelfile <- c(
+  "FROM qwen3:4b",
+  "PARAMETER temperature 0.7",
+  "PARAMETER seed 42",
+  'SYSTEM """',
+  "You are a Natural Language Processing tool.",
+  'Anaphora Resolution is correferente resolution focusing on backward references, replacing pronouns by antecedents. For Example: "Bill Cato Attempted to Assault Mrs. Vickers. He was shot to death" becomes after anaphora resolution "Bill Cato Attempted to Assault Mrs. Vickers. Bill Cato was shot to death". "he" is replaced by "Bill Cato".',
+'If the following text, if the phrase do not has pronouns (like "he", "she", "it"), leave it untouched, just repeat it as it is. But if the phrase contains pronouns, replace it with the reference (anaphora resolution).',
+  '"""') |> paste(collapse = "\n")
+
+# modelfile <- system.file("extdata", "modelfile.txt", package = "rollama")
+rollama::create_model("anaphora", modelfile)
+
+options(rollama_config = "")
+query("Why is the sky blue?")
+```
+```{r }
+query <- tibble::tribble(
+  # ~role,    ~content,
+  # "system", system_instruction,
+  "user", "Bill Cato Attempted to Assault Mrs. Vickers. He was shot to death",
+  "assistant", "Bill Cato Attempted to Assault Mrs. Vickers. Bill Cato was shot to death" ,
+  # "user", "Marielle and Anderson were murdered on Thursday night, March 14, 2018. She had been at an event at the Casa das Pretas Institute in the heart of Rio de Janeiro",
+  # "assistant", "Marielle and Anderson were murdered on Thursday night, March 14, 2018. Marielle  had been at an event at the Casa das Pretas Institute in the heart of Rio de Janeiro",
+  "user", paste("<text>", frase[4], "</text>", collapse = " ")) |> dplyr::mutate_all(as.character)
+
+r <- rollama::query(query, model = choosen_model)
+```
+
+Using the portuguese anaphora model
+ollama run cnmoro/gemma3-gaia-ptbr-4b:q4_k_m
+ollama run cnmoro/gemma3-gaia-ptbr-4b:q8_0
+
+After generating a new model with modelfile and gemma3-gaia
+```{r anaphora portuguese}
+frase[1] |> query(model = choosen_model)
+```

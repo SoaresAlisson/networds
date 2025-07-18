@@ -5,6 +5,6 @@
 #' @format A vector of text with 43 elements.
 #' @source <https://en.wikipedia.org/wiki/Killing_of_Brian_Thompson>
 #' @examples
-#' data(txt_wiki)
-#' str(txt_wiki)
-"txt_wiki"
+#' data(ex_txt_wiki)
+#' str(ex_txt_wiki)
+"ex_txt_wiki"

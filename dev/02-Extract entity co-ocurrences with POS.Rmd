@@ -18,7 +18,7 @@ Loading the library
 ```{r setup library}
 library(txtnet)
 library(spacyr)
-library(igraph) # library/4.5/igraph/libs/igraph.so': libxml2.so.2: não é possível abrir arquivo compartilhado: Arquivo ou diretório inexistente
+# library(igraph) # library/4.5/igraph/libs/igraph.so': libxml2.so.2: não é possível abrir arquivo compartilhado: Arquivo ou diretório inexistente
 ```
 
 Extracting proper names or entities with regex are cool, but has its limitations. 
@@ -26,7 +26,7 @@ In this section, we will use the Part of Speech (POS) tags to extract the entiti
 
 ## Installing SpacyR
 First of all, we need to install the {[spacyR](https://spacyr.quanteda.io/)} package.
-It is a wrap around the Spacy package in Python, and SpacyR deals with the boring parts of creating an exclusive python virtual environment.
+The SpacyR is a wrap around the Spacy package in Python, and SpacyR deals with the boring parts of creating an exclusive python virtual environment.
 This package will extract the NER (named entities) and POS (part of speech tagging).
 
 ```{r install spacyR, eval = FALSE}
@@ -37,13 +37,9 @@ pak::pkg_install("quanteda/spacyr")
 # to Install spaCy and requirements (python env). With empty parameters, it will
 # install the default “en_core_web_sm” model.
 spacyr::spacy_install()
-
-# To download other language model, check https://spacy.io/usage/models
-# Ex. installing portuguese, the model available are:
-modelsPT <- c("pt_core_news_sm", "pt_core_news_md", "pt_core_news_lg")
-# installing the bigger model
-spacyr::spacy_download_langmodel(modelsPT[3])
 ```
+
+To install and use other languages than English, see below "Using another languages"
 
 ## Using txtnet package
 
@@ -63,14 +59,7 @@ POS <- text |>
 
 head(POS, 20)
 ```
-```{r, eval=FALSE, echo=FALSE}
-# spacy_finalize()
-spacy_initialize(model = "pt_core_news_lg")
 
-"Maria Jana ama John Smith e Maria é amada por Joaquim de Souza" |>
-  spacyr::spacy_parse(dependency = T) |>
-  group_ppn()
-```
 
 ## Extracting entities
 
@@ -102,7 +91,7 @@ txt_wiki[2:3]
 With the function in {txtnet}, is possible to give the whole text as input, search for a term/query. The package will tokenize in sentences (or in paragraphs, if specified in parameters of the function), perform the POS tagging. Is possible to run the whole process or go step by step, to understand what is going on. 
 
 ```{r}
-# tokenizing and filtering the sentces that contains "police"
+# tokenizing by sentence and filtering those that contains "police"
 txt_wiki[2:6] |> filter_by_query("Police")
 ```
 
@@ -168,7 +157,7 @@ To get the graph of entities co-occurrences:
 graph <- filter_by_query(txt_wiki, "Police") |>
   parsePOS(only_entities = TRUE) |>
   dplyr::filter(entity_type != "CARDINAL") |> # to clean the graph
-  get_pairs2()
+  get_cooc_entities()
 
 graph
 ```
@@ -178,9 +167,9 @@ net_wordcloud(txt_wiki, graph)
 ```
 
 ```{r}
-graph |>
+graph$graphs |>
   dplyr::rename(from = n1, to = n2) |>
-  viz_graph()
+  net_wordcloud(txt_wiki, df=_)
 ```
 
 To get the graph of entities and nouns:
@@ -233,4 +222,24 @@ filter_by_query(sotu_text[237:240], "China") |>
 
 How {txtnet} uses spacy to tag the words, the user must initialize the model for the language.
 
+To download other language model, check models available at [spacy.io/usage/models](https://spacy.io/usage/models)
+Ex.: installing Portuguese, the models available are:
 
+```{r install spacy models PT, eval = FALSE}
+modelsPT <- c("pt_core_news_sm", "pt_core_news_md", "pt_core_news_lg")
+
+# installing the bigger model
+spacyr::spacy_download_langmodel(modelsPT[3])
+```
+
+```{r, eval=FALSE, echo=FALSE}
+# if you initialized spacyR with another model, first finalize it
+sapcyr::spacy_finalize()
+
+# load the model of another language
+spacy_initialize(model = "pt_core_news_lg")
+
+"Maria Jana ama John Smith e Maria é amada por Joaquim de Souza" |>
+  spacyr::spacy_parse(dependency = T) |>
+  group_ppn()
+```

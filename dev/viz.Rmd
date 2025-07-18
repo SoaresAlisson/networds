@@ -110,6 +110,48 @@ txt_wiki |> # text available in the package
   dplyr::count(n1, n2, sort = TRUE) |>
   net_wordcloud(txt_wiki, df = _)
 ```
+```{r net_wordcloud(freq, graph_freq) }
+# TODO
+#' build a networdcloud from two dataframes: 
+#' 1) a dataframe with the frequency of the nodes
+#' 2) a dataframe with the frequency of the graphs
+net_wordcloud2 <- function(freq_graph, freq_nodes, head_n = 30, color = "lightblue") {
+  # freq_nodes = graph_list$nodes; freq_graph = graph_list$graphs; head_n = 30
+
+  graph <- freq_graph |> 
+    dplyr::arrange(freq) |>
+    head(head_n)
+  # vert <- unique(c(graph$n1, graph$n2))
+
+  graph |>
+    tidygraph::as_tbl_graph() |>
+    ggraph::ggraph(layout = "graphopt") +
+    ggraph::geom_edge_link(ggplot2::aes(edge_width = freq, edge_alpha = 0.5),
+      angle_calc = "along",
+      label_dodge = grid::unit(4.5, "mm"),
+      color = color, # c("lightblue", "blue", "royalblue")[1],
+      end_cap = ggraph::circle(6, "mm")
+    ) + # afastamento do nó
+    ggraph::geom_node_text(
+      ggplot2::aes(
+        label = name,
+        size = freq_nodes # size = freq
+      ),
+      repel = TRUE
+    ) + # TODO ajustar tamanho minimo e máximo
+    # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
+    ggplot2::theme_void() +
+    ggplot2::theme(legend.position = "none")
+}
+
+# graph_list <- filter_by_query(txt_wiki[1:3], "kill") |> parsePOS()  |> get_cooc_entities(loop=TRUE)
+
+net_wordcloud2(graph_list$graphs, graph_list$nodes)
+# rm(net_wordcloud2)
+```
+```{r TODO fun }
+# function to check if graph freq is all 1
+```
 ```{r fun plot_graph2u}
 #'
 #' @examples

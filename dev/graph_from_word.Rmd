@@ -128,10 +128,10 @@ get_pairs <- function(pos, loop=FALSE) {
   entities_by_txt <-
     if (loop){
     pos |> 
-      group_by(doc_id) |> summarise(entities = list(entity)) 
+        dplyr::group_by(doc_id) |> dplyr::summarise(entities = list(entity)) 
     } else {
     pos |>
-      group_by(doc_id) |> summarise(entities = list(unique(entity))) 
+      dplyr::group_by(doc_id) |> dplyr::summarise(entities = list(unique(entity))) 
     }
 
   comb <- entities_by_txt$entities |> 
@@ -147,8 +147,10 @@ get_pairs <- function(pos, loop=FALSE) {
 
 filter_by_query(sotu_text[237:240], "China") |> parsePOS() |> get_pairs() |> dplyr::count(n1,n2) |> dplyr::arrange(-n)
 filter_by_query(sotu_text[237:240], "China") |> parsePOS()  |> get_pairs(loop=TRUE)
+filter_by_query(txt_wiki[1:3], "kill") |> parsePOS()  |> get_pairs(loop=TRUE)
+filter_by_query(txt_wiki[1:3], "kill") |> parsePOS()  |> get_cooc_entities(loop=TRUE)
 
-
+rm(get_pairs)
 ```
 ```{r fun erase loop2, }
 # utilizando Nouns e outras categorias
