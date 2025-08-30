@@ -17,7 +17,7 @@ Visualize graphs interactively (package visNetwork). The columns must be named:
 and 3rd columns will be taken as such.
 }
 \examples{
-x <- txt_wiki[2:44] |>
+x <- ex_txt_wiki[2:44] |>
   filter_by_query("Brian") |>
   parsePOS()
 g <- get_cooc_entities(x)

@@ -6,6 +6,7 @@
 \usage{
 plot_pos_graph(
   pos_list,
+  n_head = 30,
   edge_color = "lightblue",
   edge_alpha = 0.1,
   font_size = 2,
@@ -18,6 +19,8 @@ plot_pos_graph(
 }
 \arguments{
 \item{pos_list}{a list of POS, as returned by `get_cooc_entities()`}
+
+\item{n_head}{maximum number of edges to show. The freq column must be ordered}
 
 \item{edge_color}{color of the edges}
 
@@ -34,8 +37,6 @@ plot_pos_graph(
 \item{point_color}{color of the nodes}
 
 \item{graph_layout}{layout of the graph}
-
-\item{n_head}{maximum number of edges to show. The freq column must be ordered}
 }
 \description{
 plot a graph of co-occurrence of terms, as returned by `get_cooc_entities()`.
@@ -45,13 +46,13 @@ The plot_pos_graph is based in ggraph, that is based on ggplot2. That means that
 is possible to customize the graph with ggplot2 functions, like `labs()`.
 }
 \examples{
-gr <- txt_wiki[2:44] |>
+gr <- ex_txt_wiki[2:44] |>
   filter_by_query("Police") |>
   parsePOS()
 gr <- gr |> get_cooc_entities()
 plot_pos_graph(gr)
 
-gr <- txt_wiki[2:44] |>
+gr <- ex_txt_wiki[2:44] |>
   filter_by_query("Brian") |>
   parsePOS()
 gr <- gr |> get_cooc_entities()

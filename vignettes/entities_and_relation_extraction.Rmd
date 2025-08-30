@@ -222,8 +222,8 @@ text[1:2] # seeing the head of the tex
 g <- text |> extract_graph(sw = my_sw)
 # option 1: use counting the edge frequency
 g_N <- g |> dplyr::count(n1, n2, sort = T)
-# option 2: use count_graph function, same results
-g_N <- g |> count_graph()
+# option 2: use count_graphs function, same results, but using data.table (quicker) and erasing loops
+g_N <- g |> count_graphs()
 
 net_wordcloud(text, g_N, head_n = 50)
 ```
@@ -392,9 +392,32 @@ library(patchwork)
   )
 ```
 
+
+## Substitutions: replacing node text 
+When extracting graphs from unstructured text, some synonyms will appear. To replace the text of nodes in dataframe, use the function graph_subs:
+
+```{r graph_subs}
+# a test tibble
+test_graph <- tibble::tibble(
+  n1 = c("A", "B", "A", "C", "B", "Ab", "A", "D"),
+  n2 = c("B", "Ab", "B", "D", "C", "A", "C", "D") # Includes a loop (D-D)
+)
+
+# dataframe with substitutions
+DF_substitution <- tibble::tribble(
+  ~col1, ~col2,
+  "B", "blah",
+  "C", "Capybara"
+)
+
+# Doing the substitutions
+test_graph |>
+  graph_subs(DF_substitution)
+```
+
 ## Final remarks
 As mentioned, this approach based on text patterns (regex) has its limitations. 
 We advise to test different head_n, to increase the number of nodes, and if it is too polluted, decrease it.
 It can helps to see what to look at the text to infer meaning.
-Is possible to use grammar classification to get more precise results. See next session, "Extract entity co-ocurrences with POS".
+Is possible to use grammar classification to get more precise results. See next session, "Extract entity co occurrences with POS".
 

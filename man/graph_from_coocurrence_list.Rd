@@ -2,7 +2,7 @@
 % Please edit documentation in R/search_words_in_graph.R
 \name{graph_from_coocurrence_list}
 \alias{graph_from_coocurrence_list}
-\title{graph from co-ocurrence list}
+\title{Graph from co-occurrence list}
 \usage{
 graph_from_coocurrence_list(coocurrence_list, strip_rgx = "^the_", freq = TRUE)
 }
@@ -11,10 +11,14 @@ graph_from_coocurrence_list(coocurrence_list, strip_rgx = "^the_", freq = TRUE)
 
 \item{strip_rgx}{regex to strip. Default: "^the_". To erase nothing, use "".}
 
-\item{freq}{if TRUE (default), returns a dataframe with frequency. If FALSE, returns only the pairs}
+\item{freq}{if TRUE (default), returns a dataframe with frequency. If FALSE,
+returns only the pairs}
 }
 \description{
-given a listed dataframe of co-ocurrence, returns a dataframe with frequency.
+given a dataframe with a column (list) with POS, returns a list with three
+elements: 1) a tibble with the frequency of graphs; 2) a tibble with the 
+isolated nodes, i.e. nodes withot any connection. 3) a tibble with the 
+individual frequency of each node.
 If list element has only one element, it is removed.
 }
 \examples{

@@ -17,7 +17,7 @@ txt_wiki
 A vector sample text from Wikipedia
 }
 \examples{
-data(txt_wiki)
-str(txt_wiki)
+data(ex_txt_wiki)
+str(ex_txt_wiki)
 }
 \keyword{datasets}

@@ -17,7 +17,7 @@ Plot a network of co-ocurrence of terms. For more options, see `net_wordcloud()`
 \examples{
 library(txtnet)
 
-g <- txt_wiki[2:44] |>
+g <- ex_txt_wiki[2:44] |>
   filter_by_query("Police") |>
   parsePOS()
 g <- get_cooc_entities(g)
