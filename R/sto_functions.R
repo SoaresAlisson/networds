@@ -1,3 +1,5 @@
+# Functions here are copies of some functions from the packages SoaresAlisson/sto. I copied here to reduce dependencies
+
 #' A gsub to be used easily with native pipe |>
 #' gsub2 is just a wrapper around gsub
 #' @param x data to search

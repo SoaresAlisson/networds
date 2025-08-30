@@ -127,6 +127,7 @@ subs_ppn <- function(text, entities, method = "normal") {
 #' @param using sentence or paragraph to tokenize
 #' @param connect lowercase connectors, like the "von" in "John von Neumann". To use pre built connectors use `connectors()``
 #' @param sw stopwords vector. To use pre built stopwords use `gen_stopwords()`
+#'
 #' @export
 #' @examples
 #' "John Does lives in New York in United States of America." |> extract_relation()
@@ -201,6 +202,41 @@ extract_graph <- function(text, using = "sentences",
   }
   return(graph)
 }
+
+
+#' Extract a non directional graph based on co-occurrence in the token and returns a tibble
+#' It extracts only if two entities are mentioned in the same token (sentence or paragraph)
+#'
+#' @param df a data frame with two columns: text and id
+#' @param column_id name of the column with the id
+#' @param column_text name the column with the text to extract the graph
+#' @param using sentence or paragraph to tokenize
+#' @param connect lowercase connectors, like the "von" in "John von Neumann".
+#' @param sw stopwords vector.
+#' @param loop if TRUE, it will not remove loops, a node pointing to itself.
+#'
+#' @export
+#'
+#' @examples
+#' # creating a dataframe with text and id
+#' DF <- data.frame(text = c("John Does lives in New York in United States of America. He  is a passionate jazz musician, often playing in local clubs.", r"(John Michael "Ozzy" Osbourne (3 December 1948 – 22 July 2025) was an English singer, songwriter, and media personality. He co-founded the pioneering heavy metal band Black Sabbath in 1968, and rose to prominence in the 1970s as their lead vocalist. During this time, he adopted the title "Prince of Darkness".[3][4] He performed on the band's first eight albums, most notably including Black Sabbath, Paranoid (both 1970) and Master of Reality (1971), before he was fired in 1979 due to his problems with alcohol and other drugs.)")) |> dplyr::mutate(id = paste0("id_", dplyr::row_number() ))
+#' extract_graph_df(DF, "id", "text")
+extract_graph_df <- function(df, column_id, column_text, 
+                             using = "sentences",connect = connectors("misc"), 
+                             sw = c("of", "the"), 
+                             loop = FALSE) {
+  df_out <- list()
+
+  for (i in 1:nrow(DF)) {
+      df_out[[i]] <- DF[[i, column_text]] |>  
+        extract_graph() |> 
+        dplyr::mutate(txt_id = DF[[i, column_id]] )
+    } 
+    
+  df_out |> dplyr::bind_rows()
+}
+
+
 
 
 #' extract a graph from text, using custom regex pattern as nodes.

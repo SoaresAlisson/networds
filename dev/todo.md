@@ -8,14 +8,17 @@
 - rename plot_graph2 to something else
 - rename package to netword
 - when running funs, check if spacy is initialized, and ask for the model
-- resolution of anaphora, cataphora 
+- resolution of anaphora, cataphora
 - ~interactive net com outro pacote que dá weight~
 - ~alterar tamanho das letras minimas e maximas no plot~
 - ~Importar dev/dev.Rmd~
 - ~função para pegar nós filhos em tibble~
 - ~juntar a sequencia: NOUN ADP PROPN, rei de Roma~
-- ~fazer plot cooc a partir dos POS~ 
+- ~fazer plot cooc a partir dos POS~
 - ~achar funcao que transforma df em nodes e edges: tidygraph::as_tbl_graph()~
 - ~plot graph, pegar 2 primeiras colunas se nao tiver from e to~
 - ~rename plot_graph to net_wordcloud~
-
+- TF-IDF AND one graph pair per document, or show the doc index in extract_graph and extract_entity
+- ~~function dict: substitution of synonyms in both node columns~~
+- test to count_graphs
+- padronizar no extract_graph n and freq: dplyr::mutate(n = freq)  

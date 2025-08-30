@@ -7,4 +7,4 @@
 #' @examples
 #' data(ex_txt_wiki)
 #' str(ex_txt_wiki)
-"ex_txt_wiki"
+"txt_wiki"

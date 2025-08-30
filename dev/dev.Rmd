@@ -38,9 +38,11 @@ usethis::use_data_table() # creates all the boilerplate. https://usethis.r-lib.o
 devtools::build_readme() # locates your README.Rmd and builds it into a README.md
 devtools::build_manual() # Create package pdf manual
 usethis::use_pkgdown() # is a function you run once and it does the initial, minimal setup necessary to start using pkgdown:
+pkgdown::clean_site(force = TRUE)
 pkgdown::build_site_github_pages()
 pkgdown::build_site() # is a function you’ll call repeatedly, to re-render your site locally. In an extremely barebones package, https://r-pkgs.org/website.html
 devtools::build_site() # Execute pkgdown build_site in a package
+pkgdown::build_reference()
 # build_site() is a shortcut for pkgdown::build_site()
 
 # to create a data object:
@@ -518,8 +520,57 @@ count_graph <- function(graph, from, label, to, sort = F) {
     rename(value = n) #|> head(100)
 }
 
+
 triplets |> count_graph()
 # triplets[, from]
+# count_graph2 <- function(graph) {
+#   graph |> dplyr::count(n1, n2, sort=TRUE ) |>
+#   dplyr::rename(from = n1,  to = n2, value = n) #|> head(100)
+#   # label = n2,
+# }
+
+
+```
+```{r fun }
+#' Count the graph frequency of co-occurences/Co-mentioning of triplets
+#'
+#' @param graph a graph of co-occurrence
+#' @param loop if TRUE, include loops. Default=FALSE
+# @param DT if TRUE, use data.table instead of dplyr
+#'
+#' @export
+#'
+#' @examples
+#' DF <- data.frame(n1 = c("Sample1","Sample1", "Sample2", "Sample2"), n2 = c("A1","Sample1", "B1", "B1"))
+#' DF |> count_graph()  
+count_graph <- function(graph, loop = FALSE) {
+  # count_graph <- function(graph, loop = FALSE, DT=FALSE) {
+  # graph <- DF
+  # if(!DT){
+    gr <- graph |>
+      dtplyr::lazy_dt() |> # do dtplyr to improve performance
+      dplyr::count(n1, n2, sort = TRUE) |>
+      tibble::as_tibble()
+      # dplyr::rename(from = n1, to = n2, value = n) #|> head(100)
+      # nothing()
+      # label = n2,
+  # } else {
+  #     # Converts the data frame DT into a data.table for efficient operations.
+  #     data.table::setDT(graph)
+  #       # Count occurrences of 'n1' and 'n2' and sort by count in descending order
+  #     DT[, .(n = .N), by = .(n1, n2)][order(-n)]
+  #   }
+
+  if (loop) {
+    gr
+  } else {
+    gr |>
+      # dplyr::mutate(loop = (from == to))  |>
+      dplyr::mutate(loop = (n1 == n2))  |>
+      dplyr::filter(!loop) |>
+      dplyr::select(-loop)
+    } 
+}
 ```
 ```{r ex deepseek}
 In R language, I have this dataframe

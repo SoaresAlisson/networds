@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 Loading the library
 
 ```{r setup library}
-library(txtnet)
+library(networds)
 library(spacyr)
 # library(igraph) # library/4.5/igraph/libs/igraph.so': libxml2.so.2: não é possível abrir arquivo compartilhado: Arquivo ou diretório inexistente
 ```
@@ -41,7 +41,7 @@ spacyr::spacy_install()
 
 To install and use other languages than English, see below "Using another languages"
 
-## Using txtnet package
+## Using networds package
 
 ```{r text, eval=T, echo=T}
 # text from https://www.bbc.com/news/articles/c7ve36zg0e5o
@@ -74,33 +74,36 @@ POS |> spacyr::entity_extract()
 The second one, conflates the compound nouns and preserve the other POS tags.
 
 ```{r spacyr::entity_consolidate}
-POS |> spacyr::entity_consolidate()
+POS |>
+  spacyr::entity_consolidate() |>
+  head(30)
 ```
 
-This functions is used inside {txtnet}.
+This functions is used inside {networds}.
 Lets use the package text example. You can use whatever you want.
 
 ```{r sample_txt head}
-data(package = "txtnet")
+data(package = "networds")
 
 # text_sample
 # an example of text. this comes with the package.
 txt_wiki[2:3]
 ```
 
-With the function in {txtnet}, is possible to give the whole text as input, search for a term/query. The package will tokenize in sentences (or in paragraphs, if specified in parameters of the function), perform the POS tagging. Is possible to run the whole process or go step by step, to understand what is going on. 
+With the function in {networds}, is possible to give the whole text as input, search for a term/query. The package will tokenize in sentences (or in paragraphs, if specified in parameters of the function), perform the POS tagging. Is possible to run the whole process or go step by step, to understand what is going on. 
 
 ```{r}
 # tokenizing by sentence and filtering those that contains "police"
 txt_wiki[2:6] |> filter_by_query("Police")
 ```
-
-Is possible to return a vector instead of a list object
+The function returns a list, preserving the original structure. Is also possible 
+to return a vector instead of a list object
 
 ```{r}
 txt_wiki[1:12] |> filter_by_query("Police", unlist = TRUE)
 ```
-
+This function is good way to reduce the amount of processing data, processing only what is necessary.
+It is also good to check prases to get a better context after the graph is ready.
 The next step is the POS tagging using `parsePOS()`
 
 ```{r}
@@ -163,13 +166,14 @@ graph
 ```
 
 ```{r, echo=FALSE, eval=FALSE}
-net_wordcloud(txt_wiki, graph)
+net_wordcloud(txt_wiki, graph$graphs)
 ```
 
 ```{r}
 graph$graphs |>
-  dplyr::rename(from = n1, to = n2) |>
-  net_wordcloud(txt_wiki, df=_)
+  # dplyr::rename(n = freq) |>
+  # dplyr::rename(from = n1, to = n2, n = freq) |>
+  net_wordcloud(txt_wiki, df = _)
 ```
 
 To get the graph of entities and nouns:
@@ -220,7 +224,7 @@ filter_by_query(sotu_text[237:240], "China") |>
 
 ## Using another languages
 
-How {txtnet} uses spacy to tag the words, the user must initialize the model for the language.
+How {networds} uses spacy to tag the words, the user must initialize the model for the language.
 
 To download other language model, check models available at [spacy.io/usage/models](https://spacy.io/usage/models)
 Ex.: installing Portuguese, the models available are:

@@ -30,7 +30,7 @@ g <- tidygraph::tbl_graph(
 #' A sample text from text from https://www.bbc.com/news/articles/c7ve36zg0e5o
 #' @export
 #' @examples
-#' data(package = "txtnet")
+#' data(package = "networds")
 #' head(text_sample)
 text_sample <- r"(A man is being questioned about the fatal shooting of a healthcare insurance boss in New York last week, officials have told the BBC's US partner CBS News.
 UnitedHealthcare boss Brian Thompson, 50, was fatally shot in the back on Wednesday morning last week outside the Hilton hotel in Midtown Manhattan.

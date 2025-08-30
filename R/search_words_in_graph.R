@@ -19,7 +19,7 @@
 #'
 #' @examples
 #' # loading data
-#' data(package = "txtnet")
+#' data(package = "networds)
 #' # sample
 #' txt_wiki[2:3]
 #' txt_wiki |> filter_by_query("York")
@@ -292,7 +292,7 @@ get_cooc <- function(pos_df,
 #' @export
 #' @examples
 #' # loading data
-#' data(package = "txtnet")
+#' data(package = "networds")
 #' # sample
 #' txt_wiki[2:3]
 #' txt_wiki |> get_graph_from_txt("York")

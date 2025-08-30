@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-#' library(txtnet)
+#' library(networds)
 #'
 #' g <- ex_txt_wiki[2:44] |>
 #'   filter_by_query("Police") |>
@@ -20,7 +20,11 @@
 #' g <- get_cooc_entities(g)
 #' q_plot(g)
 q_plot <- function(graph_list, color = "lightblue") {
-  graph_list$edges |>
+  # graph_list <- g
+  try(graph <- graph_list$edges)
+  try(graph <- graph_list$graphs)
+
+  graph |>
     tidygraph::as_tbl_graph() |>
     ggraph::autograph(
       node_label = name,
@@ -38,67 +42,6 @@ q_plot <- function(graph_list, color = "lightblue") {
 }
 
 
-#' plot net wordcloud
-#'
-#' plot a network of co-occurrence of terms, as returned by extract_graph and
-#' then by dplyr::count(). The size of words and compound words means the
-#' individual frequency of each word/compound word. The thickness of the links
-#' indicates how often the pair occur together.
-
-#'
-#' @param text the original text used to extract the graph. It is necessary to
-#' calculate the individual frequency of the words.
-#' @param df a dataframe of co-occurrence, extracted with `extract_graph()` and
-#' `count(n1, n2)`
-#' @param head_n number of nodes to show - the more frequent
-#' @export
-#'
-#' @examples
-#'
-#' # stopwords:
-#' my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
-#'
-#' ex_txt_wiki |> # text available in the package
-#'   # because it is a vector, let's collapse it into a single element:
-#'   paste(collapse = " ") |>
-#'   extract_graph(sw = my_sw) |>
-#'   dplyr::count(n1, n2, sort = TRUE) |> # counting the graphs
-#'   net_wordcloud(ex_txt_wiki, df = _) # plotting
-net_wordcloud <- function(text, df, head_n = 30, color = "lightblue") {
-  # graph <-  g_N |> head(head_n)
-  graph <- df |> head(head_n)
-  vert <- unique(c(graph$n1, graph$n2))
-
-  # frequency of nodes/terms
-  freqPPN <- lapply(vert, \(v) {
-    text |> stringr::str_extract_all(v)
-  }) |>
-    unlist() |>
-    count_vec()
-
-  graph |>
-    tidygraph::as_tbl_graph() |>
-    # igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
-    ggraph::ggraph(layout = "graphopt") +
-    ggraph::geom_edge_link(ggplot2::aes(edge_width = n, edge_alpha = 0.5),
-      angle_calc = "along",
-      label_dodge = grid::unit(4.5, "mm"),
-      color = color,
-      # c("lightblue", "blue", "royalblue")[1],
-      end_cap = ggraph::circle(6, "mm")
-    ) + # afastamento do nó
-    ggraph::geom_node_text(
-      ggplot2::aes(
-        label = name,
-        size = freqPPN$freq
-        # size = freq
-      ),
-      repel = TRUE
-    ) + # TODO ajustar tamanho minimo e máximo
-    # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
-    ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none")
-}
 
 #' weighted word graph viz
 #'
@@ -190,121 +133,6 @@ plot_graph2 <- function(text, df, head_n = 30,
     ggplot2::theme(legend.position = "none")
 }
 
-#' plot static graph from POS list
-#'
-#' @description
-#' plot a graph of co-occurrence of terms, as returned by `get_cooc_entities()`.
-#' The function uses ggraph, so some color options can not work as expected due
-#' to some package incompatibilities.
-#' The plot_pos_graph is based in ggraph, that is based on ggplot2. That means that
-#' is possible to customize the graph with ggplot2 functions, like `labs()`.
-#'
-#' @param pos_list a list of POS, as returned by `get_cooc_entities()`
-# TODO
-#' @param n_head maximum number of edges to show. The freq column must be ordered
-#' @param edge_color color of the edges
-#' @param edge_alpha transparency of the edges. Values between 0 and 1.
-#' @param font_size integer. font size of the nodes. Values between 1 and 2.
-#' @param font_color color of the nodes.
-#' @param point_fill color of the nodes
-#' @param point_alpha transparency of the nodes
-#' @param point_color color of the nodes
-#' @param graph_layout layout of the graph
-#'
-#' @export
-#'
-#' @examples
-#' gr <- ex_txt_wiki[2:44] |>
-#'   filter_by_query("Police") |>
-#'   parsePOS()
-#' gr <- gr |> get_cooc_entities()
-#' plot_pos_graph(gr)
-#'
-#' gr <- ex_txt_wiki[2:44] |>
-#'   filter_by_query("Brian") |>
-#'   parsePOS()
-#' gr <- gr |> get_cooc_entities()
-#' plot_pos_graph(gr)
-plot_pos_graph <- function(pos_list,
-                           n_head = 30,
-                           edge_color = "lightblue",
-                           edge_alpha = 0.1,
-                           font_size = 2,
-                           font_color = "black",
-                           point_fill = "firebrick4",
-                           point_alpha = 0.3,
-                           point_color = "firebrick4",
-                           graph_layout = "graphopt") {
-  # #  Updated upstream
-
-  # node_size <- pos_list$nodes |>
-  #   dplyr::filter(! node %in% pos_list$isolated_nodes$node)
-  #
-  # pos_list$edges |>
-  #   tidygraph::as_tbl_graph() |>
-  #     ggraph::ggraph(layout = graph_layout ) +
-  #     ggraph::geom_edge_link(ggplot2::aes(
-  #       edge_width = pos_list$edges$freq,
-  #       edge_alpha = 0.5),
-  #       angle_calc = "along",
-  #       label_dodge = grid::unit(4.5, "mm"),
-  #       color = edge_color,
-  #       end_cap = ggraph::circle(6, "mm")
-  #       ) + # afastamento do nó
-  #     ggraph::geom_node_point(ggplot2::aes(
-  #       size = node_size$freq,
-  #       alpha = point_alpha,
-  #       # alpha = 0.3,
-  #       fill = point_fill ,
-  #       color = point_color )) +
-  #     ggraph::geom_node_text(ggplot2::aes(
-  # # =======
-  # pos_list <- graph_ppn
-  # pos_list <- uber_g
-
-  head_edges <- pos_list$edges |> head(n_head)
-  head_nodes <- c(head_edges$n1, head_edges$n2) |> unique()
-
-  node_size <- pos_list$nodes |> dplyr::filter(node %in% head_nodes)
-  # node_size <- head_edges  #|> dplyr::filter(!node %in% pos_list$isolated_nodes$node)
-  # nrow(pos_list$nodes)
-
-  head_edges |>
-    tidygraph::as_tbl_graph() |>
-    ggraph::ggraph(layout = graph_layout) +
-    ggraph::geom_edge_link(
-      ggplot2::aes(
-        # edge_width = pos_list$edges$freq,
-        edge_width = head_edges$freq,
-        edge_alpha = 0.5
-      ),
-      angle_calc = "along",
-      label_dodge = grid::unit(4.5, "mm"),
-      color = edge_color,
-      end_cap = ggraph::circle(6, "mm")
-    ) + # afastamento do nó
-    ggraph::geom_node_point(ggplot2::aes(
-      size = node_size$freq,
-      alpha = point_alpha,
-      # alpha = 0.3,
-      fill = point_fill,
-      color = point_color
-    )) +
-    ggraph::geom_node_text(
-      ggplot2::aes(
-        # Stashed changes
-        label = name,
-        # alpha = 0,
-        # size = node_size$freq),
-        size = font_size,
-        # fill = "mediumpurple4",
-        color = font_color
-      ),
-      repel = TRUE
-    ) +
-    ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none")
-}
 
 
 
