@@ -1,4 +1,71 @@
 url: ~
 template:
   bootstrap: 5
-
+# https://r-lib.r-universe.dev/pkgdown/doc/manual.html#build_reference
+reference:
+  # desc: "There is two possibilites for extracting graphs from pure text: regex and POS"
+  - title: Sample Data
+  - subtitle: Sample data for networds examples
+  - contents:
+      - g
+      - txt_wiki
+      - text_sample
+      #
+  - title: Preparing the data
+  - contents:
+      - filter_by_query
+  - title: Extract graph
+  - subtitle: Extracting graphs using regex
+  - contents:
+      - connectors
+      - extract_entity
+      - extract_entities2
+      - subs_ppn
+      - extract_relation
+      - extract_graph
+      - extract_graph_df
+      - extract_graph_rgx
+      - get_graph_from_txt
+        #
+  - subtitle: Extracting graphs from pure text
+  - desc: "Extract graphs using Part of Speech Tagging (POS)"
+  - contents:
+      - get_cooc_entities
+      - parsePOS
+      - extract_entities
+      - extract_entities_v
+      - extract_entities_l
+      - get_entities
+      - extract_graph_pos
+      - group_seq_pos
+      - collapse_adp
+      - filter_ppn
+      - get_cooc
+      - group_ppn
+      - group_entities
+      - graph_from_coocurrence_list
+      - entity_list_2_graph
+      - entity_list_2_graph2
+      #
+  - title: Analize graphs
+  - desc: "Given a graph, extract info or manipulate it"
+  - contents:
+      - get_node_id
+      - get_neighbors
+      - extract_nodes
+      - count_graphs
+      - count_vec
+      - filter_ego
+      - split_graph
+      - rename_cols
+      - extract_triplets
+      - graph_subs
+    #
+  - title: visualize graphs
+  - subtitle: visualize static and dynamic graphs
+  - contents:
+      - q_plot
+      - net_wordcloud
+      - plot_pos_graph
+      - plot_graph2
+      - interactive_graph

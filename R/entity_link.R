@@ -219,20 +219,20 @@ extract_graph <- function(text, using = "sentences",
 #'
 #' @examples
 #' # creating a dataframe with text and id
-#' DF <- data.frame(text = c("John Does lives in New York in United States of America. He  is a passionate jazz musician, often playing in local clubs.", r"(John Michael "Ozzy" Osbourne (3 December 1948 – 22 July 2025) was an English singer, songwriter, and media personality. He co-founded the pioneering heavy metal band Black Sabbath in 1968, and rose to prominence in the 1970s as their lead vocalist. During this time, he adopted the title "Prince of Darkness".[3][4] He performed on the band's first eight albums, most notably including Black Sabbath, Paranoid (both 1970) and Master of Reality (1971), before he was fired in 1979 due to his problems with alcohol and other drugs.)")) |> dplyr::mutate(id = paste0("id_", dplyr::row_number() ))
+#' DF <- data.frame(text = c("John Does lives in New York in United States of America. He  is a passionate jazz musician, often playing in local clubs.", r"(John Michael "Ozzy" Osbourne (3 December 1948 – 22 July 2025) was an English singer, songwriter, and media personality. He co-founded the pioneering heavy metal band Black Sabbath in 1968, and rose to prominence in the 1970s as their lead vocalist. During this time, he adopted the title "Prince of Darkness".[3][4] He performed on the band's first eight albums, most notably including Black Sabbath, Paranoid (both 1970) and Master of Reality (1971), before he was fired in 1979 due to his problems with alcohol and other drugs.)")) |> dplyr::mutate(id = paste0("id_", dplyr::row_number()))
 #' extract_graph_df(DF, "id", "text")
-extract_graph_df <- function(df, column_id, column_text, 
-                             using = "sentences",connect = connectors("misc"), 
-                             sw = c("of", "the"), 
+extract_graph_df <- function(df, column_id, column_text,
+                             using = "sentences", connect = connectors("misc"),
+                             sw = c("of", "the"),
                              loop = FALSE) {
   df_out <- list()
 
   for (i in 1:nrow(DF)) {
-      df_out[[i]] <- DF[[i, column_text]] |>  
-        extract_graph() |> 
-        dplyr::mutate(txt_id = DF[[i, column_id]] )
-    } 
-    
+    df_out[[i]] <- DF[[i, column_text]] |>
+      extract_graph() |>
+      dplyr::mutate(txt_id = DF[[i, column_id]])
+  }
+
   df_out |> dplyr::bind_rows()
 }
 
@@ -242,6 +242,8 @@ extract_graph_df <- function(df, column_id, column_text,
 #' extract a graph from text, using custom regex pattern as nodes.
 #'
 #' @return a graph
+#' keywords internal
 extract_graph_rgx <- function(text, pattern, sw = gen_stopwords("en"), count_graphs = FALSE) {
   text
+  # TODO
 }
