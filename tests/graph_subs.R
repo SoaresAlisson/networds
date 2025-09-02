@@ -2,18 +2,7 @@ library(testthat)
 library(stringr)
 library(tibble)
 
-# Test function
-graph_subs <- function(DF, df_subs) {
-  col_names <- colnames(DF)
-  subs <- tibble::deframe(df_subs)
-
-  # Apply string replacements to both columns
-  for (col in col_names[1:2]) {
-    DF[[col]] <- stringr::str_replace_all(DF[[col]], subs) |>
-      stringr::str_squish()
-  }
-  return(DF)
-}
+regex_sequence <- "[^\\w\\s\\_\\&]"
 
 # Unit tests
 test_that("graph_subs function works correctly", {
@@ -145,4 +134,191 @@ test_that("graph_subs handles edge cases", {
   result_na <- graph_subs(df_with_na, df_subs)
   expect_equal(result_na$from, c("A Company", NA, "B Incorporated"))
   # expect_equal(result_na$to, c(NA, "C Limited", "D Company"))
+})
+
+
+
+
+
+
+###### ========== #######
+###
+###    rm_symbols
+###
+###### ========== #######
+test_df <- data.frame(
+  from = c("Node_1!", "Company (Limited)@", "A&B-C"),
+  to = c("Target#1", "Another$Node", "Hi...There?"),
+  stringsAsFactors = FALSE
+)
+
+# Create a simple, fixed substitution dataframe for all tests
+test_subs <- tibble::tribble(
+  ~pattern, ~replacement,
+  "Company", "Co",
+  "Limited", "Ltd"
+)
+# context("Testing graph_subs rm_symbols parameter")
+
+test_that("rm_symbols = regex pattern removes unwanted symbols but keeps underscores and words", {
+  # test_that("rm_symbols = TRUE removes unwanted symbols but keeps underscores and words", {
+  # Create a test dataframe with various symbols
+
+
+  result <- graph_subs(test_df, test_subs)
+
+  # Test that symbols are removed from both columns
+  # expect_equal(result$from, c("Node_1", "Co Ltd", "A&B_C")) # Note: Hyphen removed, space added
+  expect_equal(result$from, c("Node_1", "Co Ltd", "A&BC")) # Note: Hyphen removed, space added
+  # expect_equal(result$to, c("Target_1", "Another_Node", "Hi_There"))
+  expect_equal(result$to, c("Target1", "AnotherNode", "HiThere"))
+
+  # Test that underscores and alphanumeric characters are preserved
+  expect_true(all(grepl(regex_sequence, result$from))) # Should only contain words, spaces, underscores
+  expect_true(all(grepl(regex_sequence, result$to)))
+})
+
+
+test_that('rm_symbols = "", leaves symbols intact after substitution', {
+  # Use the same test dataframe
+  test_df <- data.frame(
+    from = c("Node_1!", "Company (Limited)@", "A&B-C"),
+    to = c("Target#1", "Another$Node", "Hi...There?"),
+    stringsAsFactors = FALSE
+  )
+
+  result <- graph_subs(test_df, test_subs, rm_symbols = "")
+
+  # Substitutions should happen, but symbols should remain
+  expect_equal(result$from, c("Node_1!", "Co (Ltd)@", "A&B-C")) # "Company" -> "Co", "Limited" -> "Ltd"
+  expect_equal(result$to, c("Target#1", "Another$Node", "Hi...There?")) # No substitutions defined for 'to' column patterns
+})
+
+# test_that("rm_symbols = TRUE is the default behavior", {
+#   test_df <- data.frame(
+#     from = c("Test&Node"),
+#     to = c("Another@One"),
+#     stringsAsFactors = FALSE
+#   )
+#
+#   # Call without specifying rm_symbols (should default to TRUE)
+#   result_default <- graph_subs(test_df, test_subs)
+#   # Call explicitly with TRUE
+#   result_explicit <- graph_subs(test_df, test_subs)
+#
+#   # Both calls should yield the same result
+#   expect_identical(result_default, result_explicit)
+#   expect_equal(result_default$from, "Test&Node") # & symbol removed and replaced by space
+# })
+
+test_that("Edge case: rm_symbols handles empty strings and strings with only symbols", {
+  test_df <- data.frame(
+    from = c("", "!!!", "___", "A_1"),
+    to = c("   ", "@#$", "B_2", "C-3"), # Note the space and hyphen
+    stringsAsFactors = FALSE
+  )
+
+  result <- graph_subs(test_df, test_subs)
+
+  # Empty string should remain empty (or become NA? Your function doesn't handle NA)
+  expect_equal(result$from, c("", "", "_", "A_1")) # !!! becomes empty, ___ remains
+  # Spaces are whitespace (\s) so they are kept, then squished
+  expect_equal(result$to, c("", "", "B_2", "C3")) # @#$ becomes empty, hyphen in "C-3" becomes space
+})
+
+test_that("Symbol removal works independently on both columns", {
+  # Test that one column can have symbols while the other doesn't, and processing is correct
+  test_df <- data.frame(
+    from = c("Clean_Node", "Dirty_Node!"), # One clean, one dirty
+    to = c("Dirty_To@", "Clean_To"), # One dirty, one clean
+    stringsAsFactors = FALSE
+  )
+
+  result <- graph_subs(test_df, test_subs)
+
+  expect_equal(result$from, c("Clean_Node", "Dirty_Node"))
+  expect_equal(result$to, c("Dirty_To", "Clean_To"))
+})
+
+# Prompt: create me a unit test in T for this function, but only to the parameter rm_symbol
+
+
+# # Create a simple, fixed substitution dataframe for all tests
+# test_subs <- tibble::tribble(
+#   ~pattern, ~replacement,
+#   "Company", "Co",
+#   "Limited", "Ltd"
+# )
+test_that("rm_symbols, empty df_subs, parameter works correctly, ", {
+  # Create test data
+  test_df <- data.frame(
+    from = c("hello-world!", "test@email.com", "multiple___underscores"),
+    to = c("some&text", "parentheses(text)", "spaces   here"),
+    value = 1:3
+  )
+
+  # Test 1: Default rm_symbols behavior (remove non-word, non-space, non-_, non-& characters)
+  result1 <- graph_subs(DF = test_df, rm_symbols = regex_sequence)
+
+  expect_equal(result1$from, c("hello_world", "test_email_com", "multiple_underscores"))
+  expect_equal(result1$to, c("some&text", "parentheses_text", "spaces_here"))
+
+  # Test 2: Custom rm_symbols pattern (remove only specific characters)
+  result2 <- graph_subs(test_df, rm_symbols = "[@!]")
+
+  expect_equal(result2$from, c("hello-world", "testemail.com", "multiple___underscores"))
+  expect_equal(result2$to, c("some&text", "parentheses(text)", "spaces   here"))
+
+  # Test 3: Empty rm_symbols (should not remove anything)
+  result3 <- graph_subs(test_df, rm_symbols = "")
+
+  expect_equal(result3$from, c("hello-world!", "test@email.com", "multiple___underscores"))
+  expect_equal(result3$to, c("some&text", "parentheses(text)", "spaces   here"))
+
+  # Test 4: Remove all non-alphanumeric characters
+  result4 <- graph_subs(test_df, rm_symbols = "[^[:alnum:]]")
+
+  expect_equal(result4$from, c("helloworld", "testemailcom", "multipleunderscores"))
+  expect_equal(result4$to, c("sometext", "parenthesestext", "spaceshere"))
+
+  # Test 5: Remove only underscores
+  result5 <- graph_subs(test_df, rm_symbols = "_")
+
+  expect_equal(result5$from, c("hello-world!", "test@email.com", "multipleunderscores"))
+  expect_equal(result5$to, c("some&text", "parentheses(text)", "spaces   here"))
+
+  # Test 6: Verify that only first two columns are affected
+  result6 <- graph_subs(test_df, rm_symbols = "[^\\w]")
+
+  expect_equal(result6$from, c("hello_world", "test_email_com", "multiple_underscores"))
+  # expect_equal(result6$to, c("some_text", "parentheses_text", "spaces_here"))
+  expect_equal(result1$to, c("some&text", "parenthesestext", "spaces here"))
+  expect_equal(result6$value, 1:3) # Third column should remain unchanged
+})
+
+test_that("rm_symbols edge cases", {
+  # Test with empty dataframe
+  empty_df <- data.frame(from = character(), to = character(), value = numeric())
+  result_empty <- graph_subs(empty_df, rm_symbols = "[^\\w]")
+  expect_equal(nrow(result_empty), 0)
+
+  # Test with NA values in columns
+  na_df <- data.frame(
+    from = c("hello!", NA, "test@"),
+    to = c(NA, "world!", "email"),
+    value = 1:3
+  )
+  result_na <- graph_subs(na_df, rm_symbols = "[^\\w]")
+  expect_equal(result_na$from, c("hello", NA, "test"))
+  expect_equal(result_na$to, c(NA, "world", "email"))
+
+  # Test with empty strings
+  empty_str_df <- data.frame(
+    from = c("", "test!", "   "),
+    to = c("hello!", "", "   "),
+    value = 1:3
+  )
+  result_empty_str <- graph_subs(empty_str_df, rm_symbols = "[^\\w]")
+  expect_equal(result_empty_str$from, c("", "test", ""))
+  expect_equal(result_empty_str$to, c("hello", "", ""))
 })

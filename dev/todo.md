@@ -21,4 +21,5 @@
 - TF-IDF AND one graph pair per document, or show the doc index in extract_graph and extract_entity
 - ~~function dict: substitution of synonyms in both node columns~~
 - test to count_graphs
-- padronizar no extract_graph n and freq: dplyr::mutate(n = freq)  
+- padronizar no extract_graph n and freq: dplyr::mutate(n = freq)
+- função para retirar nao letras e numeros, preservando o underline/underscore
