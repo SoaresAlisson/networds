@@ -6,7 +6,12 @@
 extracts the entity from a text using regex. This regex captures all uppercase words, words that begin with upper case. If there is sequence of this patterns together, this function also captures.
 In the case of proper names with common lower case connectors like "Wwwww of Wwwww" this function also captures the connector and the subsequent uppercase words.}
 \usage{
-extract_entity(text, connect = connectors("misc"), sw = "the")
+extract_entity(
+  text,
+  connect = connectors("misc"),
+  sw = "the",
+  underscore = TRUE
+)
 }
 \arguments{
 \item{text}{an input text}
@@ -14,6 +19,8 @@ extract_entity(text, connect = connectors("misc"), sw = "the")
 \item{connect}{a vector of lowercase connectors. Use use your own, or use the function "connector" to obtain some patterns.}
 
 \item{sw}{a vector of stopwords}
+
+\item{underscore}{keep underscore to make compounded words a unique word?}
 }
 \description{
 A rule based entity extractor

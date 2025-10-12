@@ -2,7 +2,7 @@
 % Please edit documentation in R/search_words_in_graph.R
 \name{get_cooc_entities}
 \alias{get_cooc_entities}
-\title{get graph (co-ocurrence of entities)}
+\title{Get graph (co-occurrence of entities)}
 \usage{
 get_cooc_entities(pos, loop = FALSE, freq = TRUE, lower_case = FALSE)
 }

@@ -5,7 +5,6 @@ rgx_abbrev <- "([:upper:]\\.){2,}"
 rgx_word <- "(\\b[A-ZÀ-ß][A-ZÀ-ßa-zà-ÿ0-9\\.\\-]+\\b)"
 
 
-
 #' A lowercase connectors between two proper names
 #'
 #' In some languages there is a lowercase connector between two or more proper names.
@@ -20,7 +19,9 @@ rgx_word <- "(\\b[A-ZÀ-ß][A-ZÀ-ßa-zà-ÿ0-9\\.\\-]+\\b)"
 #' connectors("en")
 #' connectors("misc")
 connectors <- function(lang = "pt") {
-  if (lang %in% c("pt", "por", "port", "portugues", "português", "portuguese")) {
+  if (
+    lang %in% c("pt", "por", "port", "portugues", "português", "portuguese")
+  ) {
     conn <- c("da", "das", "de", "do", "dos")
     # } else if (lang %in% s2v("es spa spanish espanol español")) {
   } else if (lang %in% c("es", "spa", "spanish", "espanol", "español")) {
@@ -45,28 +46,49 @@ connectors <- function(lang = "pt") {
 #' @param text an input text
 #' @param connect a vector of lowercase connectors. Use use your own, or use the function "connector" to obtain some patterns.
 #' @param sw a vector of stopwords
+#' @param underscore keep underscore to make compounded words a unique word?
 #' @export
 #' @examples
 #' "John Does lives in New York in United States of America." |> extract_entity()
 #' "João Ninguém mora em São José do Rio Preto. Ele esteve antes em Sergipe" |> extract_entity(connect = connectors("pt"))
 # text |> extract_entity()
-extract_entity <- function(text, connect = connectors("misc"), sw = "the") {
+extract_entity <- function(
+    text,
+    connect = connectors("misc"),
+    sw = "the",
+    underscore = TRUE) {
   # connectors <- connectors |> s2v()
   connector <- paste(connect, collapse = "|") |> gsub("(.*)", "(\\1)", x = _)
 
   # rgx_ppn <- paste0("(", rgx_word, "+ ?)+", "", connector, "? (", rgx_word, " ?)*")
-  rgx_ppn <- paste0("(", rgx_word, "+ ?)+", "(", connector, "? (", rgx_word, " ?)+)*")
+  rgx_ppn <- paste0(
+    "(",
+    rgx_word,
+    "+ ?)+",
+    "(",
+    connector,
+    "? (",
+    rgx_word,
+    " ?)+)*"
+  )
 
-  # text <- texto
   text_vec <- text |>
     stringr::str_extract_all(rgx_ppn) |>
     unlist() |>
-    # unique() |>
     stringr::str_trim()
   # trimws()
+
   # deleting stopword elements
-  text_vec[!text_vec %in% stringr::str_to_title(sw)]
+  text_vec <- text_vec[!text_vec %in% stringr::str_to_title(sw)]
+
+  if (underscore) {
+    gsub(x = text_vec, " ", "_")
+  } else {
+    text_vec
+  }
 }
+
+#TODO gen_stopwords neste exemplo 
 
 #' Substitute proper names/entities spaces with underscore in the text.
 #'
@@ -81,7 +103,7 @@ extract_entity <- function(text, connect = connectors("misc"), sw = "the") {
 #' texto_teste |> subs_ppn(ppn)
 #' texto_teste |> subs_ppn(ppn, method = "loop")
 #' text <- texto_teste |> subs_ppn(ppn)
-#' texd
+#' text
 # text |>
 #   strsplit(" ") |>
 #   unlist() |>
@@ -89,7 +111,6 @@ extract_entity <- function(text, connect = connectors("misc"), sw = "the") {
 subs_ppn <- function(text, entities, method = "normal") {
   # entities <- texto_teste |> extract_entity(connectors("pt"), sw = gen_stopwords("pt"))
   entities <- entities |> unlist()
-
 
   if (method == "loop") {
     ent_df <- data.frame(entities = unique(entities)) |>
@@ -119,9 +140,6 @@ subs_ppn <- function(text, entities, method = "normal") {
 # "asdc,casd_asd. Asc" |> stringr::str_extract_all("\\W+")
 # c("as as", "Joaquim cas", "as_cas", "asdcasdc") |> sto::grep2("\\W")
 
-
-
-
 #' tokenize and selects only sentences/paragraphs with more than one entity per sentence or paragraph
 #' @param text an input text
 #' @param using sentence or paragraph to tokenize
@@ -132,9 +150,11 @@ subs_ppn <- function(text, entities, method = "normal") {
 #' @examples
 #' "John Does lives in New York in United States of America." |> extract_relation()
 #' "João Ninguém mora em São José do Rio Preto. Ele foi para o Rio de Janeiro." |> extract_relation(connector = connectors("pt"))
-extract_relation <- function(text, using = "sentences",
-                             connect = connectors("misc"),
-                             sw = gen_stopwords("en")) {
+extract_relation <- function(
+    text,
+    using = "sentences",
+    connect = connectors("misc"),
+    sw = gen_stopwords("en")) {
   if (using == "sentences" || using == "sent") {
     message("Tokenizing by sentences")
     list_w <- text |>
@@ -148,10 +168,9 @@ extract_relation <- function(text, using = "sentences",
   }
 
   list_w <- lapply(
-    X = list_w, \(txt) {
-      extract_entity(txt,
-        connect = connect, sw = sw
-      )
+    X = list_w,
+    \(txt) {
+      extract_entity(txt, connect = connect, sw = sw)
     }
   )
 
@@ -174,13 +193,16 @@ extract_relation <- function(text, using = "sentences",
 #' @examples
 #' text <- "John Does lives in New York in United States of America. He  is a passionate jazz musician, often playing in local clubs."
 #' extract_graph(text)
-extract_graph <- function(text, using = "sentences",
-                          connect = connectors("misc"),
-                          sw = c("of", "the"),
-                          loop = FALSE) {
+extract_graph <- function(
+    text,
+    using = "sentences",
+    connect = connectors("misc"),
+    sw = c("of", "the"),
+    loop = FALSE) {
   list_ent <- text |> extract_relation(using, connect, sw)
   graph <- tibble::tibble(n1 = as.character(""), n2 = as.character(""))
   # list_length <- list_ent |> length()
+
   graph <- lapply(list_ent, \(e) {
     items <- e |> combn(2, simplify = FALSE)
     items_length <- length(items)
@@ -221,10 +243,14 @@ extract_graph <- function(text, using = "sentences",
 #' # creating a dataframe with text and id
 #' DF <- data.frame(text = c("John Does lives in New York in United States of America. He  is a passionate jazz musician, often playing in local clubs.", r"(John Michael "Ozzy" Osbourne (3 December 1948 – 22 July 2025) was an English singer, songwriter, and media personality. He co-founded the pioneering heavy metal band Black Sabbath in 1968, and rose to prominence in the 1970s as their lead vocalist. During this time, he adopted the title "Prince of Darkness".[3][4] He performed on the band's first eight albums, most notably including Black Sabbath, Paranoid (both 1970) and Master of Reality (1971), before he was fired in 1979 due to his problems with alcohol and other drugs.)")) |> dplyr::mutate(id = paste0("id_", dplyr::row_number()))
 #' extract_graph_df(DF, "id", "text")
-extract_graph_df <- function(df, column_id, column_text,
-                             using = "sentences", connect = connectors("misc"),
-                             sw = c("of", "the"),
-                             loop = FALSE) {
+extract_graph_df <- function(
+    df,
+    column_id,
+    column_text,
+    using = "sentences",
+    connect = connectors("misc"),
+    sw = c("of", "the"),
+    loop = FALSE) {
   df_out <- list()
 
   for (i in 1:nrow(DF)) {
@@ -237,13 +263,15 @@ extract_graph_df <- function(df, column_id, column_text,
 }
 
 
-
-
 #' extract a graph from text, using custom regex pattern as nodes.
 #'
 #' @return a graph
 #' keywords internal
-extract_graph_rgx <- function(text, pattern, sw = gen_stopwords("en"), count_graphs = FALSE) {
+extract_graph_rgx <- function(
+    text,
+    pattern,
+    sw = gen_stopwords("en"),
+    count_graphs = FALSE) {
   text
   # TODO
 }

@@ -9,9 +9,12 @@
 #'
 #' @param pos_list a list of POS, as returned by `get_cooc_entities()`
 # TODO
-#' @param n_head maximum number of edges to show. The freq column must be ordered
+#' @param n_head maximum number of edges to show. The freq column must be ordered.
+#' Default 30, but values near 150 maybe can be a better fit.
 #' @param edge_color color of the edges
 #' @param edge_alpha transparency of the edges. Values between 0 and 1.
+#' @param edge_norm edge normalization if TRUE (default), normalize the result,
+#' turning column into values between 0 and 10.
 #' @param font_size integer. font size of the nodes. Values between 1 and 2.
 #' @param font_color color of the nodes.
 #' @param point_fill color of the nodes
@@ -33,16 +36,18 @@
 #'   parsePOS()
 #' gr <- gr |> get_cooc_entities()
 #' plot_pos_graph(gr)
-plot_pos_graph <- function(pos_list,
-                           n_head = 30,
-                           edge_color = "lightblue",
-                           edge_alpha = 0.1,
-                           font_size = 2,
-                           font_color = "black",
-                           point_fill = "firebrick4",
-                           point_alpha = 0.3,
-                           point_color = "firebrick4",
-                           graph_layout = "graphopt") {
+plot_pos_graph <- function(
+    pos_list,
+    n_head = 30,
+    edge_color = "lightblue",
+    edge_alpha = 0.1,
+    edge_norm = TRUE,
+    font_size = 2,
+    font_color = "black",
+    point_fill = "firebrick4",
+    point_alpha = 0.3,
+    point_color = "firebrick4",
+    graph_layout = "graphopt") {
   # #  Updated upstream
   # pos_list <- graph
   # pos_list <-  graph_wiki
@@ -74,8 +79,15 @@ plot_pos_graph <- function(pos_list,
   try(head_edges <- pos_list$edges |> head(n_head))
   try(head_edges <- pos_list$graph |> head(n_head))
   try(head_edges <- pos_list$graphs |> head(n_head))
+  if (head_edges == 0) {
+    stop("No edges found")
+  }
   # head_nodes <- c(head_edges$n1, head_edges$n2) |> unique()
-
+  if (edge_norm) {
+    edge_width <- scales::rescale(head_edges$freq, to = c(0, 10))
+  } else {
+    edge_width <- head_edges$freq
+  }
   # node_size <- pos_list$nodes |> dplyr::filter(node %in% head_nodes)
   # node_size <- head_edges  #|> dplyr::filter(!node %in% pos_list$isolated_nodes$node)
   # nrow(pos_list$nodes)
@@ -91,7 +103,8 @@ plot_pos_graph <- function(pos_list,
     ggraph::geom_edge_link(
       ggplot2::aes(
         # edge_width = pos_list$edges$freq,
-        edge_width = head_edges$freq,
+        # edge_width = head_edges$freq,
+        edge_width = edge_width,
         edge_alpha = 0.5
       ),
       angle_calc = "along",

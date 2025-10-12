@@ -16,7 +16,7 @@ parsePOS(txt, bind = TRUE, only_entities = TRUE)
 \description{
 from a list of filtered text (from the function filter_by_query), tags the POS/ parse with spacyr.
 It also renumber the doc_id and sentence_id. It runs spacyr::entity_extract() or spacyr::entity_consolidate() in background,
-but also runs os lists with empty elements,  and can returns a single dataframe (if `bind = TRUE`) renaming doc_id and sentence_id,
+but also runs on lists with empty elements, and can returns a single dataframe (if `bind = TRUE`) renaming doc_id and sentence_id,
 }
 \examples{
 txt_wiki |>

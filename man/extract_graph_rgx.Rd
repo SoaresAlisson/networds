@@ -13,6 +13,7 @@ extract_graph_rgx(
 }
 \value{
 a graph
+keywords internal
 }
 \description{
 extract a graph from text, using custom regex pattern as nodes.

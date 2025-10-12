@@ -2,12 +2,13 @@
 % Please edit documentation in R/function.R
 \name{extract_triplets}
 \alias{extract_triplets}
-\title{from semgram output, join passive and active voices
-# VER great..../GR_analise}
+\title{from semgram output, join passive and active voices}
 \usage{
 extract_triplets(semgram)
 }
+\arguments{
+\item{semgram}{a object from spacyr::spacy_parse() |> semgram::extract_motifs()}
+}
 \description{
 from semgram output, join passive and active voices
-# VER great..../GR_analise
 }

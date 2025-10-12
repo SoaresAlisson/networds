@@ -1,7 +1,7 @@
-url: ~
 template:
   bootstrap: 5
 # https://r-lib.r-universe.dev/pkgdown/doc/manual.html#build_reference
+url: https://github.com/SoaresAlisson/networds
 reference:
   # desc: "There is two possibilites for extracting graphs from pure text: regex and POS"
   - title: Sample Data
@@ -43,7 +43,7 @@ reference:
       - get_cooc
       - group_ppn
       - group_entities
-      - graph_from_coocurrence_list
+      # - graph_from_coocurrence_list
       - entity_list_2_graph
       - entity_list_2_graph2
       #
@@ -67,5 +67,6 @@ reference:
       - q_plot
       - net_wordcloud
       - plot_pos_graph
+      - plot_graph
       - plot_graph2
       - interactive_graph

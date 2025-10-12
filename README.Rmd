@@ -26,9 +26,9 @@ knitr::opts_chunk$set(
 
 # Extracting co-occurences and relations in text
 
-This is a package to extract graphs and build  and visualize text networks in static and dynamic graphs.
+This is a package to extract graphs and build and visualize text networks in static and dynamic graphs.
 
-It extract graphs from plain text using:
+It extracts graphs from plain text using:
 
 1) Rule based: Regex to extract proper names, and build a co-occurrence network
 2) (under development) Extraction using Part of Speech tagging of proper names and nouns and its co-occurrence
@@ -63,8 +63,10 @@ pak::pak("SoaresAlisson/networds")
 ![Obama and Trump SOTU about China](www/obama_trump_china.png)
 
 Check the vignettes:  
-- [01 - Proper name extraction with regex](https://htmlpreview.github.io/?https://raw.githubusercontent.com/SoaresAlisson/networds/refs/heads/master/vignettes/entities_and_relation_extraction.html)
-- [02 - Extract entity co-ocurrences with POS]
+<!-- - [01 - Proper name extraction with regex](https://htmlpreview.github.io/?https://raw.githubusercontent.com/SoaresAlisson/networds/refs/heads/master/vignettes/entities_and_relation_extraction.html) -->
+<!-- - [02 - Extract entity co-ocurrences with POS] -->
+
+- [website of the project](https://soaresalisson.github.io/networds)
 
 ## Similar Projects
 

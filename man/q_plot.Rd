@@ -15,7 +15,7 @@ q_plot(graph_list, color = "lightblue")
 Plot a network of co-ocurrence of terms. For more options, see `net_wordcloud()`.
 }
 \examples{
-library(txtnet)
+library(networds)
 
 g <- ex_txt_wiki[2:44] |>
   filter_by_query("Police") |>

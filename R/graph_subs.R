@@ -1,7 +1,7 @@
 #' graph substitution
 #'
 #' @description
-#' Substitute node columns (columns 1 and 2) of a graph data frame with a
+#' Substitute node columns (both columns 1 and 2) of a graph data frame with a
 #' dictionary of substitutions.
 #'
 #' @param DF a graph data frame
@@ -72,4 +72,15 @@ graph_subs <- function(DF, df_subs = NA, rm_symbols = "[^\\w\\s\\_\\&]") {
   #     ) |> stringr::str_squish()
   #   )
 }
-# library(testthat)
+
+# entity_subs <- function(DF, df_subs = NA, rm_symbols = "[^\\w\\s\\_\\&]") {
+#   col_names <- colnames(DF)
+#
+#   if (!(missing(df_subs) || is.null(df_subs))) {
+#   subs <- tibble::deframe(df_subs)
+#
+#       DF <- stringr::str_replace_all(DF[[col]], subs) |>
+#         stringr::str_squish()
+#   }
+#
+# }

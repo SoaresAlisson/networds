@@ -2,7 +2,7 @@
 % Please edit documentation in R/search_words_in_graph.R
 \name{filter_by_query}
 \alias{filter_by_query}
-\title{tokenize and filter text by query}
+\title{Tokenize and filter text by a query}
 \usage{
 filter_by_query(
   txt,
@@ -27,13 +27,8 @@ filter_by_query(
 \item{ic}{ignore case (default TRUE)}
 }
 \description{
-from vector of texts, tokenize by sentence or paragraph and returns a filtered list
-}
-\examples{
-# loading data
-data(package = "txtnet")
-# sample
-txt_wiki[2:3]
-txt_wiki |> filter_by_query("York")
-txt_wiki |> filter_by_query("Police")
+from vector of texts, tokenize by sentence or paragraph and returns a
+filtered list. It is useful to shrink the amount of text to be processed,
+what can take a long time  for example, when running POS, or when expanding
+the graph from their neighbors.
 }

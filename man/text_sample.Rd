@@ -14,7 +14,7 @@ text_sample
 A sample text from text from https://www.bbc.com/news/articles/c7ve36zg0e5o
 }
 \examples{
-data(package = "txtnet")
+data(package = "networds")
 head(text_sample)
 }
 \keyword{datasets}

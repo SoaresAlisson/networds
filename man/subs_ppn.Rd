@@ -20,5 +20,5 @@ ppn <- texto_teste |> extract_entity(connectors("pt"), sw = gen_stopwords("pt"))
 texto_teste |> subs_ppn(ppn)
 texto_teste |> subs_ppn(ppn, method = "loop")
 text <- texto_teste |> subs_ppn(ppn)
-texd
+text
 }

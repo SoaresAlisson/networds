@@ -2,7 +2,7 @@
 % Please edit documentation in R/function.R
 \name{split_graph}
 \alias{split_graph}
-\title{split a tidy graph (each line is graph with at least 2 nodes) into two dataframes within a list: one with de nodes and its indexes, a second dataframe with de edges.}
+\title{split a tidy graph into a list of dataframe}
 \usage{
 split_graph(DF_graph)
 }

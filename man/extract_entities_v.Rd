@@ -2,7 +2,7 @@
 % Please edit documentation in R/function.R
 \name{extract_entities_v}
 \alias{extract_entities_v}
-\title{extract entities}
+\title{extract entities, returns a vector}
 \usage{
 extract_entities_v(DF, rgx_entities = "^(PER(SON)?|ORG|GPE)_")
 }
@@ -13,7 +13,7 @@ extract_entities_v(DF, rgx_entities = "^(PER(SON)?|ORG|GPE)_")
 a vector
 }
 \description{
-extract entities from spacy entities.
+extract entities from Spacy entities.
 }
 \examples{
 t |> extract_entities_v()

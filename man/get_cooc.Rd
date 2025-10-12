@@ -2,17 +2,22 @@
 % Please edit documentation in R/search_words_in_graph.R
 \name{get_cooc}
 \alias{get_cooc}
-\title{get graph (co-ocurrence of entities and Nouns)}
+\title{get graph (co-occurrence of entities and/or grammar class)}
 \usage{
-get_cooc(pos_df, pos_cat = c("NOUN", "ENTITY"))
+get_cooc(pos_df, pos_cat = c("NOUN", "ENTITY", "PROPN"), nodes = "lemma")
 }
 \arguments{
 \item{pos_df}{a POS dataframe}
 
-\item{pos_cat}{the POS categories to be extracted. Default: NOUN and ENTITY}
+\item{pos_cat}{the POS categories to be extracted. Default: NOUN, PROPN and
+ENTITY}
+
+\item{nodes}{the text column to be used as nodes. options: "token" and
+"lemma" Default: "lemma".}
 }
 \description{
-from a POS dataframe (using `filter_by_query() |> parsePOS()` ) get the pairs of co-ocurrences.
+from a POS dataframe (using `spacyr::spacy_parse()` or
+`parsePOS(only_entities = FALSE)` ) get the pairs of co-occurrences.
 }
 \examples{
 x <- txt_wiki |> filter_by_query("Police")

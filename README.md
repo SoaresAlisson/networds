@@ -6,6 +6,7 @@
 # {networds} - a package to build graphs from text
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 ![](./networds_hex.svg)
@@ -17,7 +18,7 @@
 This is a package to extract graphs and build and visualize text
 networks in static and dynamic graphs.
 
-It extract graphs from plain text using:
+It extracts graphs from plain text using:
 
 1)  Rule based: Regex to extract proper names, and build a co-occurrence
     network
@@ -75,9 +76,10 @@ China</figcaption>
 </figure>
 
 Check the vignettes:  
-- [01 - Proper name extraction with
-regex](https://htmlpreview.github.io/?https://raw.githubusercontent.com/SoaresAlisson/networds/refs/heads/master/vignettes/entities_and_relation_extraction.html) -
-\[02 - Extract entity co-ocurrences with POS\]
+<!-- - [01 - Proper name extraction with regex](https://htmlpreview.github.io/?https://raw.githubusercontent.com/SoaresAlisson/networds/refs/heads/master/vignettes/entities_and_relation_extraction.html) -->
+<!-- - [02 - Extract entity co-ocurrences with POS] -->
+
+- [website of the project](https://soaresalisson.github.io/networds)
 
 ## Similar Projects
 

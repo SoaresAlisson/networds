@@ -9,3 +9,4 @@ extract_nodes(graph)
 \description{
 extract nodes from a dataframe of two columns of nodes'
 }
+\keyword{internal}
