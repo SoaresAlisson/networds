@@ -10,7 +10,8 @@
 #' calculate the individual frequency of the words.
 #' @param df a dataframe of co-occurrence, extracted with `extract_graph()` and
 #' `count(n1, n2)`
-#' @param head_n number of nodes to show - the more frequent
+#' @param head_n number of nodes to show - the more frequent. Dedault = 30. To
+#' display all, use `n_head = ""`
 #' @export
 #'
 #' @examples
@@ -24,9 +25,19 @@
 #'   extract_graph(sw = my_sw) |>
 #'   networds::count_graphs() |> # counting the graphs
 #'   net_wordcloud(ex_txt_wiki, df = _) # plotting
-net_wordcloud <- function(text, df, head_n = 30, color = "lightblue") {
-  # graph <-  g_N |> head(head_n)
-  graph <- df |> head(head_n)
+net_wordcloud <- function(
+  text,
+  df,
+  head_n = 30,
+  color = "lightblue",
+  edge_norm = TRUE
+) {
+  # to head or not to head
+  if (head_n == "") {
+    graph <- df
+  } else {
+    graph <- df |> head(head_n)
+  }
 
   # try(graph <- graph |> dplyr::mutate(n = freq)) # TODO padronizar no extract_graph
   try(graph$n <- graph[[3]])
@@ -39,11 +50,19 @@ net_wordcloud <- function(text, df, head_n = 30, color = "lightblue") {
     unlist() |>
     count_vec()
 
+  # rescale / normalize edge width
+  if (edge_norm) {
+    edge_width <- scales::rescale(graph$n, to = c(0, 10))
+  } else {
+    edge_width <- graph$n
+  }
+
   graph |>
     tidygraph::as_tbl_graph() |>
     # igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
     ggraph::ggraph(layout = "graphopt") +
-    ggraph::geom_edge_link(ggplot2::aes(edge_width = n, edge_alpha = 0.5),
+    ggraph::geom_edge_link(
+      ggplot2::aes(edge_width = edge_width, edge_alpha = 0.5),
       angle_calc = "along",
       label_dodge = grid::unit(4.5, "mm"),
       color = color,
@@ -53,7 +72,7 @@ net_wordcloud <- function(text, df, head_n = 30, color = "lightblue") {
     ggraph::geom_node_text(
       ggplot2::aes(
         label = name,
-        size = freqPPN$n
+        size = freqPPN$n,
         # size = freq
       ),
       repel = TRUE
