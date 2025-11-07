@@ -24,18 +24,29 @@
 #'
 #' @examples
 #' # plot_graph(txt, df = graph_count, head_n = 50, scale_graph = "log2")
-plot_graph2 <- function(text, df, head_n = 30,
-                        edge_color = "lightblue",
-                        edge_alpha = 0.5,
-                        node_alpha = 0.5,
-                        text_color = "black",
-                        text_size = 1,
-                        scale_graph = "scale_values") {
+plot_graph2 <- function(
+    text,
+    df,
+    head_n = 30,
+    edge_color = "lightblue",
+    edge_alpha = 0.5,
+    node_alpha = 0.5,
+    text_color = "black",
+    text_size = 1,
+    scale_graph = "scale_values") {
+  # to head or not to head
+  graph <- to_head_or_not_not_head(df, head_n)
+  # if (head_n == "") {
+  #   graph <- df
+  # } else {
+  #   graph <- df |> head(head_n)
+  # }
+
   scale_values <- function(x) {
     (x - min(x)) / (max(x) - min(x))
   }
 
-  graph <- df |>
+  graph <- graph |>
     head(head_n) |>
     dplyr::mutate(n = eval(dplyr::sym(scale_graph))(n))
 

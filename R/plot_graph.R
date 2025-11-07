@@ -22,16 +22,25 @@
 #'
 #' @examples
 #' # plot_graph(df = graph_count, head_n = 50, scale_graph = "log2")
-plot_graph <- function(df, head_n = 30,
-                       edge_color = "lightblue",
-                       edge_alpha = 0.5,
-                       node_alpha = 0.5,
-                       text_color = "black",
-                       text_size = 1
-                       # scale_graph = "scale_values"
+plot_graph <- function(
+  df,
+  head_n = 30,
+  edge_color = "lightblue",
+  edge_alpha = 0.5,
+  node_alpha = 0.5,
+  text_color = "black",
+  text_size = 1
+  # scale_graph = "scale_values"
 ) {
-  df |>
-    head(head_n) |>
+  # to head or not to head
+  if (head_n == "") {
+    graph <- df
+  } else {
+    graph <- df |> head(head_n)
+  }
+
+  graph |>
+    # head(head_n) |>
     tidygraph::as_tbl_graph() |>
     ggraph::ggraph(layout = "graphopt") +
     ggraph::geom_edge_link(
@@ -61,7 +70,7 @@ plot_graph <- function(df, head_n = 30,
       ),
       colour = text_color,
       size = text_size,
-      repel = TRUE
+      # repel = TRUE
     ) +
     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
     ggplot2::theme_void() +

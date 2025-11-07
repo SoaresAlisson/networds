@@ -25,85 +25,69 @@
 #' @export
 #'
 #' @examples
-#' gr <- ex_txt_wiki[2:44] |>
+#' gr <- txt_wiki[2:44] |>
 #'   filter_by_query("Police") |>
 #'   parsePOS()
+#'
 #' gr <- gr |> get_cooc_entities()
 #' plot_pos_graph(gr)
 #'
-#' gr <- ex_txt_wiki[2:44] |>
+#' Another example:
+#' gr <- txt_wiki[2:44] |>
 #'   filter_by_query("Brian") |>
 #'   parsePOS()
 #' gr <- gr |> get_cooc_entities()
 #' plot_pos_graph(gr)
 plot_pos_graph <- function(
-    pos_list,
-    n_head = 30,
-    edge_color = "lightblue",
-    edge_alpha = 0.1,
-    edge_norm = TRUE,
-    font_size = 2,
-    font_color = "black",
-    point_fill = "firebrick4",
-    point_alpha = 0.3,
-    point_color = "firebrick4",
-    graph_layout = "graphopt") {
-  # #  Updated upstream
-  # pos_list <- graph
-  # pos_list <-  graph_wiki
-  # # node_size <- pos_list$nodes |>
-  #   dplyr::filter(! node %in% pos_list$isolated_nodes$node)
-  #
-  # pos_list$edges |>
-  #   tidygraph::as_tbl_graph() |>
-  #     ggraph::ggraph(layout = graph_layout ) +
-  #     ggraph::geom_edge_link(ggplot2::aes(
-  #       edge_width = pos_list$edges$freq,
-  #       edge_alpha = 0.5),
-  #       angle_calc = "along",
-  #       label_dodge = grid::unit(4.5, "mm"),
-  #       color = edge_color,
-  #       end_cap = ggraph::circle(6, "mm")
-  #       ) + # afastamento do nó
-  #     ggraph::geom_node_point(ggplot2::aes(
-  #       size = node_size$freq,
-  #       alpha = point_alpha,
-  #       # alpha = 0.3,
-  #       fill = point_fill ,
-  #       color = point_color )) +
-  #     ggraph::geom_node_text(ggplot2::aes(
-  # # =======
-  # pos_list <- graph_ppn
-  # pos_list <- uber_g
-
-  try(head_edges <- pos_list$edges |> head(n_head))
-  try(head_edges <- pos_list$graph |> head(n_head))
-  try(head_edges <- pos_list$graphs |> head(n_head))
-  if (head_edges == 0) {
+  pos_list,
+  n_head = 30,
+  edge_color = "lightblue",
+  edge_alpha = 0.1,
+  edge_norm = TRUE,
+  font_size = 2,
+  font_color = "black",
+  point_fill = "firebrick4",
+  point_alpha = 0.3,
+  point_color = "firebrick4",
+  graph_layout = "graphopt"
+) {
+  try(edges <- pos_list$edges)
+  try(edges <- pos_list$graph)
+  try(edges <- pos_list$graphs)
+  # ifd_edges == 0) {
+  if (!exists("edges")) {
     stop("No edges found")
   }
-  # head_nodes <- c(head_edges$n1, head_edges$n2) |> unique()
-  if (edge_norm) {
-    edge_width <- scales::rescale(head_edges$freq, to = c(0, 10))
+
+  # to head or not to head
+  if (n_head == "") {
+    graph <- edges
   } else {
-    edge_width <- head_edges$freq
+    graph <- edges |> head(n_head)
+  }
+
+  # head_nodes <- c(graph$n1, head_edges$n2) |> unique()
+  if (edge_norm) {
+    edge_width <- scales::rescale(graph$freq, to = c(0, 10))
+  } else {
+    edge_width <- graph$freq
   }
   # node_size <- pos_list$nodes |> dplyr::filter(node %in% head_nodes)
-  # node_size <- head_edges  #|> dplyr::filter(!node %in% pos_list$isolated_nodes$node)
+  # node_size <- graph  #|> dplyr::filter(!node %in% pos_list$isolated_nodes$node)
   # nrow(pos_list$nodes)
-  g <- igraph::graph_from_data_frame(head_edges, directed = FALSE)
+  g <- igraph::graph_from_data_frame(graph, directed = FALSE)
 
   # Find the number of nodes
   num_nodes <- length(igraph::V(g))
-  node_size <- head_edges[1:num_nodes, "freq"] |> unlist()
+  node_size <- graph[1:num_nodes, "freq"] |> unlist()
 
-  head_edges |>
+  graph |>
     tidygraph::as_tbl_graph() |>
     ggraph::ggraph(layout = graph_layout) +
     ggraph::geom_edge_link(
       ggplot2::aes(
         # edge_width = pos_list$edges$freq,
-        # edge_width = head_edges$freq,
+        # edge_width = graph$freq,
         edge_width = edge_width,
         edge_alpha = 0.5
       ),

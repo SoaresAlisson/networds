@@ -1,12 +1,12 @@
 # TODO
 
 - build vignette
-- encerrar dependencia de sto: import s2v
+- ~~encerrar dependencia de sto: import s2v~~
 - conferir se collapse PPN esta funcionando
 - add _ underscore to compounded words
 - head_n pega o n da tabela de frequencia, mas não seria melhor pegar as entidades? Por outro lado, talvez
 - rename plot_graph2 to something else
-- rename package to netword
+- ~~rename package to netword~~
 - when running funs, check if spacy is initialized, and ask for the model
 - resolution of anaphora, cataphora
 - ~interactive net com outro pacote que dá weight~
@@ -17,9 +17,17 @@
 - ~fazer plot cooc a partir dos POS~
 - ~achar funcao que transforma df em nodes e edges: tidygraph::as_tbl_graph()~
 - ~plot graph, pegar 2 primeiras colunas se nao tiver from e to~
-- ~rename plot_graph to net_wordcloud~
+- ~~rename plot_graph to net_wordcloud~~
 - TF-IDF AND one graph pair per document, or show the doc index in extract_graph and extract_entity
 - ~~function dict: substitution of synonyms in both node columns~~
 - test to count_graphs
 - padronizar no extract_graph n and freq: dplyr::mutate(n = freq)
-- função para retirar nao letras e numeros, preservando o underline/underscore
+- função para retirar não letras e números, preservando o underline/underscore
+- retirar substantivo
+- extract_entity: opção para não retirar o_ underscore
+- networdcloud (parametro para correção da proporção)?
+- erros em gen_stopwords em roxygen
+- make bipartite, tripartite from different POS entities
+- use a bigger text in examples
+- criar cooccur com todas as palavras
+- substituir paramentros "using" por "by"

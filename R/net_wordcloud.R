@@ -3,7 +3,9 @@
 #' plot a network of co-occurrence of terms, as returned by extract_graph and
 #' then by dplyr::count(). The size of words and compound words means the
 #' individual frequency of each word/compound word. The thickness of the links
-#' indicates how often the pair occur together.
+#' indicates how often the pair occur together. Pay attention that if the words
+#' doesn't appear in different sizes when plotted, maybe the relative differences
+#' in their frequency can be very low.
 
 #'
 #' @param text the original text used to extract the graph. It is necessary to
