@@ -9,11 +9,11 @@ get_cooc(pos_df, pos_cat = c("NOUN", "ENTITY", "PROPN"), nodes = "lemma")
 \arguments{
 \item{pos_df}{a POS dataframe}
 
-\item{pos_cat}{the POS categories to be extracted. Default: NOUN, PROPN and
-ENTITY}
+\item{pos_cat}{the POS categories to be extracted. (Default: NOUN, PROPN and
+ENTITY).}
 
-\item{nodes}{the text column to be used as nodes. options: "token" and
-"lemma" Default: "lemma".}
+\item{nodes}{the name of the text column to be used as nodes. options: 
+"token" and "lemma" Default: "lemma".}
 }
 \description{
 from a POS dataframe (using `spacyr::spacy_parse()` or

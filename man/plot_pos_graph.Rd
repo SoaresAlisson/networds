@@ -51,13 +51,15 @@ The plot_pos_graph is based in ggraph, that is based on ggplot2. That means that
 is possible to customize the graph with ggplot2 functions, like `labs()`.
 }
 \examples{
-gr <- ex_txt_wiki[2:44] |>
+gr <- txt_wiki[2:44] |>
   filter_by_query("Police") |>
   parsePOS()
+
 gr <- gr |> get_cooc_entities()
 plot_pos_graph(gr)
 
-gr <- ex_txt_wiki[2:44] |>
+Another example:
+gr <- txt_wiki[2:44] |>
   filter_by_query("Brian") |>
   parsePOS()
 gr <- gr |> get_cooc_entities()

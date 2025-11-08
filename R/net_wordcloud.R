@@ -10,10 +10,12 @@
 #'
 #' @param text the original text used to extract the graph. It is necessary to
 #' calculate the individual frequency of the words.
-#' @param df a dataframe of co-occurrence, extracted with `extract_graph()` and
+#' @param DF a dataframe of co-occurrence, extracted with `extract_graph()` and
 #' `count(n1, n2)`
 #' @param head_n number of nodes to show - the more frequent. Dedault = 30. To
 #' display all, use `n_head = ""`
+#' @param lower Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization.
+#'
 #' @export
 #'
 #' @examples
@@ -22,44 +24,89 @@
 #' my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
 #'
 #' txt_wiki |> # text available in the package
+#'   cooccur(sw = my_sw) |>
+#'   net_wordcloud(txt_wiki, DF = _, head_n = 50) # plotting
+#'
+#' txt_wiki |> # text available in the package
 #'   # because it is a vector, let's collapse it into a single element:
 #'   paste(collapse = " ") |>
 #'   extract_graph(sw = my_sw) |>
 #'   networds::count_graphs() |> # counting the graphs
-#'   net_wordcloud(ex_txt_wiki, df = _) # plotting
+#'   net_wordcloud(txt_wiki, DF = _) # plotting
 net_wordcloud <- function(
-  text,
-  df,
-  head_n = 30,
-  color = "lightblue",
-  edge_norm = TRUE
-) {
+    text,
+    DF,
+    head_n = 30,
+    color = "lightblue",
+    lower = TRUE,
+    edge_norm = TRUE) {
   # to head or not to head
   if (head_n == "") {
-    graph <- df
+    Graph <- DF
   } else {
-    graph <- df |> head(head_n)
+    Graph <- DF |> head(head_n)
   }
-
-  # try(graph <- graph |> dplyr::mutate(n = freq)) # TODO padronizar no extract_graph
-  try(graph$n <- graph[[3]])
-  vert <- unique(c(graph$n1, graph$n2))
+  if (lower) {
+    Graph <- Graph |>
+      dplyr::mutate(
+        n1 = tolower(n1),
+        n2 = tolower(n2)
+      )
+    text <- tolower(text)
+  }
+  # getting all node unique names
+  # try(Graph <- Graph |> dplyr::mutate(n = freq)) # TODO padronizar no extract_graph
+  # rename column
+  try(Graph$n <- Graph[[3]])
+  vert <- unique(c(Graph$n1, Graph$n2)) |>
+    gsub(x = _, "\\.", "\\\\.") # to avoid punct be taken as regex .
 
   # frequency of nodes/terms
   freqPPN <- lapply(vert, \(v) {
-    text |> stringr::str_extract_all(v)
+    text |>
+      # gsub(x = _, "\\.", "\\\\.") |>
+      # stringr::str_extract_all(pattern = paste0("(?i)", v))
+      stringr::str_extract_all(pattern = paste0("\\b(?i)", v, "\\b"))
+    # stringr::str_extract_all(pattern = paste0("(?i)\\b", v, "\\b"))
   }) |>
     unlist() |>
     count_vec()
 
-  # rescale / normalize edge width
-  if (edge_norm) {
-    edge_width <- scales::rescale(graph$n, to = c(0, 10))
-  } else {
-    edge_width <- graph$n
+  # If used word like "New_York", it will clean, search in text, and put it back
+  # if (length(vert) != nrow(freqPPN)) {
+  freqPPN_nodes <- gsub(x = freqPPN$x, "\\.", "\\\\.")
+  inVert_not_inFreqPPN <- vert[!vert %in% freqPPN_nodes]
+  if (length(inVert_not_inFreqPPN) > 0) {
+    missing_nodes <- gsub(x = inVert_not_inFreqPPN, "_", " ")
+
+    missing_nodes_df <- lapply(missing_nodes, \(v) {
+      text |>
+        stringr::str_extract_all(pattern = paste0("\\b(?i)", v, "\\b"))
+    }) |>
+      unlist() |>
+      count_vec() |>
+      dplyr::mutate(x = gsub(x = x, " ", "_"))
+
+    freqPPN <- rbind(freqPPN, missing_nodes_df)
   }
 
-  graph |>
+  # inVert_not_inFreqPPN <- vert[!vert %in% freqPPN$x]
+  # if (length(inVert_not_inFreqPPN) > 0) {
+  #   stop(
+  #     "Conflict in the number of nodes. ",
+  #     length(inVert_not_inFreqPPN), " are missing: ",
+  #     paste(inVert_not_inFreqPPN, collapse = ", "), " is/are lacking."
+  #   )
+  # }
+
+  # rescale / normalize edge width
+  if (edge_norm) {
+    edge_width <- scales::rescale(Graph$n, to = c(0, 10))
+  } else {
+    edge_width <- Graph$n
+  }
+
+  Graph |>
     tidygraph::as_tbl_graph() |>
     # igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
     ggraph::ggraph(layout = "graphopt") +
@@ -74,8 +121,7 @@ net_wordcloud <- function(
     ggraph::geom_node_text(
       ggplot2::aes(
         label = name,
-        size = freqPPN$n,
-        # size = freq
+        size = freqPPN$freq,
       ),
       repel = TRUE
     ) + # TODO ajustar tamanho minimo e máximo

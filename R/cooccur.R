@@ -4,17 +4,24 @@
 #' @param token_by Tokenize by sentence or paragraph
 #' @param sw Stopwords to be removed
 #' @param lower Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization.
+#' @param loop if FALSE, self referential nodes (e.g. n1=x and also n2=x) will be excluded. Default FALSE.
 #' @param count Return count of words (default TRUE)
 #'
+#' @export
+#'
+#' @examples
 #' text |> cooccur()
 cooccur <- function(text, token_by = "sentence",
                     sw = "", lower = TRUE,
+                    loop = FALSE,
                     count = TRUE) {
-  # token_by = "sentence"; sw = ""
-  # sw <- sto::s2v("of by the a an in and was")
-
+  text_length <- length(text)
+  if (text_length > 1) {
+    message("You provided a vector of ", text_length, " elements instead of one. These will be collapsed into  a single element, with a final punctuation mark added to each.")
+    text <- paste(text, collapse = ".")
+  }
   if (nchar(text) < 1) {
-    stop("the text is empty")
+    stop("The text is empty")
   }
 
   if (token_by == "sentence") {
@@ -27,9 +34,9 @@ cooccur <- function(text, token_by = "sentence",
 
   # Clean stopwords
   word_tokens_list <- unlist(tokens) |> tokenizers::tokenize_words(lowercase = lower)
-  cleaned_tokens <- lapply(word_tokens_list, function(x) Filter(function(word) !word %in% sw, x))
+  cleaned_tokens <- lapply(word_tokens_list, \(x) Filter(function(word) !word %in% sw, x))
 
-  # if list element smaller than 2, then erase it
+  # if list element smaller than 2 elements, then erase it
   list_length_valid <- cleaned_tokens |>
     lapply(length) |>
     lapply(\(x) {
@@ -52,6 +59,9 @@ cooccur <- function(text, token_by = "sentence",
     n2 = comb_list[seq(2, length(comb_list), by = 2)]
   )
 
+  if (!loop) {
+    pairs <- pairs |> dplyr::filter(!n1 == n2)
+  }
   if (count) {
     pairs <- pairs |> dplyr::count(n1, n2, sort = TRUE)
   }

@@ -69,4 +69,4 @@ reference:
       - plot_pos_graph
       - plot_graph
       - plot_graph2
-      - interactive_graph
+      - viz_triplets_i

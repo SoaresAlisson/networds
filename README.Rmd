@@ -71,4 +71,4 @@ Check the vignettes:
 ## Similar Projects
 
 - [textnet](https://github.com/ucd-cepb/textnet) - "textNet is a set of tools in the R language that uses part-of-speech tagging and dependency parsing to generate semantic networks from text data. It is compatible with Universal Dependencies and has been tested on English-language text data".
-- [textnets](https://github.com/cbail/textnets) from Chris Bail. 
+- [textnets](https://github.com/cbail/textnets) from Chris Bail. It captures the proper names using UDpipe, plot word networks and calculates the centrality/betweeness of words in the network.

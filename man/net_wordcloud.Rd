@@ -4,22 +4,34 @@
 \alias{net_wordcloud}
 \title{plot net wordcloud}
 \usage{
-net_wordcloud(text, df, head_n = 30, color = "lightblue")
+net_wordcloud(
+  text,
+  DF,
+  head_n = 30,
+  color = "lightblue",
+  lower = TRUE,
+  edge_norm = TRUE
+)
 }
 \arguments{
 \item{text}{the original text used to extract the graph. It is necessary to
 calculate the individual frequency of the words.}
 
-\item{df}{a dataframe of co-occurrence, extracted with `extract_graph()` and
+\item{DF}{a dataframe of co-occurrence, extracted with `extract_graph()` and
 `count(n1, n2)`}
 
-\item{head_n}{number of nodes to show - the more frequent}
+\item{head_n}{number of nodes to show - the more frequent. Dedault = 30. To
+display all, use `n_head = ""`}
+
+\item{lower}{Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization.}
 }
 \description{
 plot a network of co-occurrence of terms, as returned by extract_graph and
 then by dplyr::count(). The size of words and compound words means the
 individual frequency of each word/compound word. The thickness of the links
-indicates how often the pair occur together.
+indicates how often the pair occur together. Pay attention that if the words
+doesn't appear in different sizes when plotted, maybe the relative differences
+in their frequency can be very low.
 }
 \examples{
 
@@ -27,9 +39,13 @@ indicates how often the pair occur together.
 my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
 
 txt_wiki |> # text available in the package
+  cooccur(sw = my_sw) |>
+  net_wordcloud(txt_wiki, DF = _, head_n = 50) # plotting
+
+txt_wiki |> # text available in the package
   # because it is a vector, let's collapse it into a single element:
   paste(collapse = " ") |>
   extract_graph(sw = my_sw) |>
   networds::count_graphs() |> # counting the graphs
-  net_wordcloud(ex_txt_wiki, df = _) # plotting
+  net_wordcloud(txt_wiki, DF = _) # plotting
 }
