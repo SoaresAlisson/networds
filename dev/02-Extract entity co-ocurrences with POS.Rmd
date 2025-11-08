@@ -1,6 +1,10 @@
 ---
 title: "02-Extract entity co-ocurrences with POS"
 output: rmarkdown::html_vignette
+knitr:
+  opts_chunk:
+    cache: true
+    # cache: false 
 vignette: >
   %\VignetteIndexEntry{entities_and_relation_extraction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -195,7 +199,10 @@ viz_graph(graph)
 
 ## Sotu example
 
-Using data from [{SOTU} package](https://cran.r-project.org/web/packages/sotu/index.html),  United States Presidential State of the Union Addresses.
+Using data from [{SOTU} package](https://cran.r-project.org/web/packages/sotu/index.html),  United States Presidential State of the Union Addresses^[The SOTU "is an annual message delivered by the president of the United States to a joint session of the United States Congress near the beginning of most calendar years on the current condition of the nation. The speech generally includes reports on the nation's budget, economy, news, agenda, progress, achievements and the president's priorities and legislative proposals."]:
+
+
+
 
 ```{r, eval=FALSE, echo=FALSE}
 library(sotu)
@@ -222,7 +229,7 @@ filter_by_query(sotu_text[237:240], "China") |>
   get_pairs(loop = TRUE)
 ```
 
-## Using another languages
+## Using other languages
 
 How {networds} uses spacy to tag the words, the user must initialize the model for the language.
 
@@ -230,7 +237,10 @@ To download other language model, check models available at [spacy.io/usage/mode
 Ex.: installing Portuguese, the models available are:
 
 ```{r install spacy models PT, eval = FALSE}
-modelsPT <- c("pt_core_news_sm", "pt_core_news_md", "pt_core_news_lg")
+modelsPT <- c(
+  "pt_core_news_sm", "pt_core_news_md",
+  "pt_core_news_lg"
+)
 
 # installing the bigger model
 spacyr::spacy_download_langmodel(modelsPT[3])

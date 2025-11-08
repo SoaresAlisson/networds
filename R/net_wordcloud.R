@@ -8,13 +8,16 @@
 #' in their frequency can be very low.
 
 #'
-#' @param text the original text used to extract the graph. It is necessary to
-#' calculate the individual frequency of the words.
 #' @param DF a dataframe of co-occurrence, extracted with `extract_graph()` and
 #' `count(n1, n2)`
+#' @param text the original text used to extract the graph. It is necessary to
+#' calculate the individual frequency of the words.
 #' @param head_n number of nodes to show - the more frequent. Dedault = 30. To
 #' display all, use `n_head = ""`
 #' @param lower Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization.
+#' @param edge_color color of the links
+#' @param edge_alpha transparency of the links. Values between 0 and 1.
+#' @param text_color color of the text in nodes
 #'
 #' @export
 #'
@@ -34,11 +37,13 @@
 #'   networds::count_graphs() |> # counting the graphs
 #'   net_wordcloud(txt_wiki, DF = _) # plotting
 net_wordcloud <- function(
-    text,
     DF,
+    text,
     head_n = 30,
-    color = "lightblue",
     lower = TRUE,
+    edge_color = "lightblue",
+    edge_alpha = 0.5,
+    text_color = "black",
     edge_norm = TRUE) {
   # to head or not to head
   if (head_n == "") {
@@ -111,10 +116,10 @@ net_wordcloud <- function(
     # igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
     ggraph::ggraph(layout = "graphopt") +
     ggraph::geom_edge_link(
-      ggplot2::aes(edge_width = edge_width, edge_alpha = 0.5),
+      ggplot2::aes(edge_width = edge_width, edge_alpha = edge_alpha),
       angle_calc = "along",
       label_dodge = grid::unit(4.5, "mm"),
-      color = color,
+      color = edge_color,
       # c("lightblue", "blue", "royalblue")[1],
       end_cap = ggraph::circle(6, "mm")
     ) + # afastamento do nó
@@ -123,6 +128,7 @@ net_wordcloud <- function(
         label = name,
         size = freqPPN$freq,
       ),
+      color = text_color,
       repel = TRUE
     ) + # TODO ajustar tamanho minimo e máximo
     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
