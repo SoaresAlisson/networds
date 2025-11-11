@@ -15,6 +15,7 @@
 #' @param text_color color of the text in nodes
 #' @param text_size font size of the nodes
 #' @param node_alpha transparency of the nodes
+#' @param node_color color of the nodes. If empty (default), it will use the same color of the edges.
 #' @param edge_color color of the edges
 #' @param edge_alpha transparency of the edges. Values between 0 and 1.
 #' @param edge_cut in mm, how much you want that the edge stop before reach the node. Can improve readability.
@@ -34,6 +35,7 @@ plot_graph2 <- function(
     text_color = "black",
     text_size = 1,
     node_alpha = 0.5,
+    node_color = "",
     edge_color = "lightblue",
     edge_alpha = 0.5,
     edge_cut = 0,
@@ -80,6 +82,7 @@ plot_graph2 <- function(
   # if (length(vert) != nrow(freqPPN)) {
   freqPPN_nodes <- gsub(x = freqPPN$x, "\\.", "\\\\.")
   inVert_not_inFreqPPN <- vert[!vert %in% freqPPN_nodes]
+
   if (length(inVert_not_inFreqPPN) > 0) {
     missing_nodes <- gsub(x = inVert_not_inFreqPPN, "_", " ")
 
@@ -93,6 +96,15 @@ plot_graph2 <- function(
 
     # freqPPN <- rbind(freqPPN, missing_nodes_df) |> suppressWarnings()
     freqPPN <- dplyr::bind_rows(freqPPN, missing_nodes_df) |> suppressWarnings()
+  }
+
+  if (node_color == "") {
+    node_color <- edge_color
+  }
+
+  if (class(text_size) != "numeric") {
+    message("No text_size provided. Using size proportional to frequency")
+    text_size <- eval(dplyr::sym(scale_graph))(freqPPN$freq)
   }
 
   graph |>
@@ -110,10 +122,9 @@ plot_graph2 <- function(
     ggraph::geom_node_point(
       ggplot2::aes(
         # normalizando o tamanho do texto
-        size = eval(dplyr::sym(scale_graph))(freqPPN$freq)
+        size = text_size,
       ),
-      # colour = node_color,
-      colour = edge_color,
+      colour = node_color,
       alpha = node_alpha,
       # repel = TRUE
     ) +
