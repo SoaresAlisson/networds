@@ -13,7 +13,7 @@
 #' @param head_n number of nodes to show - the more frequent
 #' @param lower Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization.
 #' @param text_color color of the text in nodes
-#' @param text_size font size of the nodes
+#' @param text_size font size of the nodes. If empty (default), it will use the frequency of word.
 #' @param node_alpha transparency of the nodes
 #' @param node_color color of the nodes. If empty (default), it will use the same color of the edges.
 #' @param edge_color color of the edges
@@ -33,7 +33,7 @@ plot_graph2 <- function(
     head_n = 30,
     lower = TRUE,
     text_color = "black",
-    text_size = 1,
+    text_size = NULL,
     node_alpha = 0.5,
     node_color = "",
     edge_color = "lightblue",
@@ -102,9 +102,11 @@ plot_graph2 <- function(
     node_color <- edge_color
   }
 
-  if (class(text_size) != "numeric") {
-    message("No text_size provided. Using size proportional to frequency")
-    text_size <- eval(dplyr::sym(scale_graph))(freqPPN$freq)
+  if (any(is.null(text_size), text_size == "")) {
+    # if (class(text_size) != "numeric") {
+    message("Using text_size proportional to word frequency as no text_size was provided in parameters")
+    # normalizando o tamanho do texto
+    text_size_freq <- eval(dplyr::sym(scale_graph))(freqPPN$freq)
   }
 
   graph |>
@@ -121,22 +123,32 @@ plot_graph2 <- function(
     ) + # afastamento do nó
     ggraph::geom_node_point(
       ggplot2::aes(
-        # normalizando o tamanho do texto
         size = text_size,
       ),
       colour = node_color,
       alpha = node_alpha,
       # repel = TRUE
     ) +
-    ggraph::geom_node_text(
-      ggplot2::aes(
-        label = name,
-        # fill = text_color,
-        size = text_size
-      ),
-      colour = text_color,
-      repel = TRUE
-    ) +
+    # text size. if size constant in all nodes or proportional to its frequency
+    {
+      if (length(text_size) == 1) {
+        ggraph::geom_node_text(
+          ggplot2::aes(label = name),
+          colour = text_color,
+          size = text_size, repel = TRUE
+        )
+      }
+    } +
+    {
+      if (length(text_size) > 1) {
+        ggraph::geom_node_text(
+          ggplot2::aes(
+            size = text_size_freq, label = name
+          ),
+          colour = text_color
+        )
+      }
+    } +
     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")

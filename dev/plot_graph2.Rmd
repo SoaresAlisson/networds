@@ -12,6 +12,8 @@ node_alpha <- 0.5
 node_color = "",
 text_color <- "black"
 text_size <- 1
+text_size <- NULL
+text_size <- ""
 edge_color <- "lightblue"
 edge_color <- "black"
 edge_alpha <- 1
@@ -49,6 +51,8 @@ DF <- text |> cooccur(sw = sw)
 plot_graph2(DF = DF, text, 
   edge_color = "blue", node_color = "", node_alpha = 0.8, edge_alpha = 1, 
   head_n = 100, text_size = 0.3)
-plot_graph2(DF = DF, text, edge_color = "blue", text_size = 3,  head_n = 100)
+plot_graph2(DF = DF, text, edge_color = "blue", text_size = 8,  head_n = 100)
+plot_graph2(DF = DF, text, edge_color = "blue", text_size = 1,  head_n = 100)
 plot_graph2(DF = DF, text, edge_color = "blue", text_size = "",  head_n = 100)
+plot_graph2(DF = DF, text, edge_color = "blue",  head_n = 100)
 ```
