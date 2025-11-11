@@ -9,29 +9,27 @@
 #' `count(n1, n2)`
 #' @param head_n number of nodes to show - the more frequent
 #' @param edge_color color of the edges
+#' @param edge_cut in mm, how much you want that the edge stop before reach the node. Can improve readability.
 #' @param edge_alpha transparency of the edges. Values between 0 and 1.
 #' @param node_alpha transparency of the nodes
 #' @param text_color color of the text in nodes
 #' @param text_size font size of the nodes
-#' @param scale_graph name of a function to normalize the result. Sometime, the range
-#' of numbers are so wide that the graph becomes unreadable. Applying a function
-#' to normalize the result can improve the readability, for example using
-# `scale_graph = "log2"`, or `"log10"`
 #'
 #' @export
 #'
 #' @examples
 #' # plot_graph(df = graph_count, head_n = 50, scale_graph = "log2")
 plot_graph <- function(
-  df,
-  head_n = 30,
-  edge_color = "lightblue",
-  edge_alpha = 0.5,
-  node_alpha = 0.5,
-  text_color = "black",
-  text_size = 1
-  # scale_graph = "scale_values"
-) {
+    df,
+    head_n = 30,
+    edge_color = "lightblue",
+    edge_alpha = 0.5,
+    edge_cut = 0,
+    node_alpha = 0.5,
+    text_color = "black",
+    text_size = 1
+    # scale_graph = "scale_values"
+    ) {
   # to head or not to head
   if (head_n == "") {
     graph <- df
@@ -51,7 +49,7 @@ plot_graph <- function(
       edge_alpha = edge_alpha,
       angle_calc = "along",
       label_dodge = grid::unit(4.5, "mm"),
-      end_cap = ggraph::circle(6, "mm")
+      end_cap = ggraph::circle(edge_cut, "mm")
     ) + # afastamento do nó
     ggraph::geom_node_point(
       ggplot2::aes(

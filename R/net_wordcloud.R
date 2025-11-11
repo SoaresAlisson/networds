@@ -17,6 +17,7 @@
 #' @param lower Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization.
 #' @param edge_color color of the links
 #' @param edge_alpha transparency of the links. Values between 0 and 1.
+#' @param edge_cut in mm, how much you want that the edge stop before reach the node. Can improve readability.
 #' @param text_color color of the text in nodes
 #'
 #' @export
@@ -43,6 +44,7 @@ net_wordcloud <- function(
     lower = TRUE,
     edge_color = "lightblue",
     edge_alpha = 0.5,
+    edge_cut = 2,
     text_color = "black",
     edge_norm = TRUE) {
   # to head or not to head
@@ -63,8 +65,7 @@ net_wordcloud <- function(
   # try(Graph <- Graph |> dplyr::mutate(n = freq)) # TODO padronizar no extract_graph
   # rename column
   try(Graph$n <- Graph[[3]])
-  vert <- unique(c(Graph$n1, Graph$n2)) |>
-    gsub(x = _, "\\.", "\\\\.") # to avoid punct be taken as regex .
+  vert <- unique(c(Graph$n1, Graph$n2)) |> gsub(x = _, "\\.", "\\\\.") # to avoid punct be taken as regex .
 
   # frequency of nodes/terms
   freqPPN <- lapply(vert, \(v) {
@@ -92,7 +93,7 @@ net_wordcloud <- function(
       count_vec() |>
       dplyr::mutate(x = gsub(x = x, " ", "_"))
 
-    freqPPN <- rbind(freqPPN, missing_nodes_df)
+    freqPPN <- rbind(freqPPN, missing_nodes_df) |> suppressWarnings()
   }
 
   # inVert_not_inFreqPPN <- vert[!vert %in% freqPPN$x]
@@ -121,7 +122,7 @@ net_wordcloud <- function(
       label_dodge = grid::unit(4.5, "mm"),
       color = edge_color,
       # c("lightblue", "blue", "royalblue")[1],
-      end_cap = ggraph::circle(6, "mm")
+      end_cap = ggraph::circle(edge_cut, "mm")
     ) + # afastamento do nó
     ggraph::geom_node_text(
       ggplot2::aes(
