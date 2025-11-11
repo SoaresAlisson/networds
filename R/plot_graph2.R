@@ -19,7 +19,7 @@
 #' @param edge_color color of the edges
 #' @param edge_alpha transparency of the edges. Values between 0 and 1.
 #' @param edge_cut in mm, how much you want that the edge stop before reach the node. Can improve readability.
-#' @param scale_graph name of a function to normalize the result. Sometime, the range
+#' @param scale_graph name of a function to normalize the result. Sometimes, the range
 #' of numbers are so wide that the graph becomes unreadable. Applying a function
 #' to normalize the result can improve the readability, for example using
 #' `scale_graph = "log2"`, or `"log10"`
@@ -33,9 +33,10 @@ plot_graph2 <- function(
     head_n = 30,
     lower = TRUE,
     text_color = "black",
-    text_size = NULL,
+    text_size = 1,
     node_alpha = 0.5,
-    node_color = "",
+    node_color = NULL,
+    node_size = NULL,
     edge_color = "lightblue",
     edge_alpha = 0.5,
     edge_cut = 0,
@@ -48,6 +49,7 @@ plot_graph2 <- function(
   #   graph <- df |> head(head_n)
   # }
 
+  # fun to normalize values
   scale_values <- function(x) {
     (x - min(x)) / (max(x) - min(x))
   }
@@ -61,7 +63,6 @@ plot_graph2 <- function(
     text <- tolower(text)
   }
   graph <- graph |>
-    # head(head_n) |>
     dplyr::mutate(n = eval(dplyr::sym(scale_graph))(n))
 
   vert <- unique(c(graph$n1, graph$n2)) |>
@@ -78,7 +79,7 @@ plot_graph2 <- function(
     unlist() |>
     count_vec()
 
-  # If used word like "New_York", it will clean, search in text, and put it back
+  # If used word like "New_York", it will clean the "_", search it in text, and put the underline back
   # if (length(vert) != nrow(freqPPN)) {
   freqPPN_nodes <- gsub(x = freqPPN$x, "\\.", "\\\\.")
   inVert_not_inFreqPPN <- vert[!vert %in% freqPPN_nodes]
@@ -98,15 +99,15 @@ plot_graph2 <- function(
     freqPPN <- dplyr::bind_rows(freqPPN, missing_nodes_df) |> suppressWarnings()
   }
 
-  if (node_color == "") {
+  if (any(is.null(node_color), node_color == "")) {
     node_color <- edge_color
   }
 
-  if (any(is.null(text_size), text_size == "")) {
+  if (any(is.null(node_size), node_size == "")) {
     # if (class(text_size) != "numeric") {
-    message("Using text_size proportional to word frequency as no text_size was provided in parameters")
+    message("Using node_size proportional to word frequency as no node_size was provided in parameters")
     # normalizando o tamanho do texto
-    text_size_freq <- eval(dplyr::sym(scale_graph))(freqPPN$freq)
+    node_size <- eval(dplyr::sym(scale_graph))(freqPPN$freq)
   }
 
   graph |>
@@ -115,40 +116,40 @@ plot_graph2 <- function(
     ggraph::ggraph(layout = "graphopt") +
     ggraph::geom_edge_link(
       ggplot2::aes(edge_width = n),
+      colour = edge_color,
       edge_alpha = edge_alpha,
       angle_calc = "along",
       label_dodge = grid::unit(4.5, "mm"),
-      colour = edge_color,
       end_cap = ggraph::circle(edge_cut, "mm")
     ) + # afastamento do nó
-    ggraph::geom_node_point(
-      ggplot2::aes(
-        size = text_size,
-      ),
-      colour = node_color,
-      alpha = node_alpha,
-      # repel = TRUE
-    ) +
     # text size. if size constant in all nodes or proportional to its frequency
     {
-      if (length(text_size) == 1) {
-        ggraph::geom_node_text(
-          ggplot2::aes(label = name),
-          colour = text_color,
-          size = text_size, repel = TRUE
+      if (length(node_size) == 1) {
+        ggraph::geom_node_point(
+          colour = node_color,
+          alpha = node_alpha,
+          size = node_size,
         )
       }
     } +
     {
-      if (length(text_size) > 1) {
-        ggraph::geom_node_text(
-          ggplot2::aes(
-            size = text_size_freq, label = name
-          ),
-          colour = text_color
+      if (length(node_size) > 1) {
+        ggraph::geom_node_point(
+          ggplot2::aes(size = node_size),
+          colour = node_color,
+          alpha = node_alpha
         )
       }
     } +
+    ggraph::geom_node_text(
+      ggplot2::aes(
+        label = name,
+        # fill = text_color,
+      ),
+      size = text_size,
+      colour = text_color,
+      repel = TRUE
+    ) +
     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")

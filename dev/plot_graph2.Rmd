@@ -53,6 +53,8 @@ plot_graph2(DF = DF, text,
   head_n = 100, text_size = 0.3)
 plot_graph2(DF = DF, text, edge_color = "blue", text_size = 8,  head_n = 100)
 plot_graph2(DF = DF, text, edge_color = "blue", text_size = 1,  head_n = 100)
-plot_graph2(DF = DF, text, edge_color = "blue", text_size = "",  head_n = 100)
-plot_graph2(DF = DF, text, edge_color = "blue",  head_n = 100)
+plot_graph2(DF = DF, text, edge_color = "blue", node_size = "", text_size = 4, head_n = 100)
+plot_graph2(DF = DF, text, edge_color = "blue", node_size = 2, text_size = 4,head_n = 100)
+plot_graph2(DF = DF, text, edge_color = "blue", node_size = 2, text_size = 4,head_n = 100, 
+  scale_graph = c("scale_values", "log2", "log10")[1])
 ```
