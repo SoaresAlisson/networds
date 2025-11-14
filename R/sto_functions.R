@@ -1,4 +1,5 @@
 # Functions here are copies of some functions from the packages SoaresAlisson/sto. I copied here to reduce dependencies
+# if one day sto will be in CRAN, than this files and functions will be removed.
 
 #' A gsub to be used easily with native pipe |>
 #' gsub2 is just a wrapper around gsub
@@ -57,4 +58,43 @@ count_vec <- function(vec, sort_n = TRUE) {
     vec_count <- vec_count |> dplyr::arrange(-freq)
   }
   tibble::as_tibble(vec_count)
+}
+
+
+#' tokenize words
+#'
+#' @description
+#' A word tokenizer, designed to keep compounded words, like "Covid-19"" or URLs
+#'
+#' @param txt input text
+#' @param lower convert words to lowercase. Default TRUE.
+#'
+#' @export
+#'
+#' @examples
+#' @examples
+#' txt <- "Was ice-cream better in Soviet Union or in New York? Bla bla, ble. The package https://quanteda.io/reference/index.html is very Nice! There are also compounded words like New_Jersey. The Covid-19 pandemic is very bad. Some,text,like;csv"
+#' tokenize_words(txt)
+#'
+#' txt2 <- c("Was ice-cream better before?", "The Covid-19 brought many problems.")
+#' tokenize_words(txt2)
+tokenize_words <- function(txt, lower = TRUE, unlist = FALSE) {
+  txt <- txt |>
+    strsplit("[ \n\t\r,;\\|]") |>
+    lapply(\(x){
+      x |>
+        gsub2("[!?,;]") |>
+        gsub2("\\W+$") |>
+        stringi::stri_remove_empty()
+    })
+
+  if (lower) {
+    txt <- lapply(txt, tolower)
+  }
+
+  if (unlist) {
+    txt <- unlist(txt)
+  }
+
+  return(txt)
 }
