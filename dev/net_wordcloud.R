@@ -1,5 +1,5 @@
 #
-# ....... -- DEV --- .......
+# ....... --- DEV --- .......
 #
 sw <- ""
 sw <- sto::s2v("of by the a an in and was")
@@ -35,8 +35,7 @@ if (head_n == "") {
   graph <- df |> head(head_n)
 }
 
-# ..........................................................
-# different number of elements in freq graph and freq words
+# .......................................................... different number of elements in freq graph and freq words
 Vert <- vert |> sort()
 FreqPPN <- freqPPN$x |> sort()
 FreqPPN[FreqPPN %in% Vert]
@@ -57,7 +56,11 @@ gsub(x=FreqPPN, "\\.", "\\\\.")
 # Ex
 txt_wiki |> # text available in the package                          
   cooccur(sw = my_sw) |>                                             
-  net_wordcloud(txt_wiki, DF = _, head_n = 90) # plotting                      
+  net_wordcloud(DF = _, text = txt_wiki, head_n = 90) # plotting                      
+
+txt_wiki |> # text available in the package                          
+  cooccur(sw = my_sw) |>                                             
+  net_wordcloud(DF = _, text = txt_wiki, head_n = 90, edge_alpha = 0.1) # plotting                      
 
 # using 
 wiki_graph <- txt_wiki |> # text available in the package                          

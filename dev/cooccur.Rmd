@@ -1,6 +1,14 @@
 
 Extraction of cooccurrence of all words, minus stopwords
 
+```{r token test}
+"bla bla ble-ble bli_bli blo1 blu.blu bla:ble bla/bli" |> 
+  tokenizers::tokenize_words(strip_punct = F)
+
+txt <- "Was ice-cream better in Soviet Union or in New York? Bla bla. The package https://quanteda.io/reference/index.html is very Nice! There are also compounded words like New_Jersey"
+```
+Preserva . _
+
 ```{r }
 get_cooc
 
@@ -23,6 +31,9 @@ token_by <- "sentence"
 sw <- ""
 count <- TRUE
 lower <- F
+lower <- T
+loop <- FALSE
+count <- TRUE
 ```
 ```{r }
 # Define the function

@@ -7,6 +7,8 @@ sto::ll("dplyr spacyr udpipe sto rsyntax tibble tidygraph ggraph networds")
 options(browser = "firefox")
 # detach("package:txtnet", unload = T)
 detach("package:networds", unload = T)
+unloadNamespace("networds")
+
 devtools::un
 # library("txtnet")
 ls("package:networds")
@@ -23,15 +25,19 @@ available::available("networds")
 list.files("vignettes")
 devtools::build_vignettes("vignettes")
 devtools::build_vignettes("vignettes/entities_and_relation_extraction.Rmd")
+devtools::build_vignettes("vignettes/02-Extract-entity-co-ocurrences-with-POS.Rmd")
 # devtools::build_vignettes("First_steps")
 # devtools::build_vignettes("entities_and_relation_extraction.Rmd")
 # devtools::build_vignettes("01-Extract entity coocurrences with regex")
 # devtools::build_vignettes("02-Extract entity co-ocurrences with POS")
 devtools::build_vignettes()
+devtools::clean_vignettes()
+devtools::build(vignette ss = FALSE)
 #devtools::install_github("quanteda/spacyr", build_vignettes = FALSE)
 vignette(pkgdown::metadata)
 usethis::use_readme_rmd()
 usethis::use_github()
+devtools::check_man() # Check documentation
 usethis::use_github_links() #  If a package is already connected to a remote GitHub repository, usethis::use_github_links() can be called to just add the relevant links to DESCRIPTION.
 
 usethis::use_data_table() # creates all the boilerplate. https://usethis.r-lib.org/reference/use_data_table.html
@@ -41,6 +47,7 @@ usethis::use_pkgdown() # is a function you run once and it does the initial, min
 pkgdown::clean_site(force = TRUE)
 pkgdown::build_site_github_pages()
 pkgdown::build_site() # is a function you’ll call repeatedly, to re-render your site locally. In an extremely barebones package, https://r-pkgs.org/website.html
+pkgdown::clean_site(force = TRUE)
 devtools::build_site() # Execute pkgdown build_site in a package
 pkgdown::build_reference()
 # build_site() is a shortcut for pkgdown::build_site()
@@ -454,7 +461,7 @@ DT_pos[, paste(token, collapse = " "), by = .(name, data.table::rleid(name))]  |
 dplyr::select(DT_pos, token,  name)[, paste(token, collapse = " "), by = .(name, data.table::rleid(name))]
 ```
 
-```
+
 
 
 
@@ -669,7 +676,7 @@ DT_pos |> extract_entities_l()
 library(tidygraph)
 library(ggraph)
 
-gr <- create_notable('herschel') %>%
+gr <- create_notable("herschel") %>%
   mutate(class = sample(letters[1:3], n(), TRUE)) %E>%
   mutate(weight = runif(n()))
 
@@ -677,11 +684,10 @@ gr <- create_notable('herschel') %>%
 autograph(gr, node_label = class)
 
 letters[1:10] |> create_notable()
-
 ```
 
 ```{r ex ggraph autograph }
-x <- txt_wiki[2:44] |> 
+x <- txt_wiki[2:44] |>
   filter_by_query("Police") |>
   parsePOS()
 
@@ -689,91 +695,97 @@ x
 
 gr <- get_cooc_entities(x)
 
-  graph <- df |> head(head_n)
-  vert <- unique(c(graph$n1, graph$n2))
+graph <- df |> head(head_n)
+vert <- unique(c(graph$n1, graph$n2))
 
-  # frequency of nodes/terms
-  freqPPN <- lapply(vert, \(v) {
-    text |> stringr::str_extract_all(v)
-  }) |>
-    unlist() |>
-    count_vec()
+# frequency of nodes/terms
+freqPPN <- lapply(vert, \(v) {
+  text |> stringr::str_extract_all(v)
+}) |>
+  unlist() |>
+  count_vec()
 
-color="lightblue"
-gr$edges |> 
+color <- "lightblue"
+gr$edges |>
   tidygraph::as_tbl_graph() |>
   ggraph::autograph(
-    node_label= name, 
+    node_label = name,
     node_size = gr$nodes$freq,
-    edge_colour = color, 
-    edge_width = freq)
-
+    edge_colour = color,
+    edge_width = freq
+  )
 ```
 ```{r ex ggraph}
 cv <- s2v("black blue yellow red dargoldenrod4 mediumblue midnightblue firebrick4 maroon4 forestgreen seagreen4 lightpink4 mediumpurple4")
 length(cv)
 
-edge_color = s2v("lightpink4 forestgreen")[2]
-edge_alpha = 0.1
+edge_color <- s2v("lightpink4 forestgreen")[2]
+edge_alpha <- 0.1
 
 # color="lightblue"
-point_color = cv[2]
-point_fill = cv[3]
-point_alpha = 0.3
+point_color <- cv[2]
+point_fill <- cv[3]
+point_alpha <- 0.3
 # font_color = s2v("dargoldenrod4 mediumblue firebrick4")[2]
-font_color = cv[2]
-font_size = 2
+font_color <- cv[2]
+font_size <- 2
 
-graph_layout = s2v("nicely graphopt stress kk mds fr drl lgl")
+graph_layout <- s2v("nicely graphopt stress kk mds fr drl lgl")
 
-# gr$edges |> as_tbl_graph() 
+# gr$edges |> as_tbl_graph()
 # gr
 
-node_size <- gr$nodes |> 
+node_size <- gr$nodes |>
   dplyr::filter(!node %in% gr$isolated_nodes$node)
 
 gr$edges |>
   tidygraph::as_tbl_graph() |>
-    # igraph::graph_from_data_frame(directed = FALSE, vertices = gr$nodes ) |>
-    ggraph::ggraph(layout = graph_layout[6]) +
-    ggraph::geom_edge_link(ggplot2::aes(
-    # edge_width = 1, 
-      edge_width = gr$edges$freq, 
-      edge_alpha = edge_alpha),
-      angle_calc = "along",
-      label_dodge = grid::unit(4.5, "mm"),
-      color = edge_color,
-      # c("lightblue", "blue", "royalblue")[1],
-      end_cap = ggraph::circle(6, "mm")  # afastamento do nó
-    ) + 
-    ggraph::geom_node_point(ggplot2::aes(
-      size = node_size$freq, 
-      alpha = point_alpha, 
-      # alpha = 0.3, 
-      fill = point_fill ,
-      color = point_color )) +
-    ggraph::geom_node_text(ggplot2::aes(
+  # igraph::graph_from_data_frame(directed = FALSE, vertices = gr$nodes ) |>
+  ggraph::ggraph(layout = graph_layout[6]) +
+  ggraph::geom_edge_link(
+    ggplot2::aes(
+      # edge_width = 1,
+      edge_width = gr$edges$freq,
+      edge_alpha = edge_alpha
+    ),
+    angle_calc = "along",
+    label_dodge = grid::unit(4.5, "mm"),
+    color = edge_color,
+    # c("lightblue", "blue", "royalblue")[1],
+    end_cap = ggraph::circle(6, "mm") # afastamento do nó
+  ) +
+  ggraph::geom_node_point(ggplot2::aes(
+    size = node_size$freq,
+    alpha = point_alpha,
+    # alpha = 0.3,
+    fill = point_fill,
+    color = point_color
+  )) +
+  ggraph::geom_node_text(
+    ggplot2::aes(
       label = name,
       # alpha = 0,
       size = font_size,
       # fill = "mediumpurple4",
-      color = font_color), 
-      # size = node_size$freq), 
-      repel = TRUE) + 
-  
+      color = font_color
+    ),
+    # size = node_size$freq),
+    repel = TRUE
+  ) +
+
   ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none")
+  ggplot2::theme(legend.position = "none")
 ```
 ```{r list data to test fun graph_ppn}
-gr$edges  |> plot_pos_graph()
-txt_wiki[2:44] |> 
+gr$edges |> plot_pos_graph()
+txt_wiki[2:44] |>
   filter_by_query("Police") |>
-  parsePOS() |> 
-  get_cooc_entities() |> 
+  parsePOS() |>
+  get_cooc_entities() |>
   plot_pos_graph()
 
-graph_ppn <- filter_by_query(txt_wiki[2:44], "Police") |> 
-  parsePOS(only_entities=FALSE)  |> 
+graph_ppn <- filter_by_query(txt_wiki[2:44], "Police") |>
+  parsePOS(only_entities = FALSE) |>
   dplyr::filter(entity_type != "CARDINAL") |> # to clean the graph
   dplyr::mutate(token = gsub("Police", "police", token)) |> # normalize the term "police"
   get_cooc()
@@ -782,22 +794,22 @@ graph_ppn <- filter_by_query(txt_wiki[2:44], "Police") |>
 plot_pos_graph <- function(pos_list,
                            edge_color = "lightblue",
                            edge_alpha = 0.1,
-                           font_size=2, 
+                           font_size = 2,
                            font_color = "black",
                            point_fill = "firebrick4",
                            point_alpha = 0.3,
                            point_color = "firebrick4",
                            graph_layout = "graphopt") {
-# === Updated upstream
-    # pos_list <- graph_ppn
-  # 
-  # node_size <- pos_list$nodes |> 
+  # === Updated upstream
+  # pos_list <- graph_ppn
+  #
+  # node_size <- pos_list$nodes |>
   #   dplyr::filter(!node %in% pos_list$isolated_nodes$node)
   #
   # pos_list$edges |>
-# =======
-# pos_list <- graph_ppn
-  # pos_list <- uber_g 
+  # =======
+  # pos_list <- graph_ppn
+  # pos_list <- uber_g
 
   head_edges <- pos_list$edges |> head(n_head)
   head_nodes <- c(head_edges$n1, head_edges$n2) |> unique()
@@ -806,60 +818,67 @@ plot_pos_graph <- function(pos_list,
   # node_size <- head_edges  #|> dplyr::filter(!node %in% pos_list$isolated_nodes$node)
   # nrow(pos_list$nodes)
 
- head_edges |> 
-## ===== Stashed changes
+  head_edges |>
+    ## ===== Stashed changes
     tidygraph::as_tbl_graph() |>
-      ggraph::ggraph(layout = graph_layout) +
-      ggraph::geom_edge_link(ggplot2::aes(
-        edge_width = pos_list$edges$freq, 
-        edge_alpha = 0.5),
-        angle_calc = "along",
-        label_dodge = grid::unit(4.5, "mm"),
-        color = color,
-        end_cap = ggraph::circle(6, "mm")
-        ) + # afastamento do nó
-      ggraph::geom_node_point(ggplot2::aes(
-        size = node_size$freq, 
-        alpha = point_alpha, 
-        # alpha = 0.3, 
-        fill = point_fill ,
-        color = point_color )) +
-      ggraph::geom_node_text(ggplot2::aes(
+    ggraph::ggraph(layout = graph_layout) +
+    ggraph::geom_edge_link(
+      ggplot2::aes(
+        edge_width = pos_list$edges$freq,
+        edge_alpha = 0.5
+      ),
+      angle_calc = "along",
+      label_dodge = grid::unit(4.5, "mm"),
+      color = color,
+      end_cap = ggraph::circle(6, "mm")
+    ) + # afastamento do nó
+    ggraph::geom_node_point(ggplot2::aes(
+      size = node_size$freq,
+      alpha = point_alpha,
+      # alpha = 0.3,
+      fill = point_fill,
+      color = point_color
+    )) +
+    ggraph::geom_node_text(
+      ggplot2::aes(
         label = name,
         # alpha = 0,
-      # size = node_size$freq), 
+        # size = node_size$freq),
         size = font_size,
         # fill = "mediumpurple4",
-        color = font_color), 
-        repel = TRUE) + 
-      ggplot2::theme_void() +
-      ggplot2::theme(legend.position = "none")
- }
+        color = font_color
+      ),
+      repel = TRUE
+    ) +
+    ggplot2::theme_void() +
+    ggplot2::theme(legend.position = "none")
+}
 
 graph_ppn |> plot_pos_graph(font_size = 5)
 # ggsave("www/graph_pos_wikiText.png", width = 8, height = 8)
 ```
 ```{r testing}
 # outros dados para testar a funcao plot_pos_graph
-arq <- "~/Documentos/Programação/R/cebrap/analise_tribunais/data/uber-agregado-acordaos.Rds"; file.exists(arq)
+arq <- "~/Documentos/Programação/R/cebrap/analise_tribunais/data/uber-agregado-acordaos.Rds"
+file.exists(arq)
 # file.exists("arq")
 uber_acor <- readRDS(arq)
 dplyr::glimpse(uber_acor)
-try(spacyr::spacy_finalize() )
+try(spacyr::spacy_finalize())
 spacyr::spacy_initialize(model = "pt_core_news_lg")
 tictoc::tic()
-uber_g  <- 
+uber_g <-
   uber_acor$textoAcordao_txt |>
-    filter_by_query("onerosidade") |>
-    parsePOS() |>
-    get_cooc_entities()
+  filter_by_query("onerosidade") |>
+  parsePOS() |>
+  get_cooc_entities()
 tictoc::toc() # uber:342.445 sec = 5,7 min
 # uber_g
-uber_g |> plot_pos_graph(font_size=75, n_head = n_head ) + labs(title = f('Os {n_head} termos coocorrentes ao termo "{termo}"'))
+uber_g |> plot_pos_graph(font_size = 75, n_head = n_head) + labs(title = f('Os {n_head} termos coocorrentes ao termo "{termo}"'))
 ggsave(f("~/Documentos/Programação/R/cebrap/analise_tribunais/www/uber_coocorrencias_{termo}_{n_head}.png"), width = 8, height = 8)
 ```
 ```{r}
-# gr$edges |> 
+# gr$edges |>
 #   tidygraph::as_tbl_graph() |>
 #   ggraph::autograph(node_label= name)
 #
@@ -867,7 +886,7 @@ ggsave(f("~/Documentos/Programação/R/cebrap/analise_tribunais/www/uber_coocorr
 # ```{r ex ggraph}
 # color="lightblue"
 #
-# gr$edges |> as_tbl_graph() 
+# gr$edges |> as_tbl_graph()
 #
 # gr$edges |>
 #   tidygraph::as_tbl_graph() |>
@@ -885,7 +904,6 @@ ggsave(f("~/Documentos/Programação/R/cebrap/analise_tribunais/www/uber_coocorr
 #     # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
 #     ggplot2::theme_void() +
 #     ggplot2::theme(legend.position = "none")
-
 ```
 
 
@@ -1250,17 +1268,20 @@ as_tibble(txtPT_trt_full_pos) |> extract_graph_pos(F)
 ## test 
 
 ```{r antivax news read}
-Dir  <- "~/Documentos/Programação/R/meus_pacotes/busca_empregos/diario_oficial/dev/"
+Dir <- "~/Documentos/Programação/R/meus_pacotes/busca_empregos/diario_oficial/dev/"
 files <- list.files(Dir)
-texto  <- readLines(paste0(Dir, files[1]))
-texto <- texto[1:308] |> 
+texto <- readLines(paste0(Dir, files[1]))
+texto <- texto[1:308] |>
   tail(50) |>
-  trimws() |> stringi::stri_remove_empty()
+  trimws() |>
+  stringi::stri_remove_empty()
 ```
 ```{r extract}
 sto::show_sw("pt")
 my_sw <- sto::gen_stopwords("pt", cat = "IN CC CD DT PREP PP PPZ demonstrativo", add = "Já")
-texto |> paste(collapse = " ") |> extract_entity(sw = my_sw)
+texto |>
+  paste(collapse = " ") |>
+  extract_entity(sw = my_sw)
 ```
 
 

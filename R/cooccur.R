@@ -3,7 +3,8 @@
 #' @param text Text
 #' @param token_by Tokenize by sentence or paragraph
 #' @param sw Stopwords to be removed
-#' @param lower Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization.
+#' @param lower Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization. It is advised to use lowercase.
+# @param compound_words wich words will be united by underscore to be considered as a single word.
 #' @param loop if FALSE, self referential nodes (e.g. n1=x and also n2=x) will be excluded. Default FALSE.
 #' @param count Return count of words (default TRUE)
 #'
@@ -13,15 +14,21 @@
 #' text |> cooccur()
 cooccur <- function(text, token_by = "sentence",
                     sw = "", lower = TRUE,
+                    # compound_words = "",
                     loop = FALSE,
                     count = TRUE) {
   text_length <- length(text)
+
   if (text_length > 1) {
-    message("You provided a vector of ", text_length, " elements instead of one. These will be collapsed into  a single element, with a final punctuation mark added to each.")
+    message(
+      "You provided a vector of ", text_length,
+      " elements instead of one. These will be collapsed into  a single element, with a final punctuation mark added to each."
+    )
     text <- paste(text, collapse = ".")
   }
+
   if (nchar(text) < 1) {
-    stop("The text is empty")
+    stop("The text provided is empty")
   }
 
   if (token_by == "sentence") {
@@ -32,9 +39,25 @@ cooccur <- function(text, token_by = "sentence",
     stop("Invalid token_type. Must be 'sentence' or 'paragraph'.")
   }
 
+  # if (nchar(compound_words) > 0) {
+  #   tokens <- lapply(tokens, \(x) {
+  #     x <- sto::compound_words(tokens, compound_words)
+  #   })
+  # }
+
   # Clean stopwords
-  word_tokens_list <- unlist(tokens) |> tokenizers::tokenize_words(lowercase = lower)
-  cleaned_tokens <- lapply(word_tokens_list, \(x) Filter(function(word) !word %in% sw, x))
+  word_tokens_list <- unlist(tokens) |>
+    # tokenizers::tokenize_words(lowercase = lower)
+    tokenize_words(lower = lower)
+
+  if (length(sw) > 0) {
+    cleaned_tokens <- lapply(
+      word_tokens_list,
+      \(x) Filter(function(word) !word %in% sw, x)
+    )
+  } else {
+    cleaned_tokens <- as.list(word_tokens_list)
+  }
 
   # if list element smaller than 2 elements, then erase it
   list_length_valid <- cleaned_tokens |>

@@ -29,5 +29,11 @@
 - erros em gen_stopwords em roxygen
 - make bipartite, tripartite from different POS entities
 - use a bigger text in examples
-- criar cooccur com todas as palavras
+- ~criar cooccur com todas as palavras~
 - substituir paramentros "using" por "by"
+- net_wordcloud add param freq to word labels
+- atualizer testes no net_wordcloud e em cooccur
+- ~mudar ordem dos parametros net_wordcloud, colocar DF e text para usar com pipe~
+- add interactive option,  ggiraph
+- ~replace_all compounded words, like New_york: added in {sto}~
+- test for tokenize_words in sto_functions

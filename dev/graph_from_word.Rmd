@@ -134,10 +134,9 @@ get_pairs <- function(pos, loop=FALSE) {
       dplyr::group_by(doc_id) |> dplyr::summarise(entities = list(unique(entity))) 
     }
 
-  comb <- entities_by_txt$entities |> 
-    as.list() |> 
-    lapply(combn, 2, simplify=FALSE) |>
-    unlist()
+  comb_list <- entities_by_txt$entities |> 
+    as.list() |>
+    lapply(combn, 2, simplify=FALSE) # |> unlist()
 
     tibble::tibble(
       n1 = comb[seq(1, length(comb), by = 2)],
@@ -198,15 +197,14 @@ graph_df <- data.frame(
   col2 = letters[1:5],
   col3 = c(TRUE, FALSE, TRUE, FALSE, TRUE)
 )
-  col_names <- graph_df |> colnames()
+col_names <- graph_df |> colnames()
 
-  if(col_names %in% c("from", "to") |> any() ) {
-    col_names[1] <- "from"
-    col_names[2] <- "to"
+if (col_names %in% c("from", "to") |> any()) {
+  col_names[1] <- "from"
+  col_names[2] <- "to"
 
-    colnames(graph_df) <- col_names
-  }
-
+  colnames(graph_df) <- col_names
+}
 ```
 
 

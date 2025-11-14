@@ -1,15 +1,20 @@
 ```{r }
-DF <- txt_wiki[2:44] |>
-  extract_graph() |>
-  count_graphs()
 sw <- stopwordsgen::gen_stopwords(lang = "pt", categories = "all")
 sw <- stopwordsgen::gen_stopwords(lang = "en", categories = "all")
 text <- txt_wiki[2:44]
 text <- txt_wiki[2:44] |> paste(collapse = ". ")
+
+DF <- txt_wiki[2:44] |>
+  extract_graph() |>
+  count_graphs()
+
+DF <- txt_wiki[2:44] |> cooccur(sw = sw)
+
 head_n <- 30
 lower <- TRUE
 node_alpha <- 0.5
-node_color = "",
+node_color = ""
+node_color = NULL
 text_color <- "black"
 text_size <- 1
 text_size <- NULL
@@ -34,27 +39,41 @@ stringr::str_extract_all(txt_wiki, pattern = not_listed[1]) |>  unlist()
 grepl(x=txt_wiki, pattern = Vert[1]) |>  unlist()
 grepl(x=txt_wiki, pattern = not_listed[1]) |>  unlist()
 # "3d"   "december" "mangione" "york"
-tokens 
+tokens
+
+freqx <- freqPPN$x
+v_g <- c(graph$n1, graph$n2)  |> unique()
+freqx[!freqx %in% v_g]
+v_g[v_g %in% freqx]
+v_g[!v_g %in% freqx]
 # ..........................................................
 
 ```
 ```{r }
-plot_graph2(DF = DF, text, edge_color = 1)
+DF <- txt_wiki[2:44] |>
+  extract_graph() |>
+  count_graphs()
+
+plot_graph2(DF = DF, text, edge_color = 1, text_size = 2.5)
 ```
 ```{r }
-text R- txt_wiki[2:44]
+text <- txt_wiki[2:44]
 DF <- text |> cooccur(sw = sw)
-plot_graph2(DF = DF, text, edge_color = 1)
+plot_graph2(DF = DF, text, edge_color = 1, text_size = 2.5)
 
 text <- text_sample
 DF <- text |> cooccur(sw = sw)
-plot_graph2(DF = DF, text, 
-  edge_color = "blue", node_color = "", node_alpha = 0.8, edge_alpha = 1, 
-  head_n = 100, text_size = 0.3)
-plot_graph2(DF = DF, text, edge_color = "blue", text_size = 8,  head_n = 100)
-plot_graph2(DF = DF, text, edge_color = "blue", text_size = 1,  head_n = 100)
+plot_graph2(
+  DF = DF, text,
+  edge_color = "blue", node_color = "", node_alpha = 0.8, edge_alpha = 1,
+  head_n = 100, text_size = 0.3
+)
+plot_graph2(DF = DF, text, edge_color = "blue", text_size = 8, head_n = 100)
+plot_graph2(DF = DF, text, edge_color = "blue", text_size = 1, head_n = 100)
 plot_graph2(DF = DF, text, edge_color = "blue", node_size = "", text_size = 4, head_n = 100)
-plot_graph2(DF = DF, text, edge_color = "blue", node_size = 2, text_size = 4,head_n = 100)
-plot_graph2(DF = DF, text, edge_color = "blue", node_size = 2, text_size = 4,head_n = 100, 
-  scale_graph = c("scale_values", "log2", "log10")[1])
+plot_graph2(DF = DF, text, edge_color = "blue", node_size = 2, text_size = 4, head_n = 100)
+plot_graph2(
+  DF = DF, text, edge_color = "blue", node_size = 2, text_size = 4, head_n = 100,
+  scale_graph = c("scale_values", "log2", "log10")[1]
+)
 ```

@@ -1,0 +1,64 @@
+```{r default parameters}
+n_head <- ""
+n_head <- 30
+head_n <- 30
+edge_color <- "lightblue"
+edge_alpha <- 0.1
+edge_norm <- TRUE
+font_size <- 2
+font_color <- "black"
+point_fill <- "firebrick4"
+point_alpha <- 0.3
+point_color <- "firebrick4"
+graph_layout <- "graphopt"
+```
+```{r }
+# #  Updated upstream
+pos_list <- graph
+pos_list <- graph_wiki
+pos_list <- graph_ppn
+pos_list <- uber_g
+# # node_size <- pos_list$nodes |>
+#   dplyr::filter(! node %in% pos_list$isolated_nodes$node)
+#
+# pos_list$edges |>
+#   tidygraph::as_tbl_graph() |>
+#     ggraph::ggraph(layout = graph_layout ) +
+#     ggraph::geom_edge_link(ggplot2::aes(
+#       edge_width = pos_list$edges$freq,
+#       edge_alpha = 0.5),
+#       angle_calc = "along",
+#       label_dodge = grid::unit(4.5, "mm"),
+#       color = edge_color,
+#       end_cap = ggraph::circle(6, "mm")
+#       ) + # afastamento do nó
+#     ggraph::geom_node_point(ggplot2::aes(
+#       size = node_size$freq,
+#       alpha = point_alpha,
+#       # alpha = 0.3,
+#       fill = point_fill ,
+#       color = point_color )) +
+#     ggraph::geom_node_text(ggplot2::aes(
+# # =======
+```
+```{r exemplo roxygen }
+#' @examples
+data(ex_txt_wiki)
+gr <- txt_wiki[2:44] |>
+  filter_by_query("Police") |>
+  parsePOS()
+
+DF <- txt_wiki[2:44] |>
+  extract_graph() |>
+  count_graphs()
+
+gr <- gr |> get_cooc_entities()
+plot_pos_graph(gr)
+
+# Another example
+gr <- txt_wiki[2:44] |>
+  filter_by_query("Brian") |>
+  parsePOS()
+gr <- gr |> get_cooc_entities()
+plot_pos_graph(gr)
+```

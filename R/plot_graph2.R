@@ -62,6 +62,7 @@ plot_graph2 <- function(
       )
     text <- tolower(text)
   }
+
   graph <- graph |>
     dplyr::mutate(n = eval(dplyr::sym(scale_graph))(n))
 
@@ -105,9 +106,10 @@ plot_graph2 <- function(
 
   if (any(is.null(node_size), node_size == "")) {
     # if (class(text_size) != "numeric") {
-    message("Using node_size proportional to word frequency as no node_size was provided in parameters")
     # normalizando o tamanho do texto
     node_size <- eval(dplyr::sym(scale_graph))(freqPPN$freq)
+    message("Using node_size proportional to word frequency as no node_size was provided in parameters")
+    # message(node_size)
   }
 
   graph |>

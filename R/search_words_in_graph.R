@@ -80,6 +80,7 @@ filter_by_query <- function(
 #' txt_wiki |>
 #'   filter_by_query("Police") |>
 #'   parsePOS()
+#'
 #' txt_wiki |>
 #'   filter_by_query("Police") |>
 #'   parsePOS(only_entities = FALSE)
@@ -151,9 +152,6 @@ graph_from_cooccurrence <- function(
   strip_rgx = "^the_",
   freq = TRUE
 ) {
-  # df_cooccurrence  <- entities_by_txt
-  # df_cooccurrence  <- pos2
-  # df_cooccurrence  <- DF # from test files 
   if (nrow(df_cooccurrence) == 0) stop("Empty dataframe.")
 
   # check colnames
@@ -176,8 +174,11 @@ graph_from_cooccurrence <- function(
   lonely_nodes <- node_list |>
     lapply(length) |>
     unlist() == 1
-  all_nodes_are_lonely = all(lonely_nodes)
+
+  all_nodes_are_lonely <- all(lonely_nodes)
+
   if(all_nodes_are_lonely){  stop("All nodes are solitary. No graph pairs detected.")} 
+  
   lonely_nodes <- node_list[lonely_nodes] |> unlist()
 
   # removing list elements that has length < 1
@@ -185,8 +186,10 @@ graph_from_cooccurrence <- function(
     lapply(length) |>
     unlist() > 1
 
+  node_list <- node_list[list_length_correct]
+
   # combining pairs
-  comb_list <- node_list[list_length_correct] |>
+  comb_list <- node_list |>
     lapply(combn, 2, simplify = FALSE) |>
     unlist()
 
@@ -254,6 +257,7 @@ graph_from_cooccurrence <- function(
 #' x <- txt_wiki |> filter_by_query("Police")
 #' x <- x |> parsePOS()
 #' get_cooc_entities(x)
+#'
 #' # with loops /self-reference
 #' get_cooc_entities(x, loop = TRUE)
 #' get_cooc_entities(x, lower_case = TRUE)
@@ -294,10 +298,10 @@ get_cooc_entities <- function(
 #' `parsePOS(only_entities = FALSE)` ) get the pairs of co-occurrences.
 #'
 #' @param pos_df a POS dataframe
-#' @param pos_cat the POS categories to be extracted. Default: NOUN, PROPN and
-#' ENTITY
-#' @param nodes the text column to be used as nodes. options: "token" and
-#' "lemma" Default: "lemma".
+#' @param pos_cat the POS categories to be extracted. (Default: NOUN, PROPN and
+#' ENTITY).
+#' @param nodes the name of the text column to be used as nodes. options: 
+#' "token" and "lemma" Default: "lemma".
 #'
 #' @export
 #'
