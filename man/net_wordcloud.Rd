@@ -5,25 +5,36 @@
 \title{plot net wordcloud}
 \usage{
 net_wordcloud(
-  text,
   DF,
+  text,
   head_n = 30,
-  color = "lightblue",
   lower = TRUE,
+  edge_color = "lightblue",
+  edge_alpha = 0.5,
+  edge_cut = 2,
+  text_color = "black",
   edge_norm = TRUE
 )
 }
 \arguments{
-\item{text}{the original text used to extract the graph. It is necessary to
-calculate the individual frequency of the words.}
-
 \item{DF}{a dataframe of co-occurrence, extracted with `extract_graph()` and
 `count(n1, n2)`}
+
+\item{text}{the original text used to extract the graph. It is necessary to
+calculate the individual frequency of the words.}
 
 \item{head_n}{number of nodes to show - the more frequent. Dedault = 30. To
 display all, use `n_head = ""`}
 
 \item{lower}{Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization.}
+
+\item{edge_color}{color of the links}
+
+\item{edge_alpha}{transparency of the links. Values between 0 and 1.}
+
+\item{edge_cut}{in mm, how much you want that the edge stop before reach the node. Can improve readability.}
+
+\item{text_color}{color of the text in nodes}
 }
 \description{
 plot a network of co-occurrence of terms, as returned by extract_graph and

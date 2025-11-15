@@ -20,7 +20,7 @@ cooccur(
 
 \item{sw}{Stopwords to be removed}
 
-\item{lower}{Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization.}
+\item{lower}{Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization. It is advised to use lowercase.}
 
 \item{loop}{if FALSE, self referential nodes (e.g. n1=x and also n2=x) will be excluded. Default FALSE.}
 

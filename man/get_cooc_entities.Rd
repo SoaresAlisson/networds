@@ -20,6 +20,7 @@ from a POS dataframe (using filter_by_query() |> parsePOS()) get the pairs of en
 x <- txt_wiki |> filter_by_query("Police")
 x <- x |> parsePOS()
 get_cooc_entities(x)
+
 # with loops /self-reference
 get_cooc_entities(x, loop = TRUE)
 get_cooc_entities(x, lower_case = TRUE)

@@ -5,36 +5,46 @@
 \title{weighted word graph viz}
 \usage{
 plot_graph2(
+  DF,
   text,
-  df,
   head_n = 30,
-  edge_color = "lightblue",
-  edge_alpha = 0.5,
-  node_alpha = 0.5,
+  lower = TRUE,
   text_color = "black",
   text_size = 1,
+  node_alpha = 0.5,
+  node_color = NULL,
+  node_size = NULL,
+  edge_color = "lightblue",
+  edge_alpha = 0.5,
+  edge_cut = 0,
   scale_graph = "scale_values"
 )
 }
 \arguments{
-\item{text}{an input text}
-
-\item{df}{a dataframe of co-occurrence, extracted with `extract_graph()` and
+\item{DF}{a dataframe of co-occurrence, extracted with `extract_graph()` and
 `count(n1, n2)`}
 
+\item{text}{an input text}
+
 \item{head_n}{number of nodes to show - the more frequent}
+
+\item{lower}{Convert words to lowercase. If the text is passed in all lowercase, it can return false sentence and paragraph tokenization.}
+
+\item{text_color}{color of the text in nodes}
+
+\item{text_size}{font size of the nodes. If empty (default), it will use the frequency of word.}
+
+\item{node_alpha}{transparency of the nodes}
+
+\item{node_color}{color of the nodes. If empty (default), it will use the same color of the edges.}
 
 \item{edge_color}{color of the edges}
 
 \item{edge_alpha}{transparency of the edges. Values between 0 and 1.}
 
-\item{node_alpha}{transparency of the nodes}
+\item{edge_cut}{in mm, how much you want that the edge stop before reach the node. Can improve readability.}
 
-\item{text_color}{color of the text in nodes}
-
-\item{text_size}{font size of the nodes}
-
-\item{scale_graph}{name of a function to normalize the result. Sometime, the range
+\item{scale_graph}{name of a function to normalize the result. Sometimes, the range
 of numbers are so wide that the graph becomes unreadable. Applying a function
 to normalize the result can improve the readability, for example using
 `scale_graph = "log2"`, or `"log10"`}

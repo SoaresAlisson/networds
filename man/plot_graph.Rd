@@ -9,6 +9,7 @@ plot_graph(
   head_n = 30,
   edge_color = "lightblue",
   edge_alpha = 0.5,
+  edge_cut = 0,
   node_alpha = 0.5,
   text_color = "black",
   text_size = 1
@@ -24,6 +25,8 @@ plot_graph(
 
 \item{edge_alpha}{transparency of the edges. Values between 0 and 1.}
 
+\item{edge_cut}{in mm, how much you want that the edge stop before reach the node. Can improve readability.}
+
 \item{node_alpha}{transparency of the nodes}
 
 \item{text_color}{color of the text in nodes}
@@ -31,10 +34,6 @@ plot_graph(
 \item{text_size}{font size of the nodes}
 
 \item{text}{an input text}
-
-\item{scale_graph}{name of a function to normalize the result. Sometime, the range
-of numbers are so wide that the graph becomes unreadable. Applying a function
-to normalize the result can improve the readability, for example using}
 }
 \description{
 From a dataframe of graph frequence, plot a graph plot a graph of

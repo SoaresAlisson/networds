@@ -22,6 +22,7 @@ but also runs on lists with empty elements, and can returns a single dataframe (
 txt_wiki |>
   filter_by_query("Police") |>
   parsePOS()
+
 txt_wiki |>
   filter_by_query("Police") |>
   parsePOS(only_entities = FALSE)

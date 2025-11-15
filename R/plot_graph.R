@@ -31,11 +31,12 @@ plot_graph <- function(
     # scale_graph = "scale_values"
     ) {
   # to head or not to head
-  if (head_n == "") {
-    graph <- df
-  } else {
-    graph <- df |> head(head_n)
-  }
+  graph <- to_head_or_not_not_head(DF, head_n)
+  # if (head_n == "") {
+  #   graph <- df
+  # } else {
+  #   graph <- df |> head(head_n)
+  # }
 
   graph |>
     # head(head_n) |>

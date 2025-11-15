@@ -112,13 +112,13 @@ txt_wiki |> # text available in the package
 ```
 ```{r net_wordcloud(freq, graph_freq) }
 # TODO
-#' build a networdcloud from two dataframes: 
+#' build a networdcloud from two dataframes:
 #' 1) a dataframe with the frequency of the nodes
 #' 2) a dataframe with the frequency of the graphs
 net_wordcloud2 <- function(freq_graph, freq_nodes, head_n = 30, color = "lightblue") {
   # freq_nodes = graph_list$nodes; freq_graph = graph_list$graphs; head_n = 30
 
-  graph <- freq_graph |> 
+  graph <- freq_graph |>
     dplyr::arrange(freq) |>
     head(head_n)
   # vert <- unique(c(graph$n1, graph$n2))
@@ -495,5 +495,10 @@ g$edges |>
 g$edges |> interactive_graph()
 # ---------
 g_N |> interactive_graph()
+
+# -----
+x <- txt_wiki[2:44] |> cooccur()
+# graph_DF <- x
+plot_graph_i(x, head_n = 150)
 ```
 
