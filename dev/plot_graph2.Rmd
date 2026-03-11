@@ -1,0 +1,106 @@
+```{r }
+sw <- stopwordsgen::gen_stopwords(lang = "pt", categories = "all")
+sw <- stopwordsgen::gen_stopwords(lang = "en", categories = "all")
+text <- txt_wiki[2:44]
+text <- txt_wiki[2:44] |> paste(collapse = ". ")
+
+DF <- txt_wiki[2:44] |>
+  extract_graph() |>
+  count_graphs()
+
+DF <- txt_wiki[2:44] |> cooccur(sw = sw)
+
+head_n <- 30
+lower <- TRUE
+node_alpha <- 0.5
+node_color = ""
+node_color = NULL
+text_color <- "black"
+text_size <- 1
+text_size <- NULL
+text_size <- ""
+edge_color <- "lightblue"
+edge_color <- "black"
+edge_alpha <- 1
+edge_cut <- 0
+scale_graph <- "scale_values"
+scale_graph <- "none"
+scale_graph <- ""
+```
+layout = "kk"
+```{r }
+# ..........................................................
+# different number of elements in freq graph and freq words
+Vert <- vert |> sort()
+FreqPPN <- freqPPN$x |> sort()
+FreqPPN[FreqPPN %in% Vert]
+FreqPPN[!FreqPPN %in% Vert]
+not_listed <- Vert[!Vert %in% FreqPPN]
+ |>
+not_listed |> lapply(\(x), stringr::str_extract_all(txt_wiki, pattern = x))
+stringr::str_extract_all(txt_wiki, pattern = not_listed[1]) |>  unlist()
+grepl(x=txt_wiki, pattern = Vert[1]) |>  unlist()
+grepl(x=txt_wiki, pattern = not_listed[1]) |>  unlist()
+# "3d"   "december" "mangione" "york"
+tokens
+
+freqx <- freqPPN$x
+v_g <- c(graph$n1, graph$n2)  |> unique()
+freqx[!freqx %in% v_g]
+v_g[v_g %in% freqx]
+v_g[!v_g %in% freqx]
+# ..........................................................
+
+```
+```{r }
+DF <- txt_wiki[2:44] |>
+  extract_graph() |>
+  count_graphs()
+
+plot_graph2(DF = DF, text, edge_color = 1, text_size = 2.5)
+```
+```{r }
+text <- txt_wiki[2:44]
+DF <- text |> cooccur(sw = sw)
+plot_graph2(DF = DF, text, edge_color = 1, text_size = 2.5)
+
+text <- text_sample
+DF <- text |> cooccur(sw = sw)
+plot_graph2(
+  DF = DF, text,
+  edge_color = "blue", node_color = "", node_alpha = 0.8, edge_alpha = 1,
+  head_n = 100, text_size = 0.3
+)
+plot_graph2(DF = DF, text, edge_color = "blue", text_size = 8, head_n = 100)
+plot_graph2(DF = DF, text, edge_color = "blue", text_size = 1, head_n = 100)
+plot_graph2(DF = DF, text, edge_color = "blue", node_size = "", text_size = 4, head_n = 100)
+plot_graph2(DF = DF, text, edge_color = "blue", node_size = 2, text_size = 4, head_n = 100)
+plot_graph2(
+  DF = DF, text, edge_color = "blue", node_size = 2, text_size = 4, head_n = 100,
+  scale_graph = c("scale_values", "log2", "log10")[1]
+)
+```
+```{r test erro different texts}
+Text <- ex_prince$text[1:6]
+Text2 <- ex_prince$text[7]
+sw_str <- "him by as because by who on i of the and a to it or so that be with in he have they had which for are them is would as him by as because by who on i but one did if when this from their there was his at these"
+my_sw <- sto::s2v(sw_str, print=F) |> unique()
+graph <- cooccur(Text, sw = my_sw)
+  
+ # result <- plot_graph2(graph, Text)
+ #  expect_type(result, "list")
+plot_graph2(graph, Text2)
+plot_graph2(graph, Text)
+  expect_error( plot_graph2(graph, Text2))
+} )
+```
+```{r scale_graph}
+TXT <- txt_wiki[2:14]
+DF <- TXT |>
+  extract_graph() |>
+  count_graphs()
+
+plot_graph2(DF = DF, TXT, edge_color = 1, text_size = 2.5)
+plot_graph2(DF = DF, TXT, edge_color = 1, text_size = 2.5, scale_graph = "none")
+plot_graph2(DF = DF, TXT, edge_color = 1, text_size = 2.5, scale_graph = "")
+```

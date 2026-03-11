@@ -1,0 +1,121 @@
+```{r fun extract_graph}
+#' Extract a non directional graph based on co-occurrence in the token.
+#' It extracts only if two entities are mentioned in the same token (sentence or paragraph)
+#' @param text an input text
+#' @param using sentence or paragraph to tokenize
+#' @param connect lowercase connectors, like the "von" in "John von Neumann".
+#' @param sw stopwords vector.
+#' @param loop if TRUE, it will not remove loops, a node pointing to itself.
+#' @export
+#' @examples
+#' text <- "John Does lives in New York in United States of America. He is a passionate jazz musician, often playing in local clubs."
+#' extract_graph(text)
+extract_graph <- function(text, using = "sentences",
+                          connect = connectors("misc"),
+                          sw = c("of", "the"),
+                          loop = FALSE) {
+
+  list_ent <- text |> extract_relation(using, connect, sw)
+
+  graph <- tibble::tibble(n1 = as.character(""), n2 = as.character(""))
+  # list_length <- list_ent |> length()
+
+  graph <- lapply(list_ent, \(e) {
+    items <- e |> combn(2, simplify = FALSE)
+    items_length <- length(items)
+    lapply(1:items_length, \(x) {
+      line <- unlist(c(items[x][1], items[x][2]))
+      graph <- rbind(graph, line)
+      graph
+    }) |>
+      dplyr::bind_rows() |>
+      dplyr::filter(n1 != "")
+  }) |>
+    dplyr::bind_rows()
+
+  if (!loop) {
+    graph <- graph |>
+      dplyr::mutate(loop = (n1 == n2)) |>
+      dplyr::filter(loop == FALSE) |>
+      dplyr::select(-loop)
+  }
+  return(graph)
+}
+```
+```{r text}
+DF <- tibble::tibble(text = 
+# DF <- data.frame(text = 
+  c("John Does lives in New York in United States of America. He  is a passionate jazz musician, often playing in local clubs.",
+    r"(John Michael "Ozzy" Osbourne (3 December 1948 – 22 July 2025) was an English singer, songwriter, and media personality. He co-founded the pioneering heavy metal band Black Sabbath in 1968, and rose to prominence in the 1970s as their lead vocalist. During this time, he adopted the title "Prince of Darkness".[3][4] He performed on the band's first eight albums, most notably including Black Sabbath, Paranoid (both 1970) and Master of Reality (1971), before he was fired in 1979 due to his problems with alcohol and other drugs.)",
+  "O astro do heavy metal Ozzy Osbourne morreu após um ataque cardíaco, segundo o atestado de óbito do cantor. Segundo o documento, obtido pelo jornal The New York Times, ele também sofria de uma doença arterial coronariana, além de Parkinson, um diagnóstico que recebeu ainda em 2019.")) |> dplyr::mutate(id = paste0("id_", dplyr::row_number() ))
+
+#DF <- 
+extract_graph_df(DF, id, text)# |> dplyr::pull(graph) 
+extract_graph_df(DF, "id", "text")
+
+DF |> dplyr::pull(graph) |>
+# insert list name as a column in each tibble
+  purrr::map(.x=_, \(x) { dplyr::mutate(txt_id = dplyr::row_number()) }) 
+# purrr::map(.x=_, \(x) graph)
+  lapply(\(x) { dplyr::mutate(txt_id = graph} )
+```
+```{r nrow(DF)
+df_out <- list() 
+
+for (i in 1:nrow(DF)) {
+    df_out[[i]] <- DF[[i, "text"]] |>  
+      extract_graph() |> 
+      dplyr::mutate(txt_id = DF[[i, "id"]] )
+  } 
+  
+df_out |> dplyr::bind_rows()
+```
+```{r fun extract_graph_df}
+#' Extract a non directional graph based on co-occurrence in the token and returns a tibble
+#' It extracts only if two entities are mentioned in the same token (sentence or paragraph)
+#' @param df a data frame with two columns: text and id
+#' @param column_id name of the column with the id
+#' @param column_text name the column with the text to extract the graph
+#' @param using sentence or paragraph to tokenize
+#' @param connect lowercase connectors, like the "von" in "John von Neumann".
+#' @param sw stopwords vector.
+#' @param loop if TRUE, it will not remove loops, a node pointing to itself.
+#' @export
+#' @examples
+#' text <- "John Does lives in New York in United States of America. He  is a passionate jazz musician, often playing in local clubs."
+#' extract_graph(text)
+extract_graph_df <- function(df, column_id, column_text, 
+                             using = "sentences",connect = connectors("misc"), 
+                             sw = c("of", "the"), 
+                             loop = FALSE) {
+  # column_text = text
+  # column_id = id
+  # DF <- df |>
+  # col_names  <- DF$id
+  # DF  |> 
+  #   dplyr::mutate(graph = 
+  #       purrr::map(.x = {{column_text}}, extract_graph, using = using, connect = connect, sw = sw, loop = loop)) |> 
+  #       # lapply( column_text \(x) { extract_graph( column_text = x, using = using, connect = connect, sw = sw, loop = loop) })) |>
+  #     purrr::imap()
+  #   dplyr::pull(graph) |>
+    # dplyr::mutate(txt_id = {{column_id}})
+                  # }))
+  nrow(DF)
+
+  df_out <- list()
+
+  for (i in 1:nrow(DF)) {
+    # df_out[[i]] <- DF[[i, "text"]] |>  
+      df_out[[i]] <- DF[[i, column_text]] |>  
+        extract_graph() |> 
+        dplyr::mutate(txt_id = DF[[i, column_id]] )
+    } 
+    
+  df_out |> dplyr::bind_rows()
+}
+
+extract_graph_df(DF, "id", "text")
+
+```
+
+

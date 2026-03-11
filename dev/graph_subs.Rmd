@@ -1,0 +1,30 @@
+graph_subs
+
+```{r }
+g_sub <- tribble(
+  ~word, ~subs,
+  "The Great Reset", "Great Reset",
+  "World Economic Forum", "WEF",
+  "W.E.F.", "WEF"
+)
+
+
+
+#' substitute node columns (columns 1 and 2) of a graph dataframe with a dictionoary of substitutions
+#'
+#' @export
+graph_subs <- function(DF, df_subs) {
+  col_names <- colnames(DF)
+  subs <- tibble::deframe(df_subs)
+
+  DF |>
+    dplyr::mutate(
+      !!col_names[1] := stringr::str_replace_all(!!sym(col_names[1]), subs),
+      !!col_names[2] := stringr::str_replace_all(!!sym(col_names[2]), subs)
+      # n1 = stringr::str_replace_all(n1, subs),
+      # n2 = stringr::str_replace_all(n2, subs)
+    )
+}
+
+graph_subs(graph_GR, g_sub)
+```

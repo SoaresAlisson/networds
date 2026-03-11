@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.git-old
+session.vim
+docs
+/doc/
+/Meta/

@@ -1,0 +1,36 @@
+```{r }
+G <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit." |> cooccur()
+G
+G <- G |> tidygraph::as_tbl_graph()
+Tbl_graph <- G |> tidygraph::as_tbl_graph()
+G
+G |> tblgraph_to_tbl()
+```
+```{r tblgraph_to_tbl <- function(Tbl_graph) {
+  Tbl_graph |>
+    tidygraph::activate(edges) |>
+    # dplyr::filter(n > min_threshold) |>
+    dplyr::mutate(
+      n1 = .N()$name[from], # Get node name for 'from'
+      n2 = .N()$name[to] # Get node name for 'to'
+    ) |>
+    tibble::as_tibble() |>
+    dplyr::select(n1, n2, n)
+}
+}
+```
+```{r }
+tblgraph_to_tbl <- function(Tbl_graph) {
+  Tbl_graph |>
+    tidygraph::activate(edges) |>
+    # dplyr::filter(n > min_threshold) |>
+    dplyr::mutate(
+      n1 = tidygraph::.N()$name[from],
+      n2 = tidygraph::.N()$name[to]
+    ) |>
+    tibble::as_tibble() |>
+    dplyr::select(n1, n2, n)
+}
+```
+
+

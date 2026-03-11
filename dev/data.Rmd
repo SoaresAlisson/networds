@@ -1,0 +1,26 @@
+## Prince
+
+```{r }
+sto:::ll("sto dplyr")
+```
+```{r }
+book <- epubr::epub("dev/pg1232-images.epub")
+book <- book[["data"]][[1]]
+book[,"n"] <- 1:nrow(book)
+book |> dplyr::filter(section == "item38") |> dplyr::pull("text")
+book |> dplyr::filter( )
+
+prince <- book[8:36,]
+
+prince <- prince |> select(text) |> 
+  mutate(
+    title = stringr::str_extract(text, ".*\\n") |> gsub2("\\n+$"),
+    text = stringr::str_remove(text, ".*\\n+")) |>
+  select(title, text)
+ex_prince <- prince
+save(ex_prince, file = "data/ex_prince.rda")
+
+```
+```{r devtools use data}
+usethis::use_data(ex_prince, overwrite = TRUE)
+```

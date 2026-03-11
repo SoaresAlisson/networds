@@ -1,0 +1,51 @@
+# TODO
+
+- build vignette
+- ~~encerrar dependencia de sto: import s2v~~
+- ~~rename package to netword~~
+- ~interactive net com outro pacote que dá weight~
+- ~alterar tamanho das letras minimas e maximas no plot~
+- ~Importar dev/dev.Rmd~
+- ~função para pegar nós filhos em tibble~
+- ~juntar a sequencia: NOUN ADP PROPN, rei de Roma~
+- ~fazer plot cooc a partir dos POS~
+- ~achar funcao que transforma df em nodes e edges: tidygraph::as_tbl_graph()~
+- ~plot graph, pegar 2 primeiras colunas se nao tiver from e to~
+- ~~rename plot_graph to net_wordcloud~~
+- ~~function dict: substitution of synonyms in both node columns~~
+- ~criar cooccur com todas as palavras~
+- ~mudar ordem dos parametros net_wordcloud, colocar DF e text para usar com pipe~
+- ~replace_all compounded words, like New_york: added in {sto}~
+- ~filter both columns at the same time~
+- conferir se collapse PPN esta funcionando
+- add _ underscore to compounded words
+- head_n pega o n da tabela de frequencia, mas não seria melhor pegar as entidades? Por outro lado, talvez
+- rename plot_graph2 to something else
+- when running funs, check if spacy is initialized, and ask for the model
+- resolution of anaphora, cataphora
+- TF-IDF AND one graph pair per document, or show the doc index in extract_graph and extract_entity
+- test to count_graphs
+- padronizar no extract_graph n and freq: dplyr::mutate(n = freq)
+- função para retirar não letras e números, preservando o underline/underscore
+- retirar substantivo
+- extract_entity: opção para não retirar o_ underscore
+- networdcloud (parametro para correção da proporção)?
+- erros em gen_stopwords em roxygen
+- make bipartite, tripartite from different POS entities
+- use a bigger text in examples
+- substituir parametros "using" por "by"
+- net_wordcloud add param freq to word labels
+- atualizar testes no net_wordcloud e em cooccur
+- add interactive option,  ggiraph?
+- test for tokenize_words in sto_functions
+- get_pair by k-neighbour based on X word window. Danowski (1993)
+- plot graphs. add parameter of which column to use
+- ~get_cooc_entities use tibble instead of data.frame~
+- plot_grah add param edge_width
+- more options to cooccur, to enable cooccurrence in chunks of text, like in whole tweets.
+- networdcloud and plot_graph2, if text is different from graph, war the user about the possibility of different ext
+- check cooccur with simple examples. Ex. when there is only 2 words: "word1 word2"
+- export to Gephi format
+- graphs -> edges in get_cooc_entities
+- how to move geom_text above/below the circle center
+- http and puncts not working
