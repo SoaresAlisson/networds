@@ -29,7 +29,7 @@
 - função para retirar não letras e números, preservando o underline/underscore
 - retirar substantivo
 - extract_entity: opção para não retirar o_ underscore
-- networdcloud (parametro para correção da proporção)?
+- ~networdcloud (parametro para correção da proporção)?~
 - erros em gen_stopwords em roxygen
 - make bipartite, tripartite from different POS entities
 - use a bigger text in examples
@@ -48,4 +48,4 @@
 - export to Gephi format
 - graphs -> edges in get_cooc_entities
 - how to move geom_text above/below the circle center
-- http and puncts not working
+- ~http~ and puncts not working

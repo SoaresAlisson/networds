@@ -85,7 +85,7 @@ Text <- ex_prince$text[1:6]
 Text2 <- ex_prince$text[7]
 sw_str <- "him by as because by who on i of the and a to it or so that be with in he have they had which for are them is would as him by as because by who on i but one did if when this from their there was his at these"
 my_sw <- sto::s2v(sw_str, print=F) |> unique()
-graph <- cooccur(Text, sw = my_sw)
+graph <- cooccur_words(Text, sw = my_sw)
   
  # result <- plot_graph2(graph, Text)
  #  expect_type(result, "list")
@@ -103,4 +103,22 @@ DF <- TXT |>
 plot_graph2(DF = DF, TXT, edge_color = 1, text_size = 2.5)
 plot_graph2(DF = DF, TXT, edge_color = 1, text_size = 2.5, scale_graph = "none")
 plot_graph2(DF = DF, TXT, edge_color = 1, text_size = 2.5, scale_graph = "")
+```
+```{r fun scale min max}
+scale_to_range <- function(x, new_min = 0.15, new_max = 2) {
+  # First normalize to 0-1
+  normalized <- (x - min(x)) / (max(x) - min(x))
+  
+  # Then scale to new range
+  scaled <- normalized * (new_max - new_min) + new_min
+  
+  return(scaled)
+}
+
+DF |>
+  head(30) |> 
+  dplyr::mutate(n = scale_to_range(n, 0.2, 7)) |> 
+  plot_graph2(TXT, head_n = "", edge_color = 1, text_size = 2.5, scale_graph = "", text_contour_color = "white")
+
+
 ```
