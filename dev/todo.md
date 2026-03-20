@@ -17,6 +17,9 @@
 - ~mudar ordem dos parametros net_wordcloud, colocar DF e text para usar com pipe~
 - ~replace_all compounded words, like New_york: added in {sto}~
 - ~filter both columns at the same time~
+- ~http and puncts not working~
+- ~networdcloud (parametro para correção da proporção)?~
+- ~get_cooc_entities use tibble instead of data.frame~
 - conferir se collapse PPN esta funcionando
 - add _ underscore to compounded words
 - head_n pega o n da tabela de frequencia, mas não seria melhor pegar as entidades? Por outro lado, talvez
@@ -29,7 +32,6 @@
 - função para retirar não letras e números, preservando o underline/underscore
 - retirar substantivo
 - extract_entity: opção para não retirar o_ underscore
-- networdcloud (parametro para correção da proporção)?
 - erros em gen_stopwords em roxygen
 - make bipartite, tripartite from different POS entities
 - use a bigger text in examples
@@ -40,7 +42,6 @@
 - test for tokenize_words in sto_functions
 - get_pair by k-neighbour based on X word window. Danowski (1993)
 - plot graphs. add parameter of which column to use
-- ~get_cooc_entities use tibble instead of data.frame~
 - plot_grah add param edge_width
 - more options to cooccur, to enable cooccurrence in chunks of text, like in whole tweets.
 - networdcloud and plot_graph2, if text is different from graph, war the user about the possibility of different ext
@@ -48,4 +49,3 @@
 - export to Gephi format
 - graphs -> edges in get_cooc_entities
 - how to move geom_text above/below the circle center
-- http and puncts not working

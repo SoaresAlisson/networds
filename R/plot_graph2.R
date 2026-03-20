@@ -63,7 +63,7 @@ plot_graph2 <- function(
 
   # fun to normalize values
   scale_values <- function(x) {
-    (x - min(x)) / (max(x) - min(x))
+    ((x - min(x)) / (max(x) - min(x))) + 0.1
   }
 
   text_length <- length(text)
@@ -86,7 +86,11 @@ plot_graph2 <- function(
     text <- tolower(text)
   }
 
-  if (!scale_graph %in% c("none", "")) {
+  if (scale_graph == "scale_values") {
+    graph <- graph |>
+      # dplyr::rename(n = freq)
+      dplyr::mutate(n = scale_to_range(n, 0.2, 9))
+  } else if (!scale_graph %in% c("none", "")) {
     # if (scale_graph != "none") {
     graph <- graph |>
       # dplyr::rename(n = freq)

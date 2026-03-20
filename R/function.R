@@ -1,3 +1,5 @@
+`%>%` <- magrittr::`%>%`
+
 #' sort columns n1 and n2 alphabetically
 #'
 #' @param DF dataframe with n1 and n2 columns
@@ -458,63 +460,13 @@ split_graph <- function(DF_graph) {
 #' .
 #' @noRd
 to_head_or_not_not_head <- function(DF, head_n = head_n) {
-  if (head_n == "") {
+  if (head_n == "" || is.na(head_n)) {
     DF
   } else {
     DF |> head(head_n)
   }
 }
 
-#' extract the frequency of nodes in a text
-#' @return a dataframe of nodes and its frequency
-freq_nodes <- function(vert, text) {
-  # frequency of nodes/terms
-  freqPPN <- lapply(vert, \(v) {
-    text |>
-      # gsub(x = _, "\\.", "\\\\.") |>
-      # stringr::str_extract_all(pattern = paste0("(?i)", v))
-      stringr::str_extract_all(pattern = paste0("\\b(?i)", v, "\\b"))
-    # stringr::str_extract_all(pattern = paste0("(?i)\\b", v, "\\b"))
-  }) |>
-    unlist() |>
-    count_vec()
-
-  # If used word like "New_York", it will clean, search in text, and put it back
-  # if (length(vert) != nrow(freqPPN)) {
-  freqPPN_nodes <- gsub(x = freqPPN$x, "\\.", "\\\\.")
-
-  inVert_not_inFreqPPN <- vert[!vert %in% freqPPN_nodes]
-
-  if (length(inVert_not_inFreqPPN) > 0) {
-    missing_nodes <- gsub(x = inVert_not_inFreqPPN, "_", " ")
-
-    missing_nodes_df <- lapply(missing_nodes, \(v) {
-      text |>
-        stringr::str_extract_all(pattern = paste0("\\b(?i)", v, "\\b"))
-    }) |>
-      unlist() |>
-      count_vec() |>
-      dplyr::mutate(x = gsub(x = x, " ", "_"))
-
-    freqPPN <- rbind(freqPPN, missing_nodes_df) |> suppressWarnings()
-  }
-
-  # if still there is vertices not found in word frequency: stop
-  vertices_not_in_freq <- vert[!vert %in% freqPPN$x]
-
-  vertices_not_in_freq_length <- length(vertices_not_in_freq)
-
-  if (vertices_not_in_freq_length > 0) {
-    stop(paste0(
-      "There is ",
-      vertices_not_in_freq_length,
-      " nodes not found in the text provided. Make sure that text parameter in the present function is the same text used in graph extraction. Nodes not found: \n",
-      paste(vertices_not_in_freq, collapse = ", ")
-    ))
-  }
-
-  return(freqPPN)
-}
 
 #' Text contour or commen text
 #'

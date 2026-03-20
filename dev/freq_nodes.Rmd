@@ -1,0 +1,85 @@
+```{r }
+lower = TRUE
+```
+```{r }
+  # freqPPN_nodes <- gsub(x = freqPPN$x, "\\.", "\\\\.")
+
+vert <- c("Mr.", "Mrs.", "Dr.")
+text <- c( "Mr. Smith and Mrs. Jones went to see Dr. Brown. Mr. Smith is a patient. ADr. lorem")
+
+result <- freq_nodes(vert, text)
+vert <- gsub(x = vert, "\\.", "\\\\.")
+text |> stringr::str_extract_all(pattern = paste0("\\b", vert, "\\b"))
+text |> stringr::str_extract_all(pattern = stringr::fixed(paste0("\\b", vert, "\\b")))
+text |> stringr::str_extract_all(pattern = "Mr.")
+text |> stringr::str_extract_all(pattern = "Mr\\.")
+text |> stringr::str_extract_all(pattern = stringr::fixed("Mr."))
+text |> stringr::str_extract_all(pattern = stringr::fixed("\\bMr."))
+text |> stringr::str_extract_all(pattern = stringr::regex("\\b", stringr::fixed("Mr."), "\\b"))
+text |> stringr::str_extract_all(pattern = "Mr." |> stringr::fixed())
+
+text |>tolower() |>  stringr::str_extract_all( "\\bmr\\.")
+text |>tolower() |>  stringr::str_extract_all( "\\bdr\\.")
+# text |> stringr::str_locate_all(pattern = stringr::fixed("Mr."))
+```
+```{r fun escape_regex}
+escape_regex <- function(string, word_delim =F) {
+  string <- gsub("([.[\\(*+?{|^$])", "\\\\\\1", string)
+  if (word_delim){
+    string <- 
+      paste0("\\b", string, "\\b")
+    #  paste0("\\b", string)
+      }
+  return(string)
+}
+
+# fixed_part <- "Mr."
+# escaped_fixed <- escape_regex(fixed_part)
+# pattern <- paste0("\\b", escaped_fixed, "\\b")
+escape_regex(vert)
+escape_regex(vert, T)
+
+text |> tolower() |> stringr::str_extract_all(pattern = escape_regex(vert, T))
+
+```
+```{r }
+vert <- tolower(vert)
+v <- vert[1]
+
+lapply(vert, \(v) {
+text |>
+  tolower() |>
+  stringr::str_extract_all(
+    pattern = paste0("\\b", escape_regex(v) , "\\b")
+    # pattern = stringr::fixed(v))
+    # pattern = stringr::fixed(paste0("\\b", v, "\\b"))
+  )
+})
+```
+```{r }
+vert <- c("Mr. Smith", "Mrs. Jones", "Dr. Brown")
+text <- "Mr. Smith and Mrs. Jones went to see Dr. Brown. Mr. Smith is a patient. AMr."
+
+vert <- tolower(vert) |> escape_regex(word_delim = TRUE)
+txt <- tolower(text)
+
+lapply(vert, \(v) {
+  txt |>
+  stringr::str_extract_all(
+    pattern = v
+    # pattern = stringr::fixed(paste0("\\b", v, "\\b"))
+  )
+})
+```
+```{r }
+vert <- c("Mr. Smith", "Mrs. Jones", "Dr. Brown")
+text <- "Mr. Smith and Mrs. Jones went to see Dr. Brown. Mr. Smith is a patient. AMr."
+freq_nodes(vert, text)
+```
+```{r }
+vert <- "New_Delhi"
+text <- "The central axis of New_Delhi, which today faces east at India Gate"
+freq_nodes(vert, text)
+```
+
+
