@@ -1,0 +1,20 @@
+```{r }
+escape_rgx <- function(string, word_delim = FALSE) {
+
+# string <- gsub("([.[\\(*+?{|^$])", "\\\\\\1", string)
+  # string <- gsub(r"---([\\\\.])---", "\\\\\\1", string)
+  string <- string |> 
+    gsub(x=_, "\\.", r"(\\.)")
+  # string <- gsub("[\\\\\\\\.]", "\\\\\\1", string)
+  message(string)
+
+# string <- gsub("[\\.\\(\\*\\+\\?\\{\\|\\^\\$]", "\\\\\\1", string)
+
+  if (word_delim) {
+    string <- paste0("\\b", string, "\\b")
+  }
+  return(string)
+}
+
+escape_rgx("Mr. John", word_delim = TRUE)
+```

@@ -34,24 +34,25 @@
 #' @examples
 #' # plot_graph(txt, df = graph_count, head_n = 50, scale_graph = "log2")
 plot_graph2 <- function(
-    DF,
-    text,
-    head_n = 30,
-    lower = TRUE,
-    text_color = "black",
-    text_size = 3,
-    text_contour_color = NA,
-    node_alpha = 0.5,
-    node_color = NULL,
-    node_size = NULL,
-    edge_color = "lightblue",
-    edge_alpha = 0.5,
-    edge_cut = 0,
-    edge_type = "arc",
-    edge_bend = 0.5,
-    edge_fan = FALSE,
-    scale_graph = "scale_values",
-    layout = "kk") {
+  DF,
+  text,
+  head_n = 30,
+  lower = TRUE,
+  text_color = "black",
+  text_size = 3,
+  text_contour_color = NA,
+  node_alpha = 0.5,
+  node_color = NULL,
+  node_size = NULL,
+  edge_color = "lightblue",
+  edge_alpha = 0.5,
+  edge_cut = 0,
+  edge_type = "arc",
+  edge_bend = 0.5,
+  edge_fan = FALSE,
+  scale_graph = "scale_values",
+  layout = "kk"
+) {
   # to head or not to head
   graph <- to_head_or_not_not_head(DF, head_n)
   # if (head_n == "") {
@@ -62,7 +63,7 @@ plot_graph2 <- function(
 
   # fun to normalize values
   scale_values <- function(x) {
-    ((x - min(x)) / (max(x) - min(x))) + 0.1
+    (x - min(x)) / (max(x) - min(x))
   }
 
   text_length <- length(text)
@@ -90,11 +91,6 @@ plot_graph2 <- function(
     graph <- graph |>
       # dplyr::rename(n = freq)
       dplyr::mutate(n = eval(dplyr::sym(scale_graph))(n))
-  } else if (scale_graph == "scale_values"){
-    graph <- graph |>
-      # dplyr::rename(n = freq)
-    dplyr::mutate(n = scale_to_range(n, 0.2, 9)) 
-
   }
 
   vert <- unique(c(graph$n1, graph$n2)) |>
@@ -213,7 +209,8 @@ plot_graph2 <- function(
     # ) +
     # # ggraph::geom_node_label(ggplot2::aes(label = name), repel=TRUE,  point.padding = unit(0.2, "lines")) +
     ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none") + {
+    ggplot2::theme(legend.position = "none") +
+    {
       if (is.null(text_contour_color)) {
         # if (text_contour) {
         ggraph::geom_node_text(
