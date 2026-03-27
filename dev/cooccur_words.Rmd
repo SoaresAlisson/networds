@@ -140,5 +140,6 @@ txt <- df2 |>
 sw_all <- sto::s2v("the of a o e in de na no nas nos pra que do das dos") |> unique()
 
 cooc <- cooccur_words(text = txt[1:20], sw_all, output = "df2")
+c(cooc$n1, cooc$n2) |> sto::grep2("c\\(")
 dplyr::count(cooc, doc)
 ```

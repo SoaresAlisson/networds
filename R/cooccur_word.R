@@ -48,25 +48,39 @@ cooccur_words <- function(
 
   if (token_by %in% c("sentence", "sent")) {
     # tokens <- tokenizers::tokenize_sentences(text)
+    message("tokenizing sentences...")
     tokens <- lapply(text, \(X) {
       tokenizers::tokenize_sentences(X) |> unlist()
     })
   } else if (token_by %in% c("par", "paragraph")) {
     # tokens <- tokenizers::tokenize_paragraphs(text)
     # tokens <- lapply(text, tokenizers::tokenize_paragraphs)
-    tokens <- lapply(text, \(X) {
-      tokenizers::tokenize_paragraphs(X) |> unlist()
-    })
+    tokens <- plyr::llply(
+      text,
+      \(X) {
+        # tokens <- lapply(text, \(X) {
+        tokenizers::tokenize_paragraphs(X) |> unlist()
+      },
+      .progress = "text"
+      # .parallel = TRUE
+    )
   } else {
     stop("Invalid token_type. Must be 'sentence' or 'paragraph'.")
   }
 
   # Clean stopwords
   # word_tokens_list <- unlist(tokens) |>
-  word_tokens_list <- lapply(tokens, \(X) {
-    # tokenizers::tokenize_words(X, lowercase = lower)
-    tokenize_by_words(X, lower = lower)
-  })
+  # word_tokens_list <- lapply(tokens, \(X) {
+  message("tokenizing words...")
+  word_tokens_list <- plyr::llply(
+    tokens,
+    \(X) {
+      # tokenizers::tokenize_words(X, lowercase = lower)
+      tokenize_by_words(X, lower = lower)
+    },
+    .progress = "text"
+    # .parallel = TRUE
+  )
   # lapply(\(X) {
   #   tokenize_by_words(X, lower = lower)
   # })
