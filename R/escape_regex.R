@@ -41,9 +41,8 @@
 #' # Returns: "\\bMr\\.\\b"
 #'
 #' # Useful for creating patterns from user input
-#' user_input <- "Dr."
-#' pattern <- escape_regex(user_input, word_delim = TRUE)
-#' # pattern is "\\bDr\\.\\b"
+#' escape_regex("Dr. John", word_delim = TRUE)
+#' # pattern is "\\bDr\\.John\\b"
 #'
 escape_regex <- function(string, word_delim = FALSE) {
   # string <- gsub("([.[\\(*+?{|^$])", "\\\\\\1", string)
