@@ -49,3 +49,4 @@
 - export to Gephi format
 - graphs -> edges in get_cooc_entities
 - how to move geom_text above/below the circle center
+- in plot_graph2, be able to use words in uppercase

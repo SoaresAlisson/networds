@@ -1,4 +1,4 @@
-```{r }
+```{r params}
 lower = TRUE
 ```
 ```{r }
@@ -81,5 +81,52 @@ vert <- "New_Delhi"
 text <- "The central axis of New_Delhi, which today faces east at India Gate"
 freq_nodes(vert, text)
 ```
+```{r }
+freq_nodes( "t.me/canalsemnom/936" ,
+  "lorem t.me/canalsemnom/936, and t.me/canalsemnom/936")
+```
+```{r }
+txt <- "High Frequency Active Auroral Research Program  Patente HAARP - 690,333 10-Jan-1985  Patent Number - 4,6d6,605 - 11-Ago-1987  Aquecimento da Iono sfera  Furacão KATRINA  Anéis HAARP  Tsunami no Japão  HAARP - Controle do C lima  CHEMTRAILS - Rastros Químicos  MKULTRA - Controle Mental  + 🤥 A Farsa do Aquecimento Global 🌦 t.me/CanalSemNOM/1261 👈  Tema: 👉 HAARP 👉 A Fars a do Aquecimento Global 👉 Redução Populacional 👉 NOVA ERA 👉 Nova_Ordem_Mu ndial  @CanalSemNOM"
+freq_nodes( "t.me/canalsemnom/1261" ,txt )
 
+cooc <- txt |> cooccur_words(sw = s2v("a do o e de da dos das"))
+plot_graph2(cooc, txt)
+```
+```{r df2 df3}
+library(lubridate)
 
+df2 <- read.csv2("/home/alisson/Documentos/Programação/R/shared/UFBA/artigo_conspiracoes_Br/data/elastic_telegram_haarp_normalizado.csv") |> tibble::as_tibble() |> 
+  dplyr::mutate(date = lubridate::as_datetime(strict_date)) |> 
+      dplyr::select(date, chat_title, all_text, text, message_caption, sender_chat_id, id, chat_id, from_user_id, forward_sender_name, type,from_user_is_bot) 
+
+df3 <- bind_rows(
+  df2[year(df2$date) == 2022 & month(df2$date) == 9, ],
+  df2[year(df2$date) == 2023 & month(df2$date) == 2, ],
+  df2[year(df2$date) == 2024 & month(df2$date) == 5, ],
+  ) |>
+  mutate(date = as.Date(date),
+    all_text = sto::compound_words(all_text, "Estados_Unidos"))
+
+df3_ <- df3 |>
+  dplyr::mutate(ym = lubridate::ymd(date) |> as.character() |> gsub2("-\\d+$"),
+  year = year(date))
+
+termos_all_coll <- "\\bvulc[ãaâ]|alagado|alagamento|alarme|alerta|aluvião|calamidade|catástrofe|catastrófico|cheia|chovendo|chuva|ciclone|climático|colapso|cyclone|desabamento|desabrigad|desalojado|desastre|deslizamento|destr uição|devastação|dilúvio|earthquake|el niño|emergência|enchente|enxurrada|erosão|erupção|estiagem|extremo|fatalidade|fluvial|furacão|geada|geológico|granizo|hidrológico|hurricane|imprevisível|interdição|inund[a o]|la niña|lahar|lama|meteorológico|monção|neblina|nevasca|nevoeiro|niñ|pluvial|precipit|quake|rachadura|rain|rajada|repentino|resgate|ressaca|seca|soterramento|storm|subsidência|sulco|tempestade|terramoto|terremoto|tornado|torrencia|transbordamento|tsunami|tufão|typhoons|vendaval|vento|vítima|vulcânica" 
+
+txt_desastre <- df3_ |>
+  filter(year == 2024) |>
+  pull(all_text) |>
+  tokenizers::tokenize_sentences(simplify=TRUE) |>
+  unlist() |>
+  # filter(grepl2(txt, termos_all))
+  sto::grep2(termos_all_coll) |>
+  unique() |>
+  stringr::str_replace_all("t.me/CanalSemNOM/.*\\b", "t.me/canalsemnom")
+
+graph_desastre <- txt_desastre |> cooccur_words(sw_all, output = "df2")
+graph_desastre <- graph_desastre |> reduce_freq(3)
+graph_desastre |>
+    filter_graph_g("haarp",T, T) |>
+  plot_graph2(text = txt_desastre, head_n = 200, edge_color = "blue", edge_alpha = 0.6, node_alpha = 0.4, text_contour_color = "white")
+
+```

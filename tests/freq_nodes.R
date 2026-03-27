@@ -7,7 +7,6 @@ test_that("freq_nodes returns correct frequency for simple words", {
   vert <- c("dog", "cat")
   # vert <- c("dog", "cat", "bird")
   text <- c("The dog and the cat are friends. The dog likes the cat.")
-
   result <- freq_nodes(vert, text)
 
   expect_s3_class(result, "data.frame")

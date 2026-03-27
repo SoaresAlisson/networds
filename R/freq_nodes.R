@@ -15,9 +15,9 @@ freq_nodes <- function(vert, text, lower = TRUE) {
     vert2 <- vert |> escape_regex(word_delim = TRUE)
    }
  
-
-    freqPPN <- lapply(vert2, \(V) {
-        text2 |> stringr::str_extract_all(V) }) |> 
+  freqPPN <- plyr::llply(vert2, \(V) {
+    # freqPPN <- lapply(vert2, \(V) {
+        text2 |> stringr::str_extract_all(V) }, .progress = "text") |> 
       unlist() |>
       count_vec()
 
