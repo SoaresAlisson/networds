@@ -6,7 +6,6 @@
 # {networds} - a package to build graphs from text
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 ![](./networds_hex.svg)
@@ -20,9 +19,11 @@ networks in static and dynamic graphs.
 
 It extracts graphs from plain text using:
 
-1)  Rule based: Regex to extract proper names, and build a co-occurrence
+1) word co-occurences. Words co-occurring in the same sentence or
+    paragraph.
+2) Rule based: Regex to extract proper names, and build a co-occurrence
     network
-2)  (under development) Extraction using Part of Speech tagging of
+3) (under development) Extraction using Part of Speech tagging of
     proper names and nouns and its co-occurrence
 
 - extraction of relations (verbs, in most cases) like in
@@ -33,19 +34,19 @@ It extracts graphs from plain text using:
   “propose an improved taxonomy to capture grammatical relations across
   languages, including morphologically rich ones”
 
-3)  (Under development) Relation extraction using Large Language Models
+1) (Under development) Relation extraction using Large Language Models
     running locally with
     {[rollama](https://github.com/JBGruber/rollama)}.
 
-The method 1 is quick and easy to understand and to explain, but has its
-limitations. Method 2 and 3 are still under development and are more
-powerful, and can solve more complex problems. One of the problems is
-disambiguation, the same word can have different meanings depending on
-the context. Other problem, that can be solved with methods two and
+The method 1 and 2 is quick and easy to understand and to explain, but
+has its limitations. Method 3 and 4 are still under development and are
+more powerful, and can solve more complex problems. One of the problems
+is disambiguation, the same word can have different meanings depending
+on the context. Other problem, that can be solved with methods two and
 three, is possible to do what is called “anaphora resolution”, when
 there is repeated reference to the same entities with different words.
 <!-- _"In computational linguistics, Ruslan Mitkov defined anaphora as a phenomena of pointing back a previously mentioned item in the text"_ (Font: [A Survey on Semantic Processing Technique](https://arxiv.org/pdf/2310.18345)),  -->
-for example, in the phrase: “John Doe gave Mary a flower and she loved
+For example, in the phrase: “John Doe gave Mary a flower and she loved
 it,” the pronoun “she” is the anaphor of “Mary” and “it” is the anaphor
 of “flower”. The opposite case, when a pronoun precedes its referent, it
 is called cataphora. We are working on the implementation of this
@@ -81,6 +82,65 @@ Check the vignettes:
 
 - [website of the project](https://soaresalisson.github.io/networds)
 
+## Basic usage
+
+``` r
+library(networds)
+# a vector of texts from wikipedia
+txt <- networds::txt_wiki
+```
+
+``` r
+my_sw <- c("of", "the", "a", "in", "for", "and", "50", "also", "are", "as", "with", "is", "was", "do", "to", "him", "its", "on", "have", "they", "them", "be", "it", "had", "or", "an", "that", "he", "his", "this", "at", "from", "my", "their", "has", "but")
+cooc <- cooccur_words(txt, sw = my_sw)
+#> You provided a vector of 45 elements instead of one. No problem, but these will be collapsed into a single element, with a final punctuation mark added to each, to ensure it is treated as different sentences in the process of tokenization.
+#> tokenizing sentences...
+#> tokenizing words...
+#>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
+cooc |> plot_graph()
+#> Only one value passed to edge_width. All edges will have the same width.
+```
+
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+Same data, more customization:
+
+``` r
+txt <- txt |>
+  tolower() |>
+  gsub("new york", "New_York", x = _) |> # making New York a single word. I checked the text
+  gsub("'s\\b", "", x = _) # making New York a single word. I checked the text
+
+cooc <- cooccur_words(txt, sw = my_sw)
+#> You provided a vector of 45 elements instead of one. No problem, but these will be collapsed into a single element, with a final punctuation mark added to each, to ensure it is treated as different sentences in the process of tokenization.
+#> tokenizing sentences...
+#> tokenizing words...
+#>                                                                                  |======================================================================| 100%
+
+# ploting the graph with more control (but there is more)
+cooc |>
+  plot_graph2( # plot_graph2 also show the frequency of individual words
+    txt, # the original text, to count the frequency of words
+    head_n = 250, # increasing number of pairs. Default: 30
+    text_size = 4,
+    text_contour_color = "white",
+    edge_color = "darkblue",
+    edge_alpha = 0.25,
+    edge_bend = 0, # how much the links are bended. 0 = straight line.
+    layout = layouts[4],
+  ) +
+  # you can use ggplot2 customizatiions:
+  ggplot2::labs(
+    title = "Title of my amazing semantic network with {networds} package",
+    subtitle = "Text from wikipedia"
+  )
+#> You provided a vector of 45 elements instead of one. No problem, but these will be collapsed into a single element, with a final punctuation mark added to each.
+#>   |                                                                              |                                                                              |======================================================================| 100%
+#> Using node_size proportional to word frequency as no node_size was provided in parameters
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+
 ## Similar Projects
 
 - [textnet](https://github.com/ucd-cepb/textnet) - “textNet is a set of
@@ -88,4 +148,6 @@ Check the vignettes:
   dependency parsing to generate semantic networks from text data. It is
   compatible with Universal Dependencies and has been tested on
   English-language text data”.
-- [textnets](https://github.com/cbail/textnets) from Chris Bail.
+- [textnets](https://github.com/cbail/textnets) from Chris Bail. It
+  captures the proper names using UDpipe, plot word networks and
+  calculates the centrality/betweeness of words in the network.
