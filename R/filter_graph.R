@@ -16,7 +16,7 @@
 filter_graph <- function(DF, query, invert = FALSE) {
   if (invert) {
     DF |>
-      dplyr::filter(!(n1 == query) | (n2 == query))
+      dplyr::filter(!((n1 == query) | (n2 == query)))
   } else {
     DF |>
       dplyr::filter((n1 == query) | (n2 == query))
