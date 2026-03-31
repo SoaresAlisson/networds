@@ -16,9 +16,9 @@
 #' reduce_freq(cooc_data, threshold = 5)
 reduce_freq <- function(cooc, threshold) {
   cooc |>
-    mutate(n = ifelse(n > threshold, threshold, n)) |>
-    group_by(n1, n2) |>
-    summarize(n = sum(n)) |>
-    ungroup() |>
-    arrange(-n)
+    dplyr::mutate(n = ifelse(n > threshold, threshold, n)) |>
+    dplyr::group_by(n1, n2) |>
+    dplyr::summarize(n = sum(n)) |>
+    dplyr::ungroup() |>
+    dplyr::arrange(-n)
 }
