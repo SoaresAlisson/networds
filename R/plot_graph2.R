@@ -55,11 +55,6 @@ plot_graph2 <- function(
 ) {
   # to head or not to head
   graph <- to_head_or_not_not_head(DF, head_n)
-  # if (head_n == "") {
-  #   graph <- df
-  # } else {
-  #   graph <- df |> head(head_n)
-  # }
 
   # fun to normalize values
   scale_values <- function(x) {
@@ -97,8 +92,18 @@ plot_graph2 <- function(
       dplyr::mutate(n = eval(dplyr::sym(scale_graph))(n))
   }
 
-  vert <- unique(c(graph$n1, graph$n2)) |>
-    gsub(x = _, "\\.", "\\\\.") # to avoid punct be taken as regex .
+  # vertices
+  all_verts <- unique(c(graph$n1, graph$n2))
+  all_verts0 <- all_verts
+
+  if_verts_with_underline <- any(grepl(x = all_verts, "_"))
+
+  if (if_verts_with_underline) {
+    all_verts <- gsub(x = all_verts, "_", " ")
+  }
+
+  vert <- all_verts |>
+    gsub(x = _, "\\.", "\\\\.") # to avoid puncts be taken as regex .
 
   # # frequency of nodes/terms
   # freqPPN <- lapply(vert, \(v) {

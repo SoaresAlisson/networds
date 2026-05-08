@@ -1,8 +1,9 @@
 #' reduce the frequency of node pairs per document
 #'
 #' This function transforms a co-occurrence dataframe by capping counts above a threshold,
-#' the input must be the tibble from cooccur_words(output=df2).
-#' It groups the data by two columns, sums the counts within each group, and arranges the results in descending order.
+#' the input to it must be the tibble from cooccur_words(output=df2).
+#' It groups the data by two columns, sums the counts within each group, and 
+#' arranges the results in descending order.
 #'
 #' @param cooc A dataframe from cooccur_words(output=df2).
 #' @param threshold The threshold max value above which counts are capped in each document.

@@ -147,6 +147,8 @@ parsePOS <- function(txt, bind = TRUE, only_entities = TRUE) {
 #'   dplyr::summarise(entities = list(unique(entity)))
 #'
 #' graph_from_cooccurrence(entities_by_txt)
+#'
+#' @export
 graph_from_cooccurrence <- function(
   df_cooccurrence,
   strip_rgx = "^the_",

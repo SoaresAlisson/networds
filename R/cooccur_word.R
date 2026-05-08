@@ -55,7 +55,8 @@ cooccur_words <- function(
   } else if (token_by %in% c("par", "paragraph")) {
     # tokens <- tokenizers::tokenize_paragraphs(text)
     # tokens <- lapply(text, tokenizers::tokenize_paragraphs)
-    tokens <- plyr::llply(
+    # tokens <- plyr::llply(
+    tokens <- purrr::map(
       text,
       \(X) {
         # tokens <- lapply(text, \(X) {
@@ -72,7 +73,8 @@ cooccur_words <- function(
   # word_tokens_list <- unlist(tokens) |>
   # word_tokens_list <- lapply(tokens, \(X) {
   message("tokenizing words...")
-  word_tokens_list <- plyr::llply(
+  # word_tokens_list <- plyr::llply(
+  word_tokens_list <- purrr::map(
     tokens,
     \(X) {
       # tokenizers::tokenize_words(X, lowercase = lower)
@@ -175,7 +177,8 @@ cooccur_words <- function(
 
     total <- length(comb_list)
     # lst <- lapply(seq_along(comb_list), \(X) {
-    lst <- plyr::llply(
+    # lst <- plyr::llply(
+    lst <- purrr::map(
       seq_along(comb_list),
       function(X) {
         percent <- ((X / total) * 100)

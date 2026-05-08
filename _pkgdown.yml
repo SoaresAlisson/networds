@@ -5,76 +5,89 @@ url: https://github.com/SoaresAlisson/networds
 reference:
   # desc: "There is two possibilites for extracting graphs from pure text: regex and POS"
   - title: Sample Data
-  - subtitle: Sample data for networds examples
+  - subtitle: Sample data for networds examples and for function params
   - contents:
-      - g
-      - txt_wiki
-      - text_sample
       - ex_prince
+      - g
+      - layouts
+      - text_sample
+      - txt_wiki
       #
   - title: Preparing the data
+  - desc: Pre processing the text or data or graphs to use it
   - contents:
       - filter_by_query
-      - tokenize_by_words
       - filter_graph
+      - tblgraph_to_tbl
+      - tokenize_by_words
+      - txt_subst
+      #
   - title: Extract graph
   - subtitle: extract cooccurrence of (almost) all words
   - contents:
-      - cooccur
+      - cooccur_words
   - subtitle: Extracting graphs using regex
   - contents:
       - connectors
-      - extract_entity
+      - connectors_list
       - extract_entities2
-      - subs_ppn
-      - extract_relation
-      - extract_graph
+      - extract_entity_rb
       - extract_graph_df
+      - extract_graph_rb
       - extract_graph_rgx
+      - extract_relation
       - get_graph_from_txt
-        #
+      - subs_ppn
   - subtitle: Extracting graphs from pure text
   - desc: "Extract graphs using Part of Speech Tagging (POS)"
   - contents:
-      - get_cooc_entities
-      - parsePOS
-      - extract_entities
-      - extract_entities_v
-      - extract_entities_l
-      - get_entities
-      - extract_graph_pos
-      - group_seq_pos
+      # - graph_from_coocurrence_list
       - collapse_adp
+      - entity_list_2_graph2
+      - extract_entities
+      - extract_entities_l
+      - extract_entities_v
+      - extract_graph_pos
       - filter_ppn
       - get_cooc
-      - group_ppn
+      - get_cooc_entities
+      - get_entities
+      - graph_from_cooccurrence
       - group_entities
-      # - graph_from_coocurrence_list
-      - entity_list_2_graph
-      - entity_list_2_graph2
+      - group_ppn
+      - group_seq_pos
+      - parsePOS
       #
   - title: Analize graphs
   - desc: "Given a graph, extract info or manipulate it"
   - contents:
-      - get_node_id
-      - get_neighbors
-      - extract_nodes
       - count_graphs
       - count_vec
-      - filter_ego
-      - split_graph
-      - rename_cols
+      - extract_nodes
       - extract_triplets
+      - filter_ego
+      - filter_graph_g
+      - filter_nested_list
+      - filter_nodes
+      - freq_nodes
+      - get_neighbors
+      - get_neighbors_df
+      - get_node_id
       - graph_subs
-      # - graph_from_cooccurrence
+      - reduce_freq
+      - rename_cols
+      - scale_to_range
+      - split_graph
+    # - graph_from_cooccurrence
     #
   - title: visualize graphs
   - subtitle: visualize static and dynamic graphs
+  - desc: After extracting the graph of words/terms, visualize it.
   - contents:
-      - q_plot
       - net_wordcloud
-      - plot_pos_graph
       - plot_graph
       - plot_graph2
       - plot_graph_i
+      - plot_pos_graph
+      - q_plot
       - viz_triplets_i

@@ -1,6 +1,7 @@
 #' use straight line or arc link between nodes
 #'
 #' @param edge_type arc or line.
+#' @noRd
 geom_link_type <- function(
     edge_type = "arc",
     edge_width = 1,

@@ -1,7 +1,8 @@
 #' Change the vector min and max values proportionally
 #'
 #' @description
-#' Used to change the display of values in plot_graph2
+#' Used to change the display of values in plot_graph2, to improve visualization
+#' of min and max values
 #'
 #' @param x vector of values
 #' @param new_min new minimum value. Default 0.15

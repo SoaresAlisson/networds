@@ -44,6 +44,7 @@
 #' escape_regex("Dr. John", word_delim = TRUE)
 #' # pattern is "\\bDr\\.John\\b"
 #'
+#' @noRd
 escape_regex <- function(string, word_delim = FALSE) {
   # string <- gsub("([.[\\(*+?{|^$])", "\\\\\\1", string)
   string <- string |> 

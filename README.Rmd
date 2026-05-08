@@ -87,7 +87,7 @@ Same data, more customization:
 txt <- txt |>
   tolower() |>
   gsub("new york", "New_York", x = _) |> # making New York a single word. I checked the text
-  gsub("'s\\b", "", x = _) # making New York a single word. I checked the text
+  gsub("'s\\b", "", x = _) # cleaning the 's
 
 cooc <- cooccur_words(txt, sw = my_sw)
 
@@ -95,7 +95,7 @@ cooc |>
   plot_graph2( # plot_graph2 also show the frequency of individual words
     txt, # the original text, to count the frequency of words
     head_n = 250, # increasing number of pairs. Default: 30
-    text_size = 4,
+    text_size = 2.5,
     text_contour_color = "white",
     edge_color = "darkblue",
     edge_alpha = 0.25,
@@ -109,6 +109,7 @@ cooc |>
   )
 ```
 
+See more examples in Vignettes
 
 ## Similar Projects
 

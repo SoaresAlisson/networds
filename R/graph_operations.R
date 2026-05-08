@@ -57,7 +57,10 @@ get_neighbors <- function(graph, query, n = 1) {
 #' Get the neighbors of a word in a dataframe
 #'
 #' @description
-#' given a dataframe with from and to columns
+#' given a graph dataframe, find the neighbour nodes of the actual nodes, 
+#' increasing the size of the graph
+#'
+#' @export
 get_neighbors_df <- function(DF, query) {
   column_names <- colnames(DF)
 

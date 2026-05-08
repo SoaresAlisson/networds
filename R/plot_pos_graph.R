@@ -36,7 +36,9 @@
 #' gr <- txt_wiki[2:44] |>
 #'   filter_by_query("Brian") |>
 #'   parsePOS()
+#'
 #' gr <- gr |> get_cooc_entities()
+#'
 #' plot_pos_graph(gr)
 plot_pos_graph <- function(
   pos_list,
