@@ -1,12 +1,11 @@
 ```{r }
 sw <- stopwordsgen::gen_stopwords(lang = "pt", categories = "all")
 sw <- stopwordsgen::gen_stopwords(lang = "en", categories = "all")
-text <- txt_wiki[2:44]
+txt <- txt_wiki[2:44]
 text <- txt_wiki[2:44] |> paste(collapse = ". ")
 
-DF <- txt_wiki[2:44] |>
-  extract_graph() |>
-  count_graphs()
+DF <- txt |> extract_graph_rb() #|> count_graphs()
+c(DF$n1, DF$n2) |> unique() |> grep(x=_, "_", value=F)
 
 DF <- txt_wiki[2:44] |> cooccur(sw = sw)
 
@@ -121,4 +120,13 @@ DF |>
   plot_graph2(TXT, head_n = "", edge_color = 1, text_size = 2.5, scale_graph = "", text_contour_color = "white")
 ```
 
+Replace the _ in nodes, as extracted by extrac_graph_rb()
+#' @param text_ws FALSE. If some nodes contains white space, replace it with underline.
+```{r gsub _ }
+
+  dplyr::mutate(
+    n1 = gsub(x=n1, "_", " "),
+    n2 = gsub(x = n2, "_", " "))
+
+```
 

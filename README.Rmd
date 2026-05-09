@@ -52,7 +52,7 @@ We are working on the implementation of this feature to reduce the number of red
 
 You can install the development version of networds from [GitHub](https://github.com/) with:
 
-``` r
+```{r, eval=FALSE}
 # install.packages("pak")
 pak::pak("SoaresAlisson/networds")
 ```
@@ -83,7 +83,7 @@ cooc |> plot_graph()
 ```
 
 Same data, more customization:
-```{r }
+```{r plot customized}
 txt <- txt |>
   tolower() |>
   gsub("new york", "New_York", x = _) |> # making New York a single word. I checked the text

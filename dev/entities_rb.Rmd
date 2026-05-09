@@ -1,0 +1,23 @@
+
+
+```{r }
+
+txt_subst <- function(txt, connect = connectors("all"), sw = "", underscore = TRUE){
+  entities <- txt |> 
+    extract_entity_rb(connect = connect, sw = sw, underscore = underscore) |> 
+    unique() |> sort() |> grep(x=_, "_", value = TRUE)
+
+  df_subst <- data.frame(to = entities) |> 
+    dplyr::mutate(from = gsub(x = to, "_", " ")) |> dplyr::select(from, to)
+
+  new_txt <- txt |> stringr::str_replace_all(tibble::deframe(df_subst))
+
+  return(new_txt)
+}
+
+ "John Does lives in New York in United States of America." |> txt_subst() 
+```
+
+
+
+

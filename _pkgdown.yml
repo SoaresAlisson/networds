@@ -1,7 +1,20 @@
+title: Networds
+subtitle: Build network of text elements
 template:
   bootstrap: 5
 # https://r-lib.r-universe.dev/pkgdown/doc/manual.html#build_reference
 url: https://github.com/SoaresAlisson/networds
+navbar:
+  components:
+    text: Articles
+    menu:
+      # https://pkgdown.r-lib.org/reference/build_articles.html
+      - title: Networds - a package to extract and plot words and entities networks
+        contents: networds_package
+      - title: Rule based entity extraction with regular expression
+        contents: regex_entities_extraction
+      - title: Extract entity co-ocurrences with Part-of-Speech Tagging
+        contents: Extract-entity-co-ocurrences-with-POS
 reference:
   # desc: "There is two possibilites for extracting graphs from pure text: regex and POS"
   - title: Sample Data
