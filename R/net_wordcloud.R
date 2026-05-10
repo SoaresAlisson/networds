@@ -30,31 +30,31 @@
 #' @examples
 #'
 #' # stopwords:
-#' my_sw <- c(stopwords::stopwords(language = "en", source = "snowball", simplify = TRUE), "lol")
+#' my_sw <- c(stopwords::stopwords(
+#'   language = "en",
+#'   source = "snowball", simplify = TRUE
+#' ), "lol")
 #'
 #' txt_wiki |> # text available in the package
-#'   cooccur(sw = my_sw) |>
+#'   cooccur_words(sw = my_sw) |>
 #'   net_wordcloud(txt_wiki, DF = _, head_n = 50) # plotting
 #'
 #' txt_wiki |> # text available in the package
 #'   # because it is a vector, let's collapse it into a single element:
-#'   paste(collapse = " ") |>
-#'   extract_graph(sw = my_sw) |>
-#'   networds::count_graphs() |> # counting the graphs
+#'   cooccur_words(sw = my_sw) |>
 #'   net_wordcloud(txt_wiki, DF = _) # plotting
 net_wordcloud <- function(
-  DF,
-  text,
-  head_n = 30,
-  lower = TRUE,
-  edge_color = "lightblue",
-  edge_alpha = 0.5,
-  edge_cut = 2,
-  text_color = "black",
-  text_contour_color = NA,
-  edge_norm = TRUE,
-  layout = "graphopt"
-) {
+    DF,
+    text,
+    head_n = 30,
+    lower = TRUE,
+    edge_color = "lightblue",
+    edge_alpha = 0.5,
+    edge_cut = 2,
+    text_color = "black",
+    text_contour_color = NA,
+    edge_norm = TRUE,
+    layout = "graphopt") {
   # to head or not to head
   if (head_n == "") {
     Graph <- DF

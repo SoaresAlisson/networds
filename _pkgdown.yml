@@ -51,7 +51,7 @@ reference:
       - extract_relation
       - get_graph_from_txt
       - subs_ppn
-  - subtitle: Extracting graphs from pure text
+  - subtitle: Extracting graphs with Part of Speech Tagging (POS)
   - desc: "Extract graphs using Part of Speech Tagging (POS)"
   - contents:
       # - graph_from_coocurrence_list
@@ -80,7 +80,7 @@ reference:
       - extract_triplets
       - filter_ego
       - filter_graph_g
-      - filter_nested_list
+      #      - filter_nested_list
       - filter_nodes
       - freq_nodes
       - get_neighbors

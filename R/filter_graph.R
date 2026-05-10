@@ -38,6 +38,7 @@ filter_graph <- function(DF, query, invert = FALSE) {
 #'
 #' @examples
 #' graph <- data.frame(n1 = c("A", "B", "C"), n2 = c("B", "C", "D"))
+#' graph
 #' filter_graph_g(graph, "b")
 filter_graph_g <- function(DF, query, ic = T, invert = FALSE) {
   if (invert) {

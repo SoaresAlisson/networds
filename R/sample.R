@@ -10,13 +10,18 @@
 #' }
 #' @export
 #' @examples
-#' data(g)
-#' head(g)
+#' g
 g <- tidygraph::tbl_graph(
-  nodes = data.frame(name = c(
-    "Alice", "Bob", "Charlie",
-    "David", "John", "Mary"
-  )),
+  nodes = data.frame(
+    name = c(
+      "Alice",
+      "Bob",
+      "Charlie",
+      "David",
+      "John",
+      "Mary"
+    )
+  ),
   edges = data.frame(
     from = c(1, 1, 2, 3, 2, 6),
     to = c(2, 3, 4, 4, 5, 5)
@@ -24,14 +29,12 @@ g <- tidygraph::tbl_graph(
 )
 
 
-
 #' A Text Sample
 #' @description
 #' A sample text from text from https://www.bbc.com/news/articles/c7ve36zg0e5o
 #' @export
 #' @examples
-#' data(package = "networds")
-#' head(text_sample)
+#' text_sample
 text_sample <- r"(A man is being questioned about the fatal shooting of a healthcare insurance boss in New York last week, officials have told the BBC's US partner CBS News.
 UnitedHealthcare boss Brian Thompson, 50, was fatally shot in the back on Wednesday morning last week outside the Hilton hotel in Midtown Manhattan.
 Police say Thompson was targeted in a pre-planned killing, for which they do not yet have a motive. Nor have officers revealed a name of the suspect.

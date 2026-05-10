@@ -32,7 +32,9 @@
 #' @export
 #'
 #' @examples
-#' # plot_graph(txt, df = graph_count, head_n = 50, scale_graph = "log2")
+#' text <- ex_prince[3, 2]
+#' graph <- cooccur_words(text, sw = stopwords::stopwords())
+#' plot_graph2(DF = graph, text = text, head_n = 50, scale_graph = "log2")
 plot_graph2 <- function(
   DF,
   text,

@@ -1,9 +1,10 @@
-#' Replace text using rule based proper name
+#' Make compound words into a single word
 #'
 #' @description
-#' given a text and the proper name connectors (`connectors()`), it returns the text
-#' with its proper names as one single word, with underscore biding them. For 
-#' example, the text "John Does lives in New York in United States of America" 
+#' Replace text using rule based proper name.
+#' Given a text and the proper name connectors (`connectors()`), it returns the text
+#' with its proper names as one single word, with underscore biding them. For
+#' example, the text "John Does lives in New York in United States of America"
 #' becomes "John_Does lives in New_York in United_States_of_America."
 #'
 #' @param txt the input text
@@ -12,8 +13,12 @@
 #' @param underscore default TRUE
 # TODO
 #'
+#' @export
+#'
 #' @examples
-#' txt_subst("John Does lives in New York in United States of America.")
+#' t <- txt_subst("John Does lives in New York in United States of America.")
+#' t
+#' strsplit(t, " ")
 #'
 txt_subst <- function(
     txt,

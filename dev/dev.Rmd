@@ -46,8 +46,8 @@ devtools::build_readme() # locates your README.Rmd and builds it into a README.m
 devtools::build_manual() # Create package pdf manual
 usethis::use_pkgdown() # is a function you run once and it does the initial, minimal setup necessary to start using pkgdown:
 pkgdown::clean_site(force = TRUE)
-devtools::build_reference() # build references
-pkgdown::build_articles() # build references
+pkgdown::build_reference() # build references
+pkgdown::build_articles() # build 
 pkgdown::build_site_github_pages()
 pkgdown::build_site() # is a function you’ll call repeatedly, to re-render your site locally. In an extremely barebones package, https://r-pkgs.org/website.html
 pkgdown::clean_site(force = TRUE)
@@ -1288,8 +1288,17 @@ texto |>
   extract_entity(sw = my_sw)
 ```
 
+## pendentes 
+~~get_neighbors~~
+freq_nodes.R 
+get_neighbors_df
+subs_ppn
+get_graph_from_txt
+extract_relation
+graph_subs - make accept named vector
 
-
+delete?
+split_graph, or transform it into export to gephi
 
 
 

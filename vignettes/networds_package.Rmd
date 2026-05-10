@@ -1,0 +1,223 @@
+--- 
+title: "01 Networds - a package to extract and plot words and entities network"
+output: rmarkdown::html_vignette
+knitr:
+  opts_chunk:
+    # cache: true
+    cache: false 
+abstract: \
+     Networds is a package to extract networks from texts. It can extract co-occurrence of words, pattern of words, of entities.
+     It also has bult-in visualization tools.
+vignette: >
+  %\VignetteIndexEntry{01 Networds - a package to extract and plot words and entities netowrk}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+--- 
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  cache = TRUE,
+  comment = "#>",
+  width = "200%"
+)
+```
+
+The amount of information nowadays growth exponentially.
+To capture meaning from huge amount of text is a challenge.
+Nowadays there is a lot of options with Large Language Models, but this option here is a deterministic one.
+One possibility to help with this problem of  meaning extraction is the use of networks of words and entities. 
+It is called with many different names, such as 
+"semantic networks",
+"co-occurrence networks",
+"word networks".
+
+As any other NLP tool, it do not replace the necessity of close reading, but reduce this necessity to read everything, guiding the reading to what the researcher really think is important.
+
+It is better to capture the meaning, when there is a small amount of texts. So, having a huge text, it is possible to choose some target words, re-filter the text with this words, and re-generate the semantic network.
+
+
+## Semantic Networks 
+
+```{r lib}
+library(networds)
+library(dplyr)
+```
+Begin extracting using NER and word cooccurrence
+If you go to check the entities you extracted, maybe word cooccurrence will be better, since extract entities will not 
+
+Traditional word tokenizers, like `tokenizers::tokenize_by_words()` in the case of URLs, it can make a mess, so networds has its own word tokenizer to avoid it.
+```{r tokenizer}
+txt <- "Take look at our website https::www/example.org/complement=?foobar123"
+# the normal tokenizer used in many packages
+txt |> tokenizers::tokenize_words()
+# the tokenizer of networds
+txt |> networds::tokenize_by_words()
+```
+
+After extracting the nodes, they are sorted alphabetically in the dataframe. So if the phrase is "lorem ipsum", the nodes will be Col1:"ipsum" and col2:"lorem" instead of the original col1:"lorem" col2:"ipsum". The reason to that is to ensure that a word pair is always counted in the same way, avoiding that pairs like A-B and B-A be counted as different nodes.
+```{r cooccur_words}
+cooccur_words("lorem ipsum. Ipsum lorem")
+```
+
+Collocation.  
+After running network, some pairs can indicate that there is a compounded word there. One tip to give a better analysis and visualization is to treat it as one word, and we can do it by replacing the white space between the words using a underline. To make multiple substitutions, use a named vector in `str_replace_all`, or transform a dataframe into one by using `deframe`:
+
+```{r dictionay_of_substitutions}
+dictionay_of_substitutions <- tibble::tribble(
+  ~from, ~to,
+  "New York Times", "NYT",
+  "New York", "New_York"
+)
+
+txt_wiki |>
+  stringr::str_replace_all(tibble::deframe(dictionay_of_substitutions)) |>
+  dplyr::nth(3) # filtering the 3rd element of vector
+```
+You can have a previous table with, or more wisely, you may run the coocurrence extraction, check if one or some of the most frequent pairs looks like a single word, procede the substitution, check again, and this process again.
+In the case of proper names It can be not a good idea to do it, since normally surname and name apprears in different proportion, and to consider the prename and surname as a single word will decrease the number of times the surname appears.
+This process can be made also to reduce some variances of the same word to a common unique case.
+
+## Weighting results
+It can happens that one pair or a set of pairs appears very frequently and is not representative of the corpus, but comes from a single document can have a set of so repeated pairs that will appear in the network.
+It is very common problem when dealing with data from social media platforms, like x/Twitter, Reddit, etc. One single user with one single post with repeated pair can make you think a topic is hot when it is not.
+To avoid it, there is some strategies to weight the nodes and pairs.
+The simplest is to restrict the number of pairs a document can contribute to the corpus.
+In networds, we can do it by getting the pair frequency per document, and then making all values above a threshold be flatten.
+
+```{r txt}
+corpus <- c(
+  "I hate you! I hate you! I hate you! I hate you! I hate you! I hate you! I hate you! I hate you! I hate you! I hate you!  I hate you! I hate you! I hate you so much!",
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  "Nullam pulvinar ante ut elit scelerisque, nec hendrerit orci dapibus. Ut auctor hendrerit dignissim.",
+  "Nulla accumsan, lorem non lacinia condimentum, urna dui egestas erat, nec porta urna erat quis elit."
+)
+# simple coocurrence gives the first doc a great importance
+cooccur_words(corpus)
+```
+```{r freq theshold}
+# word coocurrence per document instead of per corpus
+cooc <- corpus |>
+  cooccur_words(output = "df2")
+
+threshold <- 1
+```
+Option 1: 
+```{r reduce_freq}
+cooc_parsim <- cooc |>
+  networds::reduce_freq(3)
+
+cooc_parsim
+```
+
+Option 2, doing the same manually: 
+```{r reduce_freq manual}
+cooc_parsim <- cooc |>
+  mutate(n = ifelse(n > threshold, threshold, n))
+
+cooc_parsim2 <- cooc_parsim |>
+  dplyr::group_by(n1, n2) |>
+  dplyr::summarize(n = sum(n)) |>
+  dplyr::arrange(dplyr::desc(n))
+```
+
+
+
+
+# Visualization 
+
+When filtering a text using a keyword and building a graph from that, very often it leads to a high centrality of that very term, in a star shape network. To improve readability, a common practice is to delete from network that term or terms used in filter.
+
+To filter both nodes, there is two options: `filter_graph`, that filter exact matches, and `filter_graph_g`, that uses grep and regex. 
+
+```{r prince from txt to graph}
+# The package comes with Prince from Machiavelli
+Text <- ex_prince$text[1:6]
+
+# stopwords
+my_sw <- c("him", "by", "as", "because", "by", "who", "on", "i", "of", "the", "and", "a", "to", "it", "or", "so", "that", "be", "with", "in", "he", "have", "they", "had", "which", "for", "are", "them", "is", "would", "as", "him", "by", "as", "because", "by", "who", "on", "i", "but", "one", "did", "if", "when", "this", "from", "their", "there", "was", "his", "at", "these", "do", "has", "no", "nor", "not", "your", "an", "those", "will", "were", "been", "himself", "themselves") |>
+  sort() |>
+  unique()
+
+cooc <- cooccur_words(Text, my_sw)
+
+cooc |> filter_graph("prince")
+# to exlude all nodes
+cooc |> filter_graph("prince", invert = TRUE)
+# Using regex. Pay attention that we have more rows
+cooc |> filter_graph_g("prince")
+```
+
+```{r cooc plot_graph2}
+cooc |>
+  head(70) |>
+  dplyr::mutate(n = scale_to_range(n, 0.5, 7)) |>
+  plot_graph2(Text,
+    head_n = "", # Run all inputed data, without internal head, let it empty
+    scale_graph = "", # use no buil-in rescale
+    edge_color = 3, text_size = 2.5,
+    text_contour_color = "white"
+  )
+```
+
+## Layouts 
+Networds use tidygraph and ggraph packages. So, is possible to try different layouts in the `layout` parameter.
+To list the options available:
+```{r layouts}
+layouts
+```
+
+Using the nicley layout in the plot:
+```{r  plot_graph2 layout nicely}
+choosed_layout <- layouts[4]
+choosed_layout
+
+cooc |>
+  head(70) |>
+  dplyr::mutate(n = scale_to_range(n, 0.5, 7)) |>
+  plot_graph2(Text,
+    head_n = "", # Run all inputed data, without internal head, let it empty
+    scale_graph = "", # use no buil-in rescale
+    edge_color = 3, text_size = 2.5, edge_bend = 0.2,
+    text_contour_color = "white",
+    layout = choosed_layout
+  )
+```
+
+Using the star layout:
+```{r  plot_graph2 layouts star}
+choosed_layout <- layouts[2]
+choosed_layout
+
+cooc |>
+  head(50) |>
+  dplyr::mutate(n = scale_to_range(n, 0.5, 7)) |>
+  plot_graph2(Text,
+    head_n = "", # Run all inputed data, without internal head, let it empty
+    scale_graph = "", # use no buil-in rescale
+    edge_color = 3, text_size = 2.5, edge_bend = 0.2,
+    text_contour_color = "white",
+    layout = choosed_layout
+  )
+```
+
+
+# Analysis
+
+## Very dense cluster 
+Sometimes, we find a very dense cluster of very interconnected node of words. 
+This must sound an alert. Probably is the same chunk of text repeated very often and is only polluting your graph.
+It can be a good indicator to go back inspect your data and run the coocurrence analysis again.
+
+```{r dense cluster}
+biased_doc <- "I want apples. I want bananas. I want pineaples. I want avocado."
+normal_docs <- c(
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar ante ut elit scelerisque, nec hendrerit orci dapibus. Ut auctor hendrerit dignissim. Nulla accumsan, lorem non lacinia condimentum, urna dui egestas erat, nec porta urna erat quis elit. ",
+  "Aenean consequat molestie est sit amet tincidunt. Pellentesque sit amet dolor auctor, elementum sem sit amet, viverra mi. Aliquam odio magna, auctor in elementum eu, consectetur nec quam. Praesent consectetur tortor massa, semper luctus nulla semper eu. Ut posuere tellus dui, tempor volutpat sem finibus ut."
+)
+
+corpus <- c(biased_doc, normal_docs)
+
+cooc <- cooccur_words(corpus)
+cooc |> plot_graph()
+```

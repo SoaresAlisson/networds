@@ -1,8 +1,11 @@
-#' Get cooccurrence of all words
+#' Get co-occurrence frequency of all words from pure text
 #'
-#' @param text Text
+#' @description
+#' input pure text and get a tibble/data frame of word co-occurrence frequency..
+#'
+#' @param text The inputed text
 #' @param token_by Tokenize by sentence or paragraph
-#' @param sw Stopwords to be removed
+#' @param sw A vector of stopwords to be removed
 #' @param lower Convert words to lowercase. If the text is passed in all
 #' lowercase, it can return false sentence and paragraph tokenization. It is
 #' advised to use lowercase.
@@ -19,7 +22,7 @@
 #' @export
 #'
 #' @examples
-#' txt <- "Lorem Ipsum. The Ipsum John. Dolor est"
+#' txt <- "Lorem Ipsum. The Ipsum John. Dolor est. Lorem Ipsum dolor."
 #' txt |> cooccur_words()
 cooccur_words <- function(
   text,

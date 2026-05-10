@@ -6,7 +6,7 @@
 #'
 #' @examples
 #'
-#' data(prince)
-#' str(prince)
+#' str(ex_prince)
+#' ex_prince
 #'
 "ex_prince"

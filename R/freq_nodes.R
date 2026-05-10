@@ -5,6 +5,12 @@
 #' @param lower Convert words to lowercase.
 #'
 #' @return a dataframe of nodes and its frequency
+#'
+#' @examples
+#' vert <- c(letters[1:7], letters[1:3])
+#' vert
+#' text <- paste(vert, collapse = " ")
+#' freq_nodes(vert, text)
 freq_nodes <- function(vert, text, lower = TRUE) {
   # frequency of nodes/terms
   if (lower) {
@@ -13,33 +19,39 @@ freq_nodes <- function(vert, text, lower = TRUE) {
   } else {
     text2 <- text
     vert2 <- vert |> escape_regex(word_delim = TRUE)
-   }
- 
-  freqPPN <- plyr::llply(vert2, \(V) {
-    # freqPPN <- lapply(vert2, \(V) {
-        text2 |> stringr::str_extract_all(V) }, .progress = "text") |> 
-      unlist() |>
-      count_vec()
+  }
+
+  freqPPN <- plyr::llply(
+    vert2,
+    \(V) {
+      # freqPPN <- lapply(vert2, \(V) {
+      text2 |> stringr::str_extract_all(V)
+    },
+    .progress = "text"
+  ) |>
+    unlist() |>
+    count_vec()
 
   # check if there is missing input vectors
-      freqPPN_nodes <- freqPPN$x
+  freqPPN_nodes <- freqPPN$x
 
-      # vertices_not_in_freq <- vert2[!grepl(vert2, freqPPN_nodes)]
-      vertices_not_in_freq <- lapply(vert2, \(V) 
-        { V[!any(grepl(V, freqPPN_nodes))] }) |> 
-        unlist()
+  # vertices_not_in_freq <- vert2[!grepl(vert2, freqPPN_nodes)]
+  vertices_not_in_freq <- lapply(vert2, \(V) {
+    V[!any(grepl(V, freqPPN_nodes))]
+  }) |>
+    unlist()
 
-      vertices_not_in_freq_length <- length(vertices_not_in_freq)
+  vertices_not_in_freq_length <- length(vertices_not_in_freq)
 
-      if (vertices_not_in_freq_length > 0) {
-        stop(paste0(
-          "There is ",
-          vertices_not_in_freq_length,
-          " nodes not found in the text provided. Make sure that text parameter in the present function is the same text used in graph extraction. Nodes not found: \n",
-          paste(vertices_not_in_freq, collapse = ", ")
-        ))
-      }
-  
+  if (vertices_not_in_freq_length > 0) {
+    stop(paste0(
+      "There is ",
+      vertices_not_in_freq_length,
+      " nodes not found in the text provided. Make sure that text parameter in the present function is the same text used in graph extraction. Nodes not found: \n",
+      paste(vertices_not_in_freq, collapse = ", ")
+    ))
+  }
+
   return(freqPPN)
 }
 

@@ -13,9 +13,9 @@
 #'
 #' @examples
 #' txt <- "Lorem Ipsum. The Ipsum John. Dolor est Lorem"
-#' DF <- txt |> cooccur()
+#' DF <- txt |> cooccur_words()
 #' DF
-#' DF |> filter_nodes()
+#' DF |> filter_nodes("ipsum")
 filter_nodes <- function(DF, query, invert = FALSE, ...) {
   col_names <- colnames(DF)
   col1 <- col_names[1]

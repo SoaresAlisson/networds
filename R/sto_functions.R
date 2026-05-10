@@ -48,7 +48,7 @@ s2v <- function(char, sep = " |\\n|\\t|\\r", wss = "_", print = FALSE) {
 #'
 #' @export
 #' @examples
-#' vec <- s2v("a a b c a b a z z z c d e")
+#' vec <- c("a", "a", "b", "c", "a", "b", "a", "z", "z", "z", "c", "d", "e")
 #' vec |> count_vec()
 count_vec <- function(vec, sort_n = TRUE) {
   vec_count <- vec |>

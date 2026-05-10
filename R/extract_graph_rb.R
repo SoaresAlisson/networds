@@ -9,7 +9,7 @@
 #' @param connect lowercase connectors, like the "von" in "John von Neumann".
 #' @param sw stopwords vector.
 #' @param count if TRUE (default) count the frequency of nodes and return it in the order of its frequency
-#' @param loop if TRUE, it will not remove loops, a node pointing to itself.
+#' @param loop if TRUE, it will not remove foops, a node pointing to itself.
 #'
 #' @export
 #'

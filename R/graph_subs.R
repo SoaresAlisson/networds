@@ -35,7 +35,8 @@
 graph_subs <- function(DF, df_subs = NA, rm_symbols = "[^\\w\\s\\_\\&]") {
   col_names <- colnames(DF)
 
-  if (!(missing(df_subs) || is.null(df_subs))) {
+  # if (!(missing(df_subs) || is.null(df_subs))) {
+  if (!(missing(df_subs) || !is.null(df_subs))) {
     # if (exists("df_subs")) {
     # if (!is.na(df_subs)) {
     # mesaage("Exists df subs: ", exists("df_subs"))
