@@ -51,3 +51,4 @@
 - how to move geom_text above/below the circle center
 - in plot_graph2, be able to use words in uppercase
 - in net_wordcloud(g, text) and plot_graph2(g, text), it work when word_word2
+- option - msgs off

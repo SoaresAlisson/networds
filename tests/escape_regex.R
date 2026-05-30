@@ -38,15 +38,16 @@ test_that("escape_regex with word_delim = TRUE adds word boundaries", {
   expect_equal(escape_regex("Dr", word_delim = TRUE), "\\bDr\\b")
   expect_equal(escape_regex("Dr. John", word_delim = TRUE), "\\bDr\\. John\\b")
   expect_equal(escape_regex("Mr.", word_delim = TRUE), "\\bMr\\.\\b")
-  expect_equal(escape_regex("Mr. Smith", word_delim = TRUE), "\\bMr\\. Smith\\b")
-
+  expect_equal(
+    escape_regex("Mr. Smith", word_delim = TRUE),
+    "\\bMr\\. Smith\\b"
+  )
 
   # Multiple strings
   input <- c("Mr.", "Dr")
   expected <- c("\\bMr\\.\\b", "\\bDr\\b")
   expect_equal(escape_regex(input, word_delim = TRUE), expected)
 })
-
 
 
 test_that("escape_regex works correctly with : Mr. Smith like names", {
@@ -86,3 +87,27 @@ test_that("escape_regex works correctly with -", {
   expect_equal(length(unlist(matches)), 1) # Matches both "Mr." and "AMr."
 })
 
+test_that("escape_regex works with single URL", {
+  text <- "the quick brown fox, see at http://youtube.com/watch?v=dQw4w9WgXcQ."
+  url_ <- "http://youtube.com/watch?v=dQw4w9WgXcQ"
+  url_scaped <- url_ |> escape_regex()
+
+  expect_equal(unlist(stringr::str_extract_all(text, pattern = "fox")), "fox")
+  expect_equal(
+    unlist(stringr::str_extract_all(text, pattern = url_scaped)),
+    url_
+  )
+})
+test_that("escape_regex works with URLs", {
+  text <- "the quick brown fox. See fox at http://youtube.com/watch?v=dQw4w9WgXcQ."
+  vert <- c(
+    "fox",
+    "http://youtube.com/watch?v=dQw4w9WgXcQ"
+  )
+  escaped <- vert |> escape_regex()
+
+  v_fox <- unlist(stringr::str_extract_all(text, pattern = escaped[1]))
+  expect_length(v_fox, 2)
+  v_url <- unlist(stringr::str_extract_all(text, pattern = escaped[2]))
+  expect_length(v_url, 1)
+})

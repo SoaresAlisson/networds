@@ -38,7 +38,7 @@ test_that("words with special character usually used in scape: .", {
 test_that("freq_nodes handles words with dots", {
   text <- "Mr. Smith and Mrs. Jones went to see Dr. Brown. Mr. Smith is a patient. AMr."
   vert <- c("Mr. Smith", "Mrs. Jones", "Dr. Brown")
-  
+
   result <- freq_nodes(vert, text)
 
   expect_equal(sort(result$x), tolower(sort(vert)))
@@ -90,7 +90,7 @@ test_that("freq_nodes handles phrases with underscores", {
 test_that("freq_nodes handles mixed simple words and phrases with underscores", {
   vert <- c("New_York", "city", "San_Francisco", "beach")
   text <- "New_York is a big city. I love San_Francisco and the beach. The city is busy."
-  
+
   result <- freq_nodes(vert, text)
 
   expect_equal(sort(result$x), sort(tolower(vert)))
@@ -102,7 +102,7 @@ test_that("freq_nodes handles text with no matches", {
   vert <- c("dog", "cat")
   text <- c("The bird flew away.")
 
-  expect_error( freq_nodes(vert, text))
+  expect_error(freq_nodes(vert, text))
 })
 
 test_that("freq_nodes stops when nodes are not found in text", {
@@ -151,4 +151,38 @@ test_that("freq_nodes returns correct order (alphabetical)", {
 
   expect_equal(result$x, c("apple", "banana", "cat", "zebra"))
   expect_equal(result$freq, c(2, 1, 1, 1))
+})
+
+# Attention: the messages was deactivated in this function. Maybe it is not necessary
+test_that("freq_nodes - messages on and off", {
+  # Test data with mixed case
+  vert <- c("zebra", "apple", "banana", "cat")
+  text <- c("apple banana cat zebra apple")
+
+  freq_nodes(vert, text)
+
+  # expect_message(freq_nodes(vert, text, msgs = TRUE))
+  expect_error(expect_message(freq_nodes(vert, text, msgs = FALSE)))
+})
+
+test_that("freq_nodes works with URLs", {
+  text <- "the quick brown fox. See fox at http://youtube.com/watch?v=dQw4w9WgXcQ."
+  vert <- c(
+    "fox",
+    "http://youtube.com/watch?v=dQw4w9WgXcQ"
+  )
+  DF <- freq_nodes(vert, text) |> as.data.frame()
+  expect_equal(DF[1, "freq"], 2)
+  expect_equal(DF[2, "freq"], 1)
+})
+
+test_that("freq_nodes works with splitted URLs", {
+  text <- "the quick brown fox. See fox at http://youtube.com/watch?v=dQw4w9WgXcQ."
+  vert <- c(
+    "fox",
+    "http://youtube.com/"
+  )
+  DF <- freq_nodes(vert, text) |> as.data.frame()
+  expect_equal(DF[1, "freq"], 2)
+  expect_equal(DF[2, "freq"], 1)
 })

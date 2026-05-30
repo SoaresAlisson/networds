@@ -3,6 +3,7 @@
 #' @param vert a vector of nodes/terms
 #' @param text an input text
 #' @param lower Convert words to lowercase.
+#' @param msgs display function messages
 #'
 #' @return a dataframe of nodes and its frequency
 #'
@@ -11,7 +12,7 @@
 #' vert
 #' text <- paste(vert, collapse = " ")
 #' freq_nodes(vert, text)
-freq_nodes <- function(vert, text, lower = TRUE) {
+freq_nodes <- function(vert, text, lower = TRUE, msgs = TRUE) {
   # frequency of nodes/terms
   if (lower) {
     text2 <- tolower(text)
@@ -20,14 +21,24 @@ freq_nodes <- function(vert, text, lower = TRUE) {
     text2 <- text
     vert2 <- vert |> escape_regex(word_delim = TRUE)
   }
+  # in case it is a URL, it will only have regex word delimiter at the beginning
+  vert2 <-
+    gsub(x = vert2, r"---{^(\\b(http|www).*)\\b$}---", "\\1")
 
-  freqPPN <- plyr::llply(
+  if (msgs) {
+    progress_ <- "text"
+  } else {
+    progress_ <- FALSE
+  }
+
+  freqPPN <- purrr::map(
+    # freqPPN <- plyr::llply(
     vert2,
     \(V) {
       # freqPPN <- lapply(vert2, \(V) {
       text2 |> stringr::str_extract_all(V)
     },
-    .progress = "text"
+    .progress = progress_
   ) |>
     unlist() |>
     count_vec()

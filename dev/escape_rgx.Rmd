@@ -1,14 +1,13 @@
 ```{r }
 escape_rgx <- function(string, word_delim = FALSE) {
-
-# string <- gsub("([.[\\(*+?{|^$])", "\\\\\\1", string)
+  # string <- gsub("([.[\\(*+?{|^$])", "\\\\\\1", string)
   # string <- gsub(r"---([\\\\.])---", "\\\\\\1", string)
-  string <- string |> 
-    gsub(x=_, "\\.", r"(\\.)")
+  string <- string |>
+    gsub(x = _, "\\.", r"(\\.)")
   # string <- gsub("[\\\\\\\\.]", "\\\\\\1", string)
   message(string)
 
-# string <- gsub("[\\.\\(\\*\\+\\?\\{\\|\\^\\$]", "\\\\\\1", string)
+  # string <- gsub("[\\.\\(\\*\\+\\?\\{\\|\\^\\$]", "\\\\\\1", string)
 
   if (word_delim) {
     string <- paste0("\\b", string, "\\b")
@@ -17,4 +16,33 @@ escape_rgx <- function(string, word_delim = FALSE) {
 }
 
 escape_rgx("Mr. John", word_delim = TRUE)
+```
+```{r URLs}
+string <- "the quick brown fox, see at http://youtube.com/watch?v=dQw4w9WgXcQ."
+url_ <- "http://youtube.com/watch?v=dQw4w9WgXcQ"
+string <- "http://youtube.com/watch?v=dQw4w9WgXcQ"
+manual_pattern <- "http://youtube\\.com/watch\\?v=dQw4w9WgXcQ"
+
+url_scaped <- string |> escape_regex(word_delim = F)
+
+
+stringr::str_extract_all(string, pattern = manual_pattern) |> unlist()
+stringr::str_extract_all(string, pattern = url_scaped) |> unlist()
+expect_equal(manual_pattern, url_scaped)
+
+stringr::str_extract_all(
+  text,
+  pattern = c(manual_pattern, url_scaped)[2] # pattern = "dqw4w9wgxcq"
+) |>
+  unlist()
+
+string |>
+  gsub(x = _, r"---(\.)---", r"---(\\.)---") |>
+  # gsub(x = _, "\\.", r"---(\.)---" ) |>
+  gsub(x = _, r"---(\?)---", r"---(\\?)---")
+
+url_ |> gsub(x = _, r"---(\?)---", r"---(\\?)---")
+
+gsub(x = url_, r"(?)", r"(\?)")
+gsub(x = url_, "\\?", r"--(\\?)--")
 ```

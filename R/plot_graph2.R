@@ -53,7 +53,8 @@ plot_graph2 <- function(
   edge_bend = 0.5,
   edge_fan = FALSE,
   scale_graph = "scale_values",
-  layout = "kk"
+  layout = "kk",
+  msgs = TRUE
 ) {
   # to head or not to head
   graph <- to_head_or_not_not_head(DF, head_n)
@@ -66,11 +67,13 @@ plot_graph2 <- function(
   text_length <- length(text)
 
   if (text_length > 1) {
-    message(
-      "You provided a vector of ",
-      text_length,
-      " elements instead of one. No problem, but these will be collapsed into a single element, with a final punctuation mark added to each."
-    )
+    if (msgs) {
+      message(
+        "You provided a vector of ",
+        text_length,
+        " elements instead of one. No problem, but these will be collapsed into a single element, with a final punctuation mark added to each."
+      )
+    }
     text <- paste(text, collapse = ".")
   }
 
@@ -104,8 +107,10 @@ plot_graph2 <- function(
     all_verts <- gsub(x = all_verts, "_", " ")
   }
 
-  vert <- all_verts |>
-    gsub(x = _, "\\.", "\\\\.") # to avoid puncts be taken as regex .
+  # TODO redundante com freq_nodes, que possui escape_regex?
+  # vert <- all_verts |>
+  #   gsub(x = _, "\\.", "\\\\.") # to avoid puncts be taken as regex .
+  vert <- all_verts
 
   # # frequency of nodes/terms
   # freqPPN <- lapply(vert, \(v) {
@@ -142,7 +147,7 @@ plot_graph2 <- function(
     node_color <- edge_color
   }
 
-  node_freq <- freq_nodes(vert, text)
+  node_freq <- freq_nodes(vert, text, msgs = msgs)
 
   if (any(is.null(node_size), node_size == "")) {
     # if (class(text_size) != "numeric") {
@@ -151,9 +156,11 @@ plot_graph2 <- function(
     if (!scale_graph %in% c("none", "")) {
       node_size <- eval(dplyr::sym(scale_graph))(node_freq$freq)
     }
-    message(
-      "Using node_size proportional to word frequency as no node_size was provided in parameters"
-    )
+    if (msgs) {
+      message(
+        "Using node_size proportional to word frequency as no node_size was provided in parameters"
+      )
+    }
     # message(node_size)
   }
 
@@ -166,6 +173,7 @@ plot_graph2 <- function(
   }
 
   graph |>
+    select(n1, n2, n) |>
     tidygraph::as_tbl_graph() |>
     # igraph::graph_from_data_frame(directed = FALSE, vertices = freqPPN) |>
     # tidygraph::activate("nodes") |>

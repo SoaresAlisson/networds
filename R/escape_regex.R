@@ -47,8 +47,18 @@
 #' @noRd
 escape_regex <- function(string, word_delim = FALSE) {
   # string <- gsub("([.[\\(*+?{|^$])", "\\\\\\1", string)
-  string <- string |> 
-    gsub(x=_, "\\.", r"(\\.)")
+  string <- string |>
+    # gsub(x = _, "\\.", r"---(\.)---")
+    gsub(x = _, r"---(\.)---", r"---(\\.)---") |>
+    gsub(x = _, r"---(\?)---", r"---(\\?)---")
+
+  # is_url <- grepl(x = string, "^(http|www)")
+  # if (is_url) {
+  #   string <- string |>
+  #     gsub(x = _, r"---(\?)---", r"---(\\?)---")
+  #   # gsub(x = _, "\\?", r"---(\?)---")
+  # }
+
   # string <- gsub("[\\.\\(\\*\\+\\?\\{\\|\\^\\$]", "\\\\\\1", string)
   if (word_delim) {
     string <- paste0("\\b", string, "\\b")

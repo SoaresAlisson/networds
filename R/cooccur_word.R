@@ -18,6 +18,7 @@
 #' element ("lst" or "list"); or 3) as raw list. This format is the most raw
 #' output of this function; 4) "df2", tibble/dataframe with the doc numbers.
 #' @param count Return count of words (default TRUE)
+#' @param msgs if FALSE, silence all messages. Default TRUE.
 #'
 #' @export
 #'
@@ -32,16 +33,20 @@ cooccur_words <- function(
   # compound_words = "",
   loop = FALSE,
   output = "df",
-  count = TRUE
+  count = TRUE,
+  msgs = TRUE
 ) {
   text_length <- length(text)
 
   if (text_length > 1 && output %in% df_names) {
-    message(
-      "You provided a vector of ",
-      text_length,
-      " elements instead of one. No problem, but these will be collapsed into a single element, with a final punctuation mark added to each, to ensure it is treated as different sentences in the process of tokenization."
-    )
+    if (msgs) {
+      msg <- paste(
+        "You provided a vector of ",
+        text_length,
+        " elements instead of one. No problem, but these will be collapsed into a single element, with a final punctuation mark added to each, to ensure it is treated as different sentences in the process of tokenization."
+      )
+      message(msg)
+    }
     text <- paste(text, collapse = ". ")
   }
 
@@ -51,7 +56,9 @@ cooccur_words <- function(
 
   if (token_by %in% c("sentence", "sent")) {
     # tokens <- tokenizers::tokenize_sentences(text)
-    message("tokenizing sentences...")
+    if (msgs) {
+      message("tokenizing sentences...")
+    }
     tokens <- lapply(text, \(X) {
       tokenizers::tokenize_sentences(X) |> unlist()
     })
@@ -75,7 +82,12 @@ cooccur_words <- function(
   # Clean stopwords
   # word_tokens_list <- unlist(tokens) |>
   # word_tokens_list <- lapply(tokens, \(X) {
-  message("tokenizing words...")
+  if (msgs) {
+    message("tokenizing words...")
+    purr_progress <- "text"
+  } else {
+    purr_progress <- FALSE
+  }
   # word_tokens_list <- plyr::llply(
   word_tokens_list <- purrr::map(
     tokens,
@@ -83,7 +95,7 @@ cooccur_words <- function(
       # tokenizers::tokenize_words(X, lowercase = lower)
       tokenize_by_words(X, lower = lower)
     },
-    .progress = "text"
+    .progress = purr_progress
     # .parallel = TRUE
   )
   # lapply(\(X) {
@@ -173,11 +185,12 @@ cooccur_words <- function(
     }
   } else if (output == "df2") {
     time_init <- Sys.time()
-    message(
-      "Each vector element will be considered as a different document. The frequency of co-occurrence per document takes much more time than per corpus."
-    )
-    message("Process began at ", format(time_init, "%H:%M:%S %Y-%m-%d"))
-
+    if (msgs) {
+      message(
+        "Each vector element will be considered as a different document. The frequency of co-occurrence per document takes much more time than per corpus."
+      )
+      message("Process began at ", format(time_init, "%H:%M:%S %Y-%m-%d"))
+    }
     total <- length(comb_list)
     # lst <- lapply(seq_along(comb_list), \(X) {
     # lst <- plyr::llply(
@@ -207,8 +220,9 @@ cooccur_words <- function(
       },
       .progress = "text"
     )
-
-    message("Binding dataframes")
+    if (msgs) {
+      message("Binding dataframes")
+    }
 
     df <- dplyr::bind_rows(lst) |>
       dplyr::select(doc, n1, n2, n)
@@ -220,8 +234,10 @@ cooccur_words <- function(
 
     # time_diff <- time_end - time_init
     # as.numeric(time_diff, units = "secs")
-    message("------------------------------")
-    message("Finished in ", elapsed, " minutes.")
+    if (msgs) {
+      message("------------------------------")
+      message("Finished in ", elapsed, " minutes.")
+    }
     return(df)
   } else if (output == "raw") {
     return(pairs)

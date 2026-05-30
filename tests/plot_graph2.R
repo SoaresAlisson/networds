@@ -32,3 +32,11 @@ plot_graph2(DF)
 plot_graph2(DF, text)
 plot_graph2(DF, text, text_contour_color = "white")
 plot_graph(DF, edge_type = "line")
+
+test_that("plot_graph2 works with URLs", {
+  sample_text <- "The Quick Brown fox jumps over the Lazy Dog. See at http://youtube.com/watch?v=dQw4w9WgXcQ."
+  # text <- sample_text
+  DF <- cooccur_words(sample_text, output = "df2")
+  plot_graph2(DF, sample_text)
+  # expect_snapshot()
+})

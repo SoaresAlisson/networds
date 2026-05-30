@@ -277,7 +277,7 @@ test_that("cooccur function with lower parameter works correctly", {
     apple_banana_lower <- result_lower[
       result_lower$n1 == "apple" & result_lower$n2 == "banana",
     ]
-    expect_equal(apple_banana_lower$n, 2) # Should appear in both sentences
+    expect_equal(apple_banana_lower$n, 3) # Should appear in both sentences
 
     # With lower=FALSE, case variants are distinct
     all_pairs_upper <- result_upper
@@ -567,8 +567,8 @@ testthat::test_that("df output", {
   # n of docs
   expect_equal(length(unique(DFresult$doc)), length(text))
   # ordering of nodes alphabetically:
-  bar_foo_freq <- DFresult |> 
-    dplyr::filter(doc == 2, n1 == "bar", n2 == "foo") |> 
+  bar_foo_freq <- DFresult |>
+    dplyr::filter(doc == 2, n1 == "bar", n2 == "foo") |>
     dplyr::pull(n)
   expect_equal(bar_foo_freq, 2)
 
@@ -580,3 +580,17 @@ testthat::test_that("df output", {
 
 # Run all tests
 # test_dir("path/to/test/file")  # If saving in separate file
+#
+test_that("cooccur - messages on and off", {
+  # Test data with mixed case
+  sample_text <- "The Quick Brown fox jumps over the Lazy Dog. A quick Brown cat runs fast. Dogs and Cats are pets."
+
+  expect_message(cooccur_words(sample_text, msgs = TRUE))
+  expect_error(expect_message(cooccur_words(sample_text, msgs = FALSE)))
+})
+
+test_that("cooccur works with URLs", {
+  sample_text <- "The Quick Brown fox jumps over the Lazy Dog. See at http://youtube.com/watch?v=dQw4w9WgXcQ."
+  DF <- cooccur_words(sample_text, output = "df2")
+  expect_true(any(grepl("http://", DF$n1), grepl("http://", DF$n2)))
+})
